@@ -1286,3 +1286,110 @@ tmpfs            4.0M     1  4.0M    1% /run/user/0
 
 ## Montaje y desmontaje de FS
 
+Para montar todo lo que esté definido en `/etc/fstab`: **mount -a**, cuando arranca el sistema, monta todo lo que está en este fichero, por lo que si hay algo mal, el sistema no arrancará.
+
+Para ver lo que hay montado en el sistema: `mount`
+
+**blkid** nos dará los UUID de los sistemas de ficheros formateados, podemos montar con el UUID o haciendo referencia a la partición formateada...
+
+p.ej:
+1. Tenemos /dev/vdb1.
+2. Creamos el sistema de fichero con `mkfs -t {ext4|xfs} /dev/vdb1`
+3. Creamos el punto de montaje: `mkdir /mnt/punto_montaje`
+4. Montamos: `mount /dev/vdb1 /mnt/pto_montaje`
+
+El punto de montaje, debe existir (así que primero de todo, hay que crear el punto de montaje)
+
+Para desmontar: `umount /dev/vdb1` ó `umount /mnt/punto_montaje`
+
+Para desmontar no tiene que haber ningún proceso usando el punto de montaje...
+
+Par ver si hay alguien usando algo en una ruta: `lsof /ruta` ó `fuser /ruta`
+
+Con `fuser -k /ruta` nos mata todos los procesos de usuario que estén usando esta ruta.
+
+El único dispositivo que pueden montar los usuarios son los USB, en la ruta `/run/media/<user>/<label>`
+
+OJO con los montajes y desmontajes... si nos equivocamos y montamos sobre un directorio que está siendo usado o que tiene información, ocultaremos la información que estaba originalmente en el directorio. Si hacemos un listado del directorio, veremos lo que hay en el dispositivo montado NO lo que hay en el directorio. Nos podemos volver locos, porque si hacemos un df veremos un uso de disco y si hacemos un du, la suma no coincidirá con lo que hay en él.
+
+**Montajes bindeados (_bind mount_)** de un directorio sobre otro, se usa para encapsular espacios de usuarios.
+
+## Links
+
+Dos tipos _hard link_ y _soft link_.
+
+### Hard link
+
+Una nueva entrada en un directorio que hace referencia a un archivo ya existente en el FS.
+* Todos los archivos tienen un HL. Tienen que estar en el mismo sistema de ficheros.
+* Si está en el mismo directorio, tendrá que tener un nombre distinto.
+* Todos los HL de un mismo fichero son clones.
+* Es un nombre que hace refencia a un mismo inodo.
+
+`ln <fich_existente> <hard_link>`
+
+### Soft link
+
+No es un archivo regular (en un listado largo lo veremos con una l), es un puntero a un fichero (es lo más parcido que hay a los accesos directos de Windows).
+* Tienen que apuntar a un archivo o directorio existente.
+* Si borramos el fichero origne, el SL no desaparece, pero queda inconsistente.
+* No tienen que estar en el mismo sistema de ficheros.
+* Pueden usarse con directorios (el origen puede ser un directorio).
+
+`ln -s <fich_existente> <soft_link>`
+
+### Operando con links
+Para ver si son hard links o no, en el listado largo, el segundo campo nos dice cuantos HL tiene.
+
+Para ver los inodos de cada fichero, dos opciones.
+* `ls -il <fichero>`
+* `stat <fichero>`
+
+## Buscando archivos en el sistema
+
+### locate
+
+Busca en una base de datos del sistema y devuelve el resultado de forma instantánea.
+
+* Para actualizar la base de datos `updatedb`, almacena la ruta y el nombre de los ficheros. Diariamente se actualiza la BB.DD.
+* Tenemos que tener permisos de lectura en los directorios por los que va a buscar.
+
+ej.: `locate passwd`
+
+Modificadores:
+* i - case insensitive
+* -n <numero> - limitas la cantidad de resultados que te devuelve
+
+### find
+
+Mucho más potente que locate, se puede afinar mucho la búsqueda, puedes ejecutar comandos sobre lo encontrado, ...
+* Para buscar, tenemos que tener permisos r-x sobre el directorio
+* Es recursivo
+
+#### Casos de uso
+
+* `find <ruta> -name <nombre>`, Busca desde la ruta por el nombre, se pueden usar comodines en el nombre
+* -iname -Case insensitive
+* -user - busca por usuario
+* -group - busca por grupo
+* -uid - busca por uid
+* -gid - busca por gid
+* -perm -- busca por permisos
+   - -perm xyz -- busca exáctamente esos permiso
+   - -perm -xyz -- busca como mínimo esos permisos (ej: -755, encontraría 755, 765, 775, 765,..,) 
+   - -perm /xyz -- como mínimo uno de los tres (ej: 755, 700, 050, ...), (el 0 es un comodín)
+* -size -- Busca por tamaño (ojo, que el tamaño se redondea hacia arriba)
+   - -size 10M -> tamaño exacto
+   - -size +10M -> tamaño mayor de 10M
+   - -size -10M --> tamaño menor de 10M
+* -mmin -- busca por tiempo desde la última modfiicación (funcionan igual + y - que con los tamaños).
+* -type - busca por tipo de archivo.
+   - f - fichero
+   - d - directorio
+   - l - link simbólico
+   - b - dispositivo de bloques
+* -liks -- busca por ficheros con hardlinks (funcionan igual el + y el -)
+* -exec - ejecuta el comando sobre los resultados del find 
+    - Estructura: `find <dir> <parámetros busqueda> -exec <comando> {};\`
+
+Todos los flags de búsqueda podemos combinarlos, si los combinamos tal cual funcionan como un AND, si queremos OR, tenemos que meter **-o**, y habría que usarlo con paréntesis.
