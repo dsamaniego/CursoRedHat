@@ -13,6 +13,7 @@
 11. [Networking](#network)
 12. [Archivado y copia entre sistemas](#empaquetado)
 13. [Manejo de paquetes de software](#packages)
+14. [Sistemas de archivos](#filesystem)
    
 # Introducción al curso <a name="introduccion"></a>
 [kiosk@foundation12 ~]$ find /etc -name passwd 2> /dev/null |tee /dev/pts/1 > ~/encontrados4.txt
@@ -1220,3 +1221,6 @@ Esto no nos resuelve dependencias así que ojito, mejor usar yum.
    - c = ficheros de configuración
 * `rpm -q --scripts <paquete>` -- Nos dice qué scripts nos va a ejecutar
 * `rpm2cpio paquete.rpm |cpio -id "*txt"` nos saca del paquete, todos los ficheros especificados con el filtro del cpio
+
+# Sistemas de archivos <a name="filesystem"></a>
+
