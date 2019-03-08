@@ -1,0 +1,21 @@
+SERVIDOR
+[root@rhel72 ~]# cat /etc/redhat-release 
+Red Hat Enterprise Linux Server release 7.3 (Maipo)
+[root@rhel72 ~]# ip a | grep 'inet 19'
+    inet 192.168.122.3/24 brd 192.168.122.255 scope global ens3
+[root@rhel72 ~]# grep '^allow' /etc/chrony.conf
+allow 192.168.122.2
+
+CLIENTE
+[root@centos70 ~]# cat /etc/redhat-release 
+CentOS Linux release 7.2.1511 (Core) 
+[root@centos70 ~]# ip a | grep 'inet 19'
+    inet 192.168.122.2/24 brd 192.168.122.255 scope global eth0
+[root@centos70 ~]# grep '^server' /etc/chrony.conf 
+server 192.168.122.3
+[root@centos70 ~]# chronyc sources
+210 Number of sources = 1
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^* 192.168.122.3                 2   6    17    49   -395us[ -676us] +/-   10ms
+

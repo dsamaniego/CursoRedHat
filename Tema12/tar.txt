@@ -1,0 +1,26 @@
+tar cf ---> necesida de r sobre los files y r y x sobre dirs
+tar xf ---> root: preserva propiedad y permisos
+            user: pasan a ser de su propiedad. permisos se preservan (se pueden ver afectados por la máscara)
+
+Añadir a un tar
+[root@rhel72 ~]# tar -f mio.tar -r /etc/yum.repos.d/redhat.repo 
+
+Eliminar de un tar (no con compresión)
+[root@rhel72 ~]# tar --delete -f mio RSYNC/file3
+
+Actualizar un file que ya está dentro del tar
+tar -uf archive.tar new/test2.txt
+
+Ver un file de un tar en stdout
+[root@rhel72 ~]# tar -xOf mio RSYNC/file2
+que tal
+adios
+
+
+Descomprimir un tar de un host en otro host:
+root@server0 ~]# ls
+mio.tar.xz
+root@server0 ~]# cat  mio.tar.xz | ssh root@desktop0.example.com 'tar xf - -C /home/student/'
+
+    ojo! el fichero mio.tar.xz en el /home/student de desktop0 no debe existir
+

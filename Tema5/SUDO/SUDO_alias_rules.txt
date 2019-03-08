@@ -1,0 +1,58 @@
+#ALIAS
+
+ # UID 0 is normally used for root
+ # Note the hash (#) on the following line indicates a uid, not a comment.
+ Runas_Alias ROOT = #0
+ # This is for all the admin users similar to the User_Alias of ADMINS set earlier 
+ # with the addition of "root"
+ Runas_Alias ADMINS = %admin, root
+
+# This is all the servers
+ Host_Alias SERVERS = 192.168.0.1, 192.168.0.2, server1
+ # This is the whole network
+ Host_Alias NETWORK = 192.168.0.0/255.255.255.0
+ # And this is every machine in the network that is not a server
+ Host_Alias WORKSTATIONS = NETWORK, !SERVER
+ # This could have been done in one step with 
+ # Host_Alias WORKSTATIONS = 192.168.0.0/255.255.255.0, !SERVERS
+
+
+
+
+
+
+
+#RULES
+
+Cmnd_Alias   SYSTEM  = /sbin/reboot,/usr/bin/kill,/sbin/halt,/sbin/shutdown,/etc/init.d/
+Cmnd_Alias   PW      = /usr/bin/passwd [A-z]*, !/usr/bin/passwd root # Not root pwd!
+Cmnd_Alias   DEBUG   = /usr/sbin/tcpdump,/usr/bin/wireshark,/usr/bin/nmap
+
+
+sysadmin     DMZ     = (ALL) NOPASSWD: SYSTEM,PW,DEBUG
+sysadmin     ALL,!DMZ = (ALL) NOPASSWD: ALL   # Can do anything outside the DMZ.
+%dba         ALL     = (DBA) ALL              # Group dba can run as database user.
+
+
+# anyone can mount/unmount a cd-rom on the desktop machines
+ALL          DESKTOP = NOPASSWD: /sbin/mount /cdrom,/sbin/umount /cdrom
+
+----------------------------
+Another helpful tag is NOEXEC, which can be used to prevent some dangerous behavior in certain programs.
+
+For example, some programs, like "less", can spawn other commands by typing this from within their interface:
+
+!command_to_run
+
+This basically executes any command the user gives it with the same permissions that "less" is running under, which can be quite dangerous.
+
+To restrict this, we could use a line like this:
+/etc/sudoers
+
+. . .
+username  ALL = NOEXEC: /usr/bin/less
+myuser ALL = (root) NOPASSWD:NOEXEC: /usr/bin/vim
+
+
+
+

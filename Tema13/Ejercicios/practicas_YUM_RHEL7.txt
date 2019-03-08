@@ -1,0 +1,28 @@
+EJERCICIOS YUM
+------------------
+
+1. Borrar ls, arreglarlo
+
+2. Que paquete me instala el /bin/bash?
+
+3. En el histórico del yum, cuales son los últimos paquetes instalados en el sistema?
+
+4. Instalar el grupo "soporte de Esperanto"
+
+5. Quien me instala la libreria /usr/lib/libsoprano.so.4 ?
+
+6. Instala el repositorio EPEL  (http://dl.fedoraproject.org/pub/epel/7/x86_64)
+
+7. Instala el comando unarj (EPEL)
+
+8. Bajarse el paquete p7zip sin instalarlo  (EPEL)
+
+9. Instalar soporte para NTFS (EPEL)
+
+10. Instalar el plugin del flash
+Instalar la versión YUM de http://get.adobe.com/
+Eso añade el repositorio de Adobe, comprobarlo
+
+11. Instalar el navegador Chrome (hay que buscarlo y descargarlo)
+http://www.google.es/chrome
+

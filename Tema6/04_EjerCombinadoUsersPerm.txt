@@ -1,0 +1,23 @@
+EJERCICIO COMBINADO DE USUARIOS Y PERMISOS	13-Abr-2018
+==========================================
+
+El ejercicio se realizará en serverX.
+
+1.- Crear los directorios /docs y /marketing
+
+2.- Crear los usuarios: pperez, mlopez, fgarcia, dhernan.
+
+   En /docs, crear los ficheros:
+	- hola-pepe.txt del usuario pperez
+	- hola-maria.txt del usuario mlopez
+	- hola-fernando.txt del usuario fgarcia
+	- hola-daniel.txt del usuario dhernan
+
+3.- Crear el grupo marketing con los usuarios pperez, mlopez, dhernan.
+    
+4.- El directorio /marketing es colaborativo para el grupo marketing.
+
+
+5.- Todos los usuarios pueden dejar ficheros en /docs pero sólo el usuario que crea algo en /docs puede borrarlo.  
+
+   
