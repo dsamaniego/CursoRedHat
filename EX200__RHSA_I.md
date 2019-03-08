@@ -1128,23 +1128,6 @@ Cuando vamos a actualizar, no se meten parches, se instalan versiones. Sólo se 
 
 Cuando desinstalamos un paquete, también desinstala los paquetes dependientes de él, ya que no van a funcionar.
 
-## Repositorios
-
-Configuración por defeco de yum: `/etc/yum.conf`
-Repositorios en: `/etc/yum.repos.d/*.repo`
-
-Para definir un repositorio necesitamos un fichero **\*.repo**
-Contenido mínimo:
-~~~text
-[IDENTIFICACION]
-name="nombre"
-baseurl={ftp,http,file}
-enabled={0|1}           # opcional (recomendable)
-gpgcheck={0|1}          # opcional (recomendable)
-gpgkey=url_public_key   # opcional (recomendable)
-~~~
-
-En el repositorio tendríamos que  tener los paquetes rpm y un repodata con los metadatos del repositorio.
 
 ## YUM
 
@@ -1165,48 +1148,70 @@ Comandos informativos:
 Comandos que hacen pupa:
 * yum install <nombre_paquete> - Instala el paquete y sus dependencias.
 * yum update <nombre_paquete> - Actualiza el paqeute y sus dependencias, si no ponemos el nombre del paquete, actualiza todos. Hace copias de seguridad de los ficheros de configuración incompatibles y crea otro limpio.
-   - Si es un kernel, este es tipo _always install_, siempre se instala, aunque se indique con update.
+   - Si es un kernel, este es tipo _always install_, siempre se instala, aunque se indique con update.  
+      Para ver los kernels que tenemos instalados: `yum list kernel` y para ver el kernel que se está usando `uname -r`.  
+      El kernel en versiones anteriores se instalaba, es decir no había opción de update.
 * yum remove <nombre_paquete> - Borra el paquete
    - Si hay paquetes que dependen de él, también me los quita (porque ya no van a funcionar).
    - Esto es una pega, porque si desinstalamos por error y lo volvemos a instalar, no arreglamos las dependencias rotas.
 
- ### Grupos
+### Grupos
  
- Dos tipos:
- - regular: un grupo de RPMs
- - Entorno: un grupo de grupos regulares.
+Agrupan paquetes y dan una funcionalidad completa, evidentemente al precio de perder el control de lo que se está instalando -puede que nos instale más cosas de las que necistamos.
+Dos tipos:
+* regular: un grupo de RPMs
+* Entorno: un grupo de grupos regulares.
  
- 3 tipos de paquetes de grupos:
- - obligatorios
- - predeterminados
- - opcionales
+3 tipos de paquetes de grupos:
+* obligatorios
+* predeterminados
+* opcionales
  
- * `yum group list <nombre>` (en versiones anteriores: yum grouplist).
- * `yum group info <nombre>` (en versiones anteriores: yum groupinfo)
-      OJO: Si le tiramos este comando, nos va a mostrar los paquetes que forman parte del grupo:
-         **=** el paquete esá instalado o fué instalado como parte del grupo.
-         **+** No está instalado y para instalarlo hay que instalar el grupo.
-         **-** No está instalado y no se instalará (habría que instalarlo manualmente).
-         (sin marcador) El paquete está instalado individualmente
-            - en este caso, podemos decirle al sistema que nos marque al grupo que sólo instale lso paquetes predeterminados u obligatorios que existan.
+* `yum group list <nombre>` (en versiones anteriores: yum grouplist).
+* `yum group info <nombre>` (en versiones anteriores: yum groupinfo)
+
+OJO: Si le tiramos este comando, nos va a mostrar los paquetes que forman parte del grupo:
+- **=** el paquete esá instalado o fué instalado como parte del grupo.
+- **+** No está instalado y para instalarlo hay que instalar el grupo.
+- **-** No está instalado y no se instalará (habría que instalarlo manualmente).
+- (sin marcador) El paquete está instalado individualmente  
+   en este caso, podemos decirle al sistema que nos marque al grupo que sólo instale lso paquetes predeterminados u obligatorios que existan.
+   
 * `yum group install <grupo>`
-* `yum group mark install <group>` --> marca que el grupo está instalado, y todos los paquetes que nos faltan por instalar de obligatorios y predeterminados, se nos instalaran (en la versión esto no era así, si teníamos la paquetería instalada, el grupo se consideraba que estaba instalado).
+* `yum group mark install <group>` --> marca que el grupo está instalado, y todos los paquetes que nos faltan por instalar de obligatorios y predeterminados, se nos instalaran (en la versión anterior esto no era así, si teníamos la paquetería instalada, el grupo se consideraba que estaba instalado).
    
-   
+### Historia
+
 Todo lo referente a lo que ha hecho yum está en `/var/log/yum.log`
-Además, tenemos un historial de lo que se ha hecho. `yum history`, que podemos consultar la paquetería que hemos isntalado.
+
+Además, tenemos un historial de lo que se ha hecho. `yum history`, que podemos consultar la paquetería que hemos instalado.
 
 Podemos deshacer operaciones hechas desde el _yum history_
 
 ## Repositorios
 
-yum repo list all --> devuelve lalista de todos los repositorios
-yum-config-manager --> utilidad para manipular los repositorios que tenemos.
-   * `yum-config-manager --{enable|disable} <repositorio>` --> nos habilita este respositorio (en el fich de config, mete un _enabled=1_)
-Podemos configurar repositorios de terceros editando un fichero *.repo en `/etc/yum.repos.d/*.repo`
+Configuración por defeco de yum: `/etc/yum.conf`
+Repositorios en: `/etc/yum.repos.d/*.repo`
+
+Para definir un repositorio necesitamos un fichero **.repo**, con el siguiente contenido:
+
+~~~text
+[IDENTIFICACION]
+name="nombre"
+baseurl={ftp,http,file}
+enabled={0|1}           # opcional (recomendable)
+gpgcheck={0|1}          # opcional (recomendable)
+gpgkey=url_public_key   # opcional (recomendable)
+~~~
+
+En el repositorio tendríamos que  tener los paquetes rpm y un repodata con los metadatos del repositorio.
+* `yum repo list all`  --> devuelve lalista de todos los repositorios
+* **yum-config-manager** --> utilidad para manipular los repositorios que tenemos.
+   * `yum-config-manager --{enable|disable} <repositorio>` --> nos habilita este respositorio (en el fich de config, mete un _enabled=1_).  
+      Podemos configurar repositorios de terceros editando un fichero *.repo en `/etc/yum.repos.d/*.repo`
    * `yum-config-manager --add-rep=<url>`, genera un fichero de repositorio basándose en la URL que le hemos pasado, una vez que tenemos el fichero, podemos manipularlo.
-* `rpm --import <url_clave>`
-* `yum --enablerepo=<patrón_repo>` y `yum --disablerepo=<patrón_repo>`, se pueden usar combinados para determinar el paquete exacto que queramos, de forma temporal para esa ejecución.
+* `rpm --import <url_clave>`: Importa la clave GPG
+* `yum --enablerepo=<patrón_repo>` y `yum --disablerepo=<patrón_repo>`, se pueden usar combinados para determinar el paquete exacto que queramos, de forma temporal, para esa ejecución.
 
 ## RPM
 
@@ -1220,7 +1225,64 @@ Esto no nos resuelve dependencias así que ojito, mejor usar yum.
 * `rpm -qdp <paquete>.rpm` -- nos dice lo que nos va a instalar de documentación un paquete local (sin la p, es de un paquete instalado)
    - c = ficheros de configuración
 * `rpm -q --scripts <paquete>` -- Nos dice qué scripts nos va a ejecutar
-* `rpm2cpio paquete.rpm |cpio -id "*txt"` nos saca del paquete, todos los ficheros especificados con el filtro del cpio
+* `rpm2cpio paquete.rpm |cpio -id "*txt"` nos saca del paquete todos los ficheros especificados con el filtro del cpio
 
 # Sistemas de archivos <a name="filesystem"></a>
+
+Un sistema de ficheros es una estructura organizada de ficheros y directorios que residen en un dispositivo de almacenamiento.
+
+Los sistemas de ficheros los usamos para encapsular la estructura arbórea, cuya finalidad es poder ampliarla con facilidad. Es decir, "colgar" de un punto por debajo un dispositivo de almacenamiento para ampliar la capacidad del sistema e integrarla en la estructura arborescente.
+
+Cada sistema de ficheros es independiente de los otros.
+
+## Conceptos
+
+* **Montaje (_mount_):** Añadir un dispositivo formateado al sistema de ficheros
+* **Dispositivos:** El demonio udev es el que está buscando dispositivos nuevos y los pone en `/dev`
+   - Discos SCSI: /dev/sda, /dev/sdb, ...
+* **Particiones:** Cada disco admite 4 particiones primarias (sda1, ..., sda4)
+   Admite una partición extendida que suele estar en la partición5, y se numeran desde el 5
+   En caso de que usemos particiones extendidas, no nos aparecerá la partición 4.
+* Los discos se pueden referescar en caliente **rescan-scsi-bus.sh** -- Busca en las primeras posiciones de la tarjeta SCSI que tenga.
+   
+### Comandos de consulta de discos
+
+- **lsblk** Muestra los discos de la máquina, sus particiones y donde están montadas
+- **blkid** Muestra los identificadores de los dispositivos montados (UUID)
+
+## LVM (Logical Volumen Management)
+
+Supongamos que tenemos un disco o una partición (`/dev/sdb`).  
+Tenemos que crear un Phisycal Volume (PV) (`/dev/sdb`) (_pvcreate_)  
+Creamos un grupo de volúmenes (VG) al que le pondremos un nombre (`vg_datos`) (_vgcreate_), que tendrá el tamaño de los PV's que lo compongan.  
+cuando lo dividimos el resutlado son Physical Extensions (PE)  
+Troceamos en LogicalVolumen (LV) en Lógical Extensions (LE) (que deben tener el mismo tamaño de las PE). (`lvdatos1`)
+Formateamos el LV y lo montamos.
+
+¿Donde está la potencia?  
+Si necesitamos ampliar, podemos usar un nuevo PV con un disco adicional, que podemos añadir al VG, extiendo el LV en la cantidad necesaria.
+
+## Comandos
+
+~~~bash
+[kiosk@foundation12 ~]$ df -mlhi
+Filesystem     Inodes IUsed IFree IUse% Mounted on
+/dev/sda3        111M  124K  111M    1% /
+devtmpfs         4.0M   447  4.0M    1% /dev
+tmpfs            4.0M    42  4.0M    1% /dev/shm
+tmpfs            4.0M   898  4.0M    1% /run
+tmpfs            4.0M    16  4.0M    1% /sys/fs/cgroup
+/dev/sda1        512K   374  512K    1% /boot
+tmpfs            4.0M    24  4.0M    1% /run/user/1000
+tmpfs            4.0M     1  4.0M    1% /run/user/0
+~~~
+
+**OJO**, no confundir KiB con KB, el primero es 2^10 (Flag -h) y el segundo 10^3 (Flag -H) y sus múltiplos
+
+**Tamaño ocupado** `du`, esto nos sirve para ir buscando dónde está el espacio usándose. Los flags mas usados:
+- -h (ó -H)
+- -s (summarize, tamaño global)
+- -m
+
+## Montaje y desmontaje de FS
 
