@@ -333,10 +333,17 @@ Se cambian con `chage -m m -M M -W x -I i username` donde:
 * -M --> max days
 * -W --> warn days
 * -I --> inactive days
+* -d --> días para cambiar la contraseña
 
 Si queremos forzar al cambio de contraseña en el siguiente login: `chage -d 0 <username>`  
+
 Si queremos forzar que una contraseña caduque un día concreto: `chage -E YYYY-MM-DD <username>`  
-Si queremos ver las configuraciones actuales de un usuario: `chage -l <username>`  
+En casos típicos, tipo, "que la contraseña caduque de aquí a x días" se puede ver la fecha en que cae con
+`date -d "+x days"
+
+Si queremos ver las configuraciones actuales de un usuario: `chage -l <username>`
+
+Se puede cambiar los valores por defecto modificando el fichero _/etc/login.defs_
 
 ### Restricción de acceso
 
@@ -1228,6 +1235,8 @@ Esto no nos resuelve dependencias así que ojito, mejor usar yum.
 * `rpm -q --scripts <paquete>` -- Nos dice qué scripts nos va a ejecutar
 * `rpm2cpio paquete.rpm |cpio -id "*txt"` nos saca del paquete todos los ficheros especificados con el filtro del cpio
 
+***
+
 # Sistemas de archivos <a name="filesystem"></a>
 
 Un sistema de ficheros es una estructura organizada de ficheros y directorios que residen en un dispositivo de almacenamiento.
@@ -1394,6 +1403,8 @@ Mucho más potente que locate, se puede afinar mucho la búsqueda, puedes ejecut
     - Estructura: `find <dir> <parámetros busqueda> -exec <comando> {};\`
 
 Todos los flags de búsqueda podemos combinarlos, si los combinamos tal cual funcionan como un AND, si queremos OR, tenemos que meter **-o**, y habría que usarlo con paréntesis.
+
+***
 
 # Virtualización <a name="virtualization"></a>
 
