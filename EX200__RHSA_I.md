@@ -14,6 +14,7 @@
 12. [Archivado y copia entre sistemas](#empaquetado)
 13. [Manejo de paquetes de software](#packages)
 14. [Sistemas de archivos](#filesystem)
+15. [Virtualización](#virtualization)
    
 # Introducción al curso <a name="introduccion"></a>
 [kiosk@foundation12 ~]$ find /etc -name passwd 2> /dev/null |tee /dev/pts/1 > ~/encontrados4.txt
@@ -1393,3 +1394,76 @@ Mucho más potente que locate, se puede afinar mucho la búsqueda, puedes ejecut
     - Estructura: `find <dir> <parámetros busqueda> -exec <comando> {};\`
 
 Todos los flags de búsqueda podemos combinarlos, si los combinamos tal cual funcionan como un AND, si queremos OR, tenemos que meter **-o**, y habría que usarlo con paréntesis.
+
+# Virtualización <a name="virtualization"></a>
+
+Las máquinas virtuales de RHEL se basan en KVM (Kernel Virtual Machine). Está basado en el Kernel, que lo único que necesita es que se instalen los módulos.
+
+* Puede ejecutar casi cualquier sistema operativo.
+* Se basa y administra con **libvirt**
+* Se administra con **virt-manager**
+* Las máquinas virtuales se usan con **virsh**
+
+## Ecosistema
+
+Junto con OpenStack, KVM es la que usa RH en su IaaS y se puede administrar todo el conjunto con CloudForms.
+
+Hosts: RedHatEnterprise Virtualization Host (RHEV-H), que cargan las máquinas virtuales con KVM
+Redes: Suele ser virtualizado
+Almacenamiento: RHStorage
+Adminsitracion: Virtual Manager (RHEV-Manager)
+
+Todo va sobre RedHat. 
+
+## Formas de trabajar.
+
+Podemos confirar nodos de dos formas:
+* thin host: con nodos pequeños dedicados excluisivamente a virtualización.
+* thick host: admite tener máquinas virtuales y más cosas.
+
+Si vamos a tener una granja, conviene que todos los host sean lo mas parecidos posibles.
+
+## Requisitos mínimos
+
+* Al menos 2 CPUs (una para el host y otra para la VM).
+* 2 GB de RAM para el host y la RAM que necesitemos para cada VM.
+* 6 GB de disco para el host
+* CPU:
+   - Intel(x86): VT-X, INTEL64
+      - Buscar en el fichero los flags vmx ó svm: 
+   - AMD: AMD-v, AMD64
+      - Buscar los flags: svm
+   - Flag común para las dos arquitecturas: nx
+   - `grep --color -E "vms|svm" /proc/cpuinfo`
+   - `grep --color - E "nx" /proc/cpuinfo`
+   
+### Paquetería.
+
+Esto es lo que hay que instalar:
+* qemu-kvm y qemu-img --
+* liberías varias:
+   - python-virtinst
+   - libvirt
+   - libvirt-python
+   - virt-manager
+   - libvirt-client
+   
+   
+El instalador que usar RHEL es **anaconda**
+
+## Comandos de manejo.
+
+### virsh
+
+* connect: conecta con el KVM-Host (`qemu://host`)
+* nodeinfo: información basica del host
+* autostart: configura el dominio KVM para que se inicie junto al host
+* console: establece la conexión con la consola virtual del host
+* create: Cra un dominio a partir de un archivo de configuración XML y lo inicia
+* define: crea un dominio a partir de un archivo de configuración XML (no lo inicia).
+* undefine: quita la definición anterior
+* edit: edita la configuración
+* reboot: Reinicia el dominio
+* shutdown: Apaga correctamente el dominio
+* screenshot
+* destroy: shutdown + undefine
