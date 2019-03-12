@@ -1,0 +1,22 @@
+Ejercicio de redirecciones y pipes
+--------------------------------------
+
+Ejecutar el comando "find /etc -name passwd"
+
+1.- que su salida vaya al fichero encontrados.txt del home del usuario student
+
+
+2.- que los posibles errores vayan al fichero nobuscadoen.txt del home del usuario student
+ 
+ 
+3.- que su salida vaya al fichero encontrados2.txt y los posibles errores vayan al fichero nobuscadoen2.txt ambos ficheros en el home del usuario student
+   
+4.- que se descarten los errores
+
+ 
+5.- que su salida vaya al fichero encontrados3.txt del home del usuario student y los errores se descarten
+  
+  
+6.- que la salida vaya a pantalla, al fichero encontrados4.txt y se descarten los errores
+
+ 
