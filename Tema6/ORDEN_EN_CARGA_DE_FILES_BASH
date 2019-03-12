@@ -1,0 +1,14 @@
+esto es el 0_mio.sh del profile.d
+esto es el mio.sh del /etc/profile.d
+esto es el bashrc
+esto es el .bashrc
+
+^_^[yo@fedora21 //16:12:24// ~]$ su - yo
+Password: 
+esto es el 0_mio.sh del profile.d
+esto es el mio.sh del /etc/profile.d
+esto es el profile
+esto es el bashrc
+esto es el .bashrc
+esto es el .bash_profile
+

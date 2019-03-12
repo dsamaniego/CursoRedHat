@@ -1,0 +1,20 @@
+EJERCICIOS EXTRA RED
+---------------------
+
+Reset de serverX. 
+
+Realizar los siguientes puntos en serverX:
+
+1.- Establecer la hora del sistema a Hong Kong.
+
+2.- El servidor NTP es classroom.example.com
+
+3.- En serverX, hacer que "escritorio" resuelva a desktopX.
+
+4.- Con los parámetros de la conexión actual del sistema, crear una nueva conexion estática llamada "ejercicio". Sólo esta conexión debe estar levantada al arrancar serverX.
+
+5.- Añadir el DNS de 208.67.222.222
+
+6.- Poner el hostname de "maquinaX.example.com"
+
+7.- Crear un fichero tar comprimido con xz de /etc y guardar una copia en el tmp de  desktopX con el nombre "etc_serverX.tar.xz".

@@ -1,0 +1,23 @@
+EJERCICIOS
+
+1. Cúal es la representación simbólica (p.e. rwxr-xr--) de cada uno de los siguientes permisos numéricos:
+
+644
+755
+000
+711
+
+2. Cúal es la representación simbólica (p.e. rwSr-xr-t) de cada uno de los siguientes permisos numéricos:
+
+2700
+6777
+0555
+1111
+3600
+3731
+
+3. Dado un file con permisos 755, qué comando cambiarìa los permisos a r-xr--r--?
+
+4. Cómo puede root cambiar la propiedad de file para que pertenezca al usuario joe y al grupo apache?
+
+

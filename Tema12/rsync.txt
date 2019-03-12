@@ -1,0 +1,114 @@
+EN LOCAL:
+
+-si dir1  no existe en dir2
+ $ rsync -a dir1/  dir2/  ---> copia el contenido de dir1 en dir2
+ $  rsync -a dir1/  dir2/  ---> copia dir1 y su contenido en dir2
+
+- si dir1 ya existe en dir2
+ $ rsync -a dir1/  dir2/dir1/  ---> sincroniza   (dir1 del target se puede llamar de otra manera que sincroniza también)
+ $ rsync -a dir1  dir2/dir1/   ---> copia dir1 y su contenido dentro de dir1 
+
+
+rsync --partial --progress --rsh=ssh  $file_source $user@$host:$destination_file
+
+
+Example 1. Synchronize Two Directories in a Local Server
+
+$ rsync -zvr /var/opt/installation/inventory/ /root/temp
+
+
+Example 2. Preserve timestamps during Sync using rsync -a
+
+$ rsync -azv /var/opt/installation/inventory/ /root/temp/
+
+
+Example 3. Synchronize Only One File
+
+$ rsync -v /var/lib/rpm/Pubkeys /root/temp/
+
+
+Example 4. Synchronize Files From Local to Remote
+
+$ rsync -avz /root/temp/ thegeekstuff@192.168.200.10:/home/thegeekstuff/temp/
+
+
+Example 5. Synchronize Files From Remote to Local
+
+$ rsync -avz thegeekstuff@192.168.200.10:/var/lib/rpm /root/temp
+
+
+Example 6. Remote shell for Synchronization
+
+$ rsync -avz -e ssh thegeekstuff@192.168.200.10:/var/lib/rpm /root/temp
+
+
+Example 7. Do Not Overwrite the Modified Files at the Destination
+
+$ rsync -avzu thegeekstuff@192.168.200.10:/var/lib/rpm /root/temp
+
+
+Example 8. Synchronize only the Directory Tree Structure (not the files)
+
+$ rsync -v -d thegeekstuff@192.168.200.10:/var/lib/ .
+
+
+Example 9. View the rsync Progress during Transfer
+
+$ rsync -avz --progress thegeekstuff@192.168.200.10:/var/lib/rpm/ /root/tmp/
+
+
+Example 10. Delete the Files Created at the Target
+
+If a file is not present at the source, but present at the target, you might want to delete the file at the target during rsync.
+
+$ rsync -avz --delete thegeekstuff@192.168.200.10:/var/lib/rpm/ .
+
+
+Example 11. Do not Create New File at the Target
+
+If you like, you can update (Sync) only the existing files at the target
+
+$ rsync -avz --existing root@192.168.1.2:/var/lib/rpm/ .
+
+
+
+Example 12. View the Changes Between Source and Destination
+
+rsync -avzi thegeekstuff@192.168.200.10:/var/lib/rpm/ /root/temp/
+> specifies that a file is being transferred to the local host.
+f represents that it is a file.
+s represents size changes are there.
+t represents timestamp changes are there.
+o owner changed
+g group changed.
+
+
+
+Example 13. Include and Exclude Pattern during File Transfer
+
+rsync allows you to give the pattern you want to include and exclude files or directories while doing synchronization.
+
+$ rsync -avz --include 'P*' --exclude '*' thegeekstuff@192.168.200.10:/vr/lib/rpm/ /root/temp/
+
+
+Example 14. Do Not Transfer Large Files
+
+You can tell rsync not to transfer files that are greater than a specific size using rsync –max-size option.
+
+$ rsync -avz --max-size='100K' thegeekstuff@192.168.200.10:/var/lib/rpm/ /root/temp/
+
+
+Example 15. Transfer the Whole File
+
+One of the main feature of rsync is that it transfers only the changed block to the destination, instead of sending the whole file.
+
+If network bandwidth is not an issue for you (but CPU is), you can transfer the whole file, using rsync -W option. This will speed-up the rsync process, as it doesn’t have to perform the checksum at the source and destination.
+
+#  rsync -avzW  thegeekstuff@192.168.200.10:/var/lib/rpm/ /root/temp
+
+
+
+
+
+
+

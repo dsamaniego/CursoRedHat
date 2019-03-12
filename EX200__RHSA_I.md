@@ -14,6 +14,7 @@
 12. [Archivado y copia entre sistemas](#empaquetado)
 13. [Manejo de paquetes de software](#packages)
 14. [Sistemas de archivos](#filesystem)
+15. [Virtualización](#virtualization)
    
 # Introducción al curso <a name="introduccion"></a>
 [kiosk@foundation12 ~]$ find /etc -name passwd 2> /dev/null |tee /dev/pts/1 > ~/encontrados4.txt
@@ -332,10 +333,17 @@ Se cambian con `chage -m m -M M -W x -I i username` donde:
 * -M --> max days
 * -W --> warn days
 * -I --> inactive days
+* -d --> días para cambiar la contraseña
 
 Si queremos forzar al cambio de contraseña en el siguiente login: `chage -d 0 <username>`  
+
 Si queremos forzar que una contraseña caduque un día concreto: `chage -E YYYY-MM-DD <username>`  
-Si queremos ver las configuraciones actuales de un usuario: `chage -l <username>`  
+En casos típicos, tipo, "que la contraseña caduque de aquí a x días" se puede ver la fecha en que cae con
+`date -d "+x days"
+
+Si queremos ver las configuraciones actuales de un usuario: `chage -l <username>`
+
+Se puede cambiar los valores por defecto modificando el fichero _/etc/login.defs_
 
 ### Restricción de acceso
 
@@ -1128,23 +1136,6 @@ Cuando vamos a actualizar, no se meten parches, se instalan versiones. Sólo se 
 
 Cuando desinstalamos un paquete, también desinstala los paquetes dependientes de él, ya que no van a funcionar.
 
-## Repositorios
-
-Configuración por defeco de yum: `/etc/yum.conf`
-Repositorios en: `/etc/yum.repos.d/*.repo`
-
-Para definir un repositorio necesitamos un fichero **\*.repo**
-Contenido mínimo:
-~~~text
-[IDENTIFICACION]
-name="nombre"
-baseurl={ftp,http,file}
-enabled={0|1}           # opcional (recomendable)
-gpgcheck={0|1}          # opcional (recomendable)
-gpgkey=url_public_key   # opcional (recomendable)
-~~~
-
-En el repositorio tendríamos que  tener los paquetes rpm y un repodata con los metadatos del repositorio.
 
 ## YUM
 
@@ -1165,48 +1156,70 @@ Comandos informativos:
 Comandos que hacen pupa:
 * yum install <nombre_paquete> - Instala el paquete y sus dependencias.
 * yum update <nombre_paquete> - Actualiza el paqeute y sus dependencias, si no ponemos el nombre del paquete, actualiza todos. Hace copias de seguridad de los ficheros de configuración incompatibles y crea otro limpio.
-   - Si es un kernel, este es tipo _always install_, siempre se instala, aunque se indique con update.
+   - Si es un kernel, este es tipo _always install_, siempre se instala, aunque se indique con update.  
+      Para ver los kernels que tenemos instalados: `yum list kernel` y para ver el kernel que se está usando `uname -r`.  
+      El kernel en versiones anteriores se instalaba, es decir no había opción de update.
 * yum remove <nombre_paquete> - Borra el paquete
    - Si hay paquetes que dependen de él, también me los quita (porque ya no van a funcionar).
    - Esto es una pega, porque si desinstalamos por error y lo volvemos a instalar, no arreglamos las dependencias rotas.
 
- ### Grupos
+### Grupos
  
- Dos tipos:
- - regular: un grupo de RPMs
- - Entorno: un grupo de grupos regulares.
+Agrupan paquetes y dan una funcionalidad completa, evidentemente al precio de perder el control de lo que se está instalando -puede que nos instale más cosas de las que necistamos.
+Dos tipos:
+* regular: un grupo de RPMs
+* Entorno: un grupo de grupos regulares.
  
- 3 tipos de paquetes de grupos:
- - obligatorios
- - predeterminados
- - opcionales
+3 tipos de paquetes de grupos:
+* obligatorios
+* predeterminados
+* opcionales
  
- * `yum group list <nombre>` (en versiones anteriores: yum grouplist).
- * `yum group info <nombre>` (en versiones anteriores: yum groupinfo)
-      OJO: Si le tiramos este comando, nos va a mostrar los paquetes que forman parte del grupo:
-         **=** el paquete esá instalado o fué instalado como parte del grupo.
-         **+** No está instalado y para instalarlo hay que instalar el grupo.
-         **-** No está instalado y no se instalará (habría que instalarlo manualmente).
-         (sin marcador) El paquete está instalado individualmente
-            - en este caso, podemos decirle al sistema que nos marque al grupo que sólo instale lso paquetes predeterminados u obligatorios que existan.
+* `yum group list <nombre>` (en versiones anteriores: yum grouplist).
+* `yum group info <nombre>` (en versiones anteriores: yum groupinfo)
+
+OJO: Si le tiramos este comando, nos va a mostrar los paquetes que forman parte del grupo:
+- **=** el paquete esá instalado o fué instalado como parte del grupo.
+- **+** No está instalado y para instalarlo hay que instalar el grupo.
+- **-** No está instalado y no se instalará (habría que instalarlo manualmente).
+- (sin marcador) El paquete está instalado individualmente  
+   en este caso, podemos decirle al sistema que nos marque al grupo que sólo instale lso paquetes predeterminados u obligatorios que existan.
+   
 * `yum group install <grupo>`
-* `yum group mark install <group>` --> marca que el grupo está instalado, y todos los paquetes que nos faltan por instalar de obligatorios y predeterminados, se nos instalaran (en la versión esto no era así, si teníamos la paquetería instalada, el grupo se consideraba que estaba instalado).
+* `yum group mark install <group>` --> marca que el grupo está instalado, y todos los paquetes que nos faltan por instalar de obligatorios y predeterminados, se nos instalaran (en la versión anterior esto no era así, si teníamos la paquetería instalada, el grupo se consideraba que estaba instalado).
    
-   
+### Historia
+
 Todo lo referente a lo que ha hecho yum está en `/var/log/yum.log`
-Además, tenemos un historial de lo que se ha hecho. `yum history`, que podemos consultar la paquetería que hemos isntalado.
+
+Además, tenemos un historial de lo que se ha hecho. `yum history`, que podemos consultar la paquetería que hemos instalado.
 
 Podemos deshacer operaciones hechas desde el _yum history_
 
 ## Repositorios
 
-yum repo list all --> devuelve lalista de todos los repositorios
-yum-config-manager --> utilidad para manipular los repositorios que tenemos.
-   * `yum-config-manager --{enable|disable} <repositorio>` --> nos habilita este respositorio (en el fich de config, mete un _enabled=1_)
-Podemos configurar repositorios de terceros editando un fichero *.repo en `/etc/yum.repos.d/*.repo`
+Configuración por defeco de yum: `/etc/yum.conf`
+Repositorios en: `/etc/yum.repos.d/*.repo`
+
+Para definir un repositorio necesitamos un fichero **.repo**, con el siguiente contenido:
+
+~~~text
+[IDENTIFICACION]
+name="nombre"
+baseurl={ftp,http,file}
+enabled={0|1}           # opcional (recomendable)
+gpgcheck={0|1}          # opcional (recomendable)
+gpgkey=url_public_key   # opcional (recomendable)
+~~~
+
+En el repositorio tendríamos que  tener los paquetes rpm y un repodata con los metadatos del repositorio.
+* `yum repo list all`  --> devuelve lalista de todos los repositorios
+* **yum-config-manager** --> utilidad para manipular los repositorios que tenemos.
+   * `yum-config-manager --{enable|disable} <repositorio>` --> nos habilita este respositorio (en el fich de config, mete un _enabled=1_).  
+      Podemos configurar repositorios de terceros editando un fichero *.repo en `/etc/yum.repos.d/*.repo`
    * `yum-config-manager --add-rep=<url>`, genera un fichero de repositorio basándose en la URL que le hemos pasado, una vez que tenemos el fichero, podemos manipularlo.
-* `rpm --import <url_clave>`
-* `yum --enablerepo=<patrón_repo>` y `yum --disablerepo=<patrón_repo>`, se pueden usar combinados para determinar el paquete exacto que queramos, de forma temporal para esa ejecución.
+* `rpm --import <url_clave>`: Importa la clave GPG
+* `yum --enablerepo=<patrón_repo>` y `yum --disablerepo=<patrón_repo>`, se pueden usar combinados para determinar el paquete exacto que queramos, de forma temporal, para esa ejecución.
 
 ## RPM
 
@@ -1220,7 +1233,248 @@ Esto no nos resuelve dependencias así que ojito, mejor usar yum.
 * `rpm -qdp <paquete>.rpm` -- nos dice lo que nos va a instalar de documentación un paquete local (sin la p, es de un paquete instalado)
    - c = ficheros de configuración
 * `rpm -q --scripts <paquete>` -- Nos dice qué scripts nos va a ejecutar
-* `rpm2cpio paquete.rpm |cpio -id "*txt"` nos saca del paquete, todos los ficheros especificados con el filtro del cpio
+* `rpm2cpio paquete.rpm |cpio -id "*txt"` nos saca del paquete todos los ficheros especificados con el filtro del cpio
+
+***
 
 # Sistemas de archivos <a name="filesystem"></a>
 
+Un sistema de ficheros es una estructura organizada de ficheros y directorios que residen en un dispositivo de almacenamiento.
+
+Los sistemas de ficheros los usamos para encapsular la estructura arbórea, cuya finalidad es poder ampliarla con facilidad. Es decir, "colgar" de un punto por debajo un dispositivo de almacenamiento para ampliar la capacidad del sistema e integrarla en la estructura arborescente.
+
+Cada sistema de ficheros es independiente de los otros.
+
+## Conceptos
+
+* **Montaje (_mount_):** Añadir un dispositivo formateado al sistema de ficheros
+* **Dispositivos:** El demonio udev es el que está buscando dispositivos nuevos y los pone en `/dev`
+   - Discos SCSI: /dev/sda, /dev/sdb, ...
+* **Particiones:** Cada disco admite 4 particiones primarias (sda1, ..., sda4)
+   Admite una partición extendida que suele estar en la partición5, y se numeran desde el 5
+   En caso de que usemos particiones extendidas, no nos aparecerá la partición 4.
+* Los discos se pueden referescar en caliente **rescan-scsi-bus.sh** -- Busca en las primeras posiciones de la tarjeta SCSI que tenga.
+   
+### Comandos de consulta de discos
+
+- **lsblk** Muestra los discos de la máquina, sus particiones y donde están montadas
+- **blkid** Muestra los identificadores de los dispositivos montados (UUID)
+
+## LVM (Logical Volumen Management)
+
+Supongamos que tenemos un disco o una partición (`/dev/sdb`).  
+Tenemos que crear un Phisycal Volume (PV) (`/dev/sdb`) (_pvcreate_)  
+Creamos un grupo de volúmenes (VG) al que le pondremos un nombre (`vg_datos`) (_vgcreate_), que tendrá el tamaño de los PV's que lo compongan.  
+cuando lo dividimos el resutlado son Physical Extensions (PE)  
+Troceamos en LogicalVolumen (LV) en Lógical Extensions (LE) (que deben tener el mismo tamaño de las PE). (`lvdatos1`)
+Formateamos el LV y lo montamos.
+
+¿Donde está la potencia?  
+Si necesitamos ampliar, podemos usar un nuevo PV con un disco adicional, que podemos añadir al VG, extiendo el LV en la cantidad necesaria.
+
+## Comandos
+
+~~~bash
+[kiosk@foundation12 ~]$ df -mlhi
+Filesystem     Inodes IUsed IFree IUse% Mounted on
+/dev/sda3        111M  124K  111M    1% /
+devtmpfs         4.0M   447  4.0M    1% /dev
+tmpfs            4.0M    42  4.0M    1% /dev/shm
+tmpfs            4.0M   898  4.0M    1% /run
+tmpfs            4.0M    16  4.0M    1% /sys/fs/cgroup
+/dev/sda1        512K   374  512K    1% /boot
+tmpfs            4.0M    24  4.0M    1% /run/user/1000
+tmpfs            4.0M     1  4.0M    1% /run/user/0
+~~~
+
+**OJO**, no confundir KiB con KB, el primero es 2^10 (Flag -h) y el segundo 10^3 (Flag -H) y sus múltiplos
+
+**Tamaño ocupado** `du`, esto nos sirve para ir buscando dónde está el espacio usándose. Los flags mas usados:
+- -h (ó -H)
+- -s (summarize, tamaño global)
+- -m
+
+## Montaje y desmontaje de FS
+
+Para montar todo lo que esté definido en `/etc/fstab`: **mount -a**, cuando arranca el sistema, monta todo lo que está en este fichero, por lo que si hay algo mal, el sistema no arrancará.
+
+Para ver lo que hay montado en el sistema: `mount`
+
+**blkid** nos dará los UUID de los sistemas de ficheros formateados, podemos montar con el UUID o haciendo referencia a la partición formateada...
+
+p.ej:
+1. Tenemos /dev/vdb1.
+2. Creamos el sistema de fichero con `mkfs -t {ext4|xfs} /dev/vdb1`
+3. Creamos el punto de montaje: `mkdir /mnt/punto_montaje`
+4. Montamos: `mount /dev/vdb1 /mnt/pto_montaje`
+
+El punto de montaje, debe existir (así que primero de todo, hay que crear el punto de montaje)
+
+Para desmontar: `umount /dev/vdb1` ó `umount /mnt/punto_montaje`
+
+Para desmontar no tiene que haber ningún proceso usando el punto de montaje...
+
+Par ver si hay alguien usando algo en una ruta: `lsof /ruta` ó `fuser /ruta`
+
+Con `fuser -k /ruta` nos mata todos los procesos de usuario que estén usando esta ruta.
+
+El único dispositivo que pueden montar los usuarios son los USB, en la ruta `/run/media/<user>/<label>`
+
+OJO con los montajes y desmontajes... si nos equivocamos y montamos sobre un directorio que está siendo usado o que tiene información, ocultaremos la información que estaba originalmente en el directorio. Si hacemos un listado del directorio, veremos lo que hay en el dispositivo montado NO lo que hay en el directorio. Nos podemos volver locos, porque si hacemos un df veremos un uso de disco y si hacemos un du, la suma no coincidirá con lo que hay en él.
+
+**Montajes bindeados (_bind mount_)** de un directorio sobre otro, se usa para encapsular espacios de usuarios.
+
+## Links
+
+Dos tipos _hard link_ y _soft link_.
+
+### Hard link
+
+Una nueva entrada en un directorio que hace referencia a un archivo ya existente en el FS.
+* Todos los archivos tienen un HL. Tienen que estar en el mismo sistema de ficheros.
+* Si está en el mismo directorio, tendrá que tener un nombre distinto.
+* Todos los HL de un mismo fichero son clones.
+* Es un nombre que hace refencia a un mismo inodo.
+
+`ln <fich_existente> <hard_link>`
+
+### Soft link
+
+No es un archivo regular (en un listado largo lo veremos con una l), es un puntero a un fichero (es lo más parcido que hay a los accesos directos de Windows).
+* Tienen que apuntar a un archivo o directorio existente.
+* Si borramos el fichero origne, el SL no desaparece, pero queda inconsistente.
+* No tienen que estar en el mismo sistema de ficheros.
+* Pueden usarse con directorios (el origen puede ser un directorio).
+
+`ln -s <fich_existente> <soft_link>`
+
+### Operando con links
+Para ver si son hard links o no, en el listado largo, el segundo campo nos dice cuantos HL tiene.
+
+Para ver los inodos de cada fichero, dos opciones.
+* `ls -il <fichero>`
+* `stat <fichero>`
+
+## Buscando archivos en el sistema
+
+### locate
+
+Busca en una base de datos del sistema y devuelve el resultado de forma instantánea.
+
+* Para actualizar la base de datos `updatedb`, almacena la ruta y el nombre de los ficheros. Diariamente se actualiza la BB.DD.
+* Tenemos que tener permisos de lectura en los directorios por los que va a buscar.
+
+ej.: `locate passwd`
+
+Modificadores:
+* i - case insensitive
+* -n <numero> - limitas la cantidad de resultados que te devuelve
+
+### find
+
+Mucho más potente que locate, se puede afinar mucho la búsqueda, puedes ejecutar comandos sobre lo encontrado, ...
+* Para buscar, tenemos que tener permisos r-x sobre el directorio
+* Es recursivo
+
+#### Casos de uso
+
+* `find <ruta> -name <nombre>`, Busca desde la ruta por el nombre, se pueden usar comodines en el nombre
+* -iname -Case insensitive
+* -user - busca por usuario
+* -group - busca por grupo
+* -uid - busca por uid
+* -gid - busca por gid
+* -perm -- busca por permisos
+   - -perm xyz -- busca exáctamente esos permiso
+   - -perm -xyz -- busca como mínimo esos permisos (ej: -755, encontraría 755, 765, 775, 765,..,) 
+   - -perm /xyz -- como mínimo uno de los tres (ej: 755, 700, 050, ...), (el 0 es un comodín)
+* -size -- Busca por tamaño (ojo, que el tamaño se redondea hacia arriba)
+   - -size 10M -> tamaño exacto
+   - -size +10M -> tamaño mayor de 10M
+   - -size -10M --> tamaño menor de 10M
+* -mmin -- busca por tiempo desde la última modfiicación (funcionan igual + y - que con los tamaños).
+* -type - busca por tipo de archivo.
+   - f - fichero
+   - d - directorio
+   - l - link simbólico
+   - b - dispositivo de bloques
+* -liks -- busca por ficheros con hardlinks (funcionan igual el + y el -)
+* -exec - ejecuta el comando sobre los resultados del find 
+    - Estructura: `find <dir> <parámetros busqueda> -exec <comando> {};\`
+
+Todos los flags de búsqueda podemos combinarlos, si los combinamos tal cual funcionan como un AND, si queremos OR, tenemos que meter **-o**, y habría que usarlo con paréntesis.
+
+***
+
+# Virtualización <a name="virtualization"></a>
+
+Las máquinas virtuales de RHEL se basan en KVM (Kernel Virtual Machine). Está basado en el Kernel, que lo único que necesita es que se instalen los módulos.
+
+* Puede ejecutar casi cualquier sistema operativo.
+* Se basa y administra con **libvirt**
+* Se administra con **virt-manager**
+* Las máquinas virtuales se usan con **virsh**
+
+## Ecosistema
+
+Junto con OpenStack, KVM es la que usa RH en su IaaS y se puede administrar todo el conjunto con CloudForms.
+
+Hosts: RedHatEnterprise Virtualization Host (RHEV-H), que cargan las máquinas virtuales con KVM
+Redes: Suele ser virtualizado
+Almacenamiento: RHStorage
+Adminsitracion: Virtual Manager (RHEV-Manager)
+
+Todo va sobre RedHat. 
+
+## Formas de trabajar.
+
+Podemos confirar nodos de dos formas:
+* thin host: con nodos pequeños dedicados excluisivamente a virtualización.
+* thick host: admite tener máquinas virtuales y más cosas.
+
+Si vamos a tener una granja, conviene que todos los host sean lo mas parecidos posibles.
+
+## Requisitos mínimos
+
+* Al menos 2 CPUs (una para el host y otra para la VM).
+* 2 GB de RAM para el host y la RAM que necesitemos para cada VM.
+* 6 GB de disco para el host
+* CPU:
+   - Intel(x86): VT-X, INTEL64
+      - Buscar en el fichero los flags vmx ó svm: 
+   - AMD: AMD-v, AMD64
+      - Buscar los flags: svm
+   - Flag común para las dos arquitecturas: nx
+   - `grep --color -E "vms|svm" /proc/cpuinfo`
+   - `grep --color - E "nx" /proc/cpuinfo`
+   
+### Paquetería.
+
+Esto es lo que hay que instalar:
+* qemu-kvm y qemu-img --
+* liberías varias:
+   - python-virtinst
+   - libvirt
+   - libvirt-python
+   - virt-manager
+   - libvirt-client
+   
+   
+El instalador que usar RHEL es **anaconda**
+
+## Comandos de manejo.
+
+### virsh
+
+* connect: conecta con el KVM-Host (`qemu://host`)
+* nodeinfo: información basica del host
+* autostart: configura el dominio KVM para que se inicie junto al host
+* console: establece la conexión con la consola virtual del host
+* create: Cra un dominio a partir de un archivo de configuración XML y lo inicia
+* define: crea un dominio a partir de un archivo de configuración XML (no lo inicia).
+* undefine: quita la definición anterior
+* edit: edita la configuración
+* reboot: Reinicia el dominio
+* shutdown: Apaga correctamente el dominio
+* screenshot
+* destroy: shutdown + undefine
