@@ -126,11 +126,11 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 
 ### Comodines y multiplicadores.
 
-* . --> Cualquier caracter
-* [abc] --> Cualquiera de a, b o c (sólo 1).
-* * --> El carácter anterior 0 o más veces repetido (ej: .* ==> cualquier carácter, 0 o más veces repetidos)
-* + --> El caracter anterior 1 o más veces repetido.
-* \{_n_\} --> repetir _n_ veces la expresión anterior (ej: c.\{2\}t ==> c seguida de dos cacracteres cualesquiera y seguido de t).
+* `.` --> Cualquier caracter
+* `[abc]` --> Cualquiera de a, b o c (sólo 1).
+* `*` --> El carácter anterior 0 o más veces repetido (ej: `.*` ==> cualquier carácter, 0 o más veces repetidos)
+* `+` --> El caracter anterior 1 o más veces repetido.
+* `\{_n_\}` --> repetir _n_ veces la expresión anterior (ej: `c.\{2\}t` ==> c seguida de dos cacracteres cualesquiera y seguido de t).
 
 **NOTA:** si no queremos que nos hagan sustituciones el shell, envolver la expresión regular con comillas simples.
 
