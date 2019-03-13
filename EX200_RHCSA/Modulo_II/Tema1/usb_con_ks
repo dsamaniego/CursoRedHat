@@ -1,0 +1,37 @@
+(Careful, that command destroys all data on the Stick)!!!
+
+https://github.com/joyent/mi-centos-7
+
+Kickstart in a USB:
+
+
+
+
+1. ISO file: rhel-server-7.0-x86_64-dvd.iso
+
+2. mount -o loop rhel-server-7.0-x86_64-dvd.iso /mnt/
+
+3. mkdir /rhel7/
+
+4. rsync -avz /mnt/ /rhel7/
+
+5. put your kickstart file into /rhel7
+   cp /path/ks.cfg /rhel7
+
+6. add new lines to /rhel7/isolinux/isolinux.cfg 
+
+label linux_ks
+  menu label ^Red Hat Enterprise Linux with Kickstart
+  kernel vmlinuz
+  append initrd=initrd.img  ks=hd:sdb1:/ks.cfg  
+(append initrd=initrd.img  inst.ks=cdrom:/dev/cdrom:/ks.cfg)
+
+7. create the ISO with:
+/usr/bin/genisoimage  -o /whenever/rhel-server-7.0-KS-x86_64-dvd.iso /rhel7/
+
+8. dd if=/whenever/rhel-server-7.0-KS-x86_64-dvd.iso of=/dev/XXX (where XXX is the Device Name of your USB drive without the partition number e.g.
+
+
+(Careful, that command destroys all data on the Stick)!!!
+
+
