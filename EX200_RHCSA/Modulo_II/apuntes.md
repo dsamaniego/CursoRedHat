@@ -96,10 +96,9 @@ También podemos modificar un fichero ya existente, luego podremos validar la si
 
 1. Crear un fichero de configuración kickstart
 2. Publicar el fichero para el instalador: 
-  * `ks=<medio>` indica dónde está el fichero (nfs, http, https, cd-rom, hd), Normalmente se lo diremon el la línea de arranque del kernel, pero hay virtualizadores donde podemos pasarle este parámetro.
+  * `ks=<medio>` indica dónde está el fichero (nfs, http, https, cd-rom, hd).  
+  Normalmente se lo diremos en la línea de arranque del kernel, pero hay virtualizadores donde podemos pasarle este parámetro.
 3. Arrancar Anaconda y apuntar al fichero de configuración.
-
-
 
 ***
 
@@ -130,7 +129,7 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 * `[abc]` --> Cualquiera de a, b o c (sólo 1).
 * `*` --> El carácter anterior 0 o más veces repetido (ej: `.*` ==> cualquier carácter, 0 o más veces repetidos)
 * `+` --> El caracter anterior 1 o más veces repetido.
-* `\{_n_\}` --> repetir _n_ veces la expresión anterior (ej: `c.\{2\}t` ==> c seguida de dos cacracteres cualesquiera y seguido de t).
+* `\{n\}` --> repetir _n_ veces la expresión anterior (ej: `c.\{2\}t` ==> c seguida de dos cacracteres cualesquiera y seguido de t).
 
 **NOTA:** si no queremos que nos hagan sustituciones el shell, envolver la expresión regular con comillas simples.
 
@@ -138,7 +137,22 @@ Ayuda: **regex(7)**
 
 ## grep
 
+Busca cadenas de caracteres usando expresiones regulares.
+* Podemos usarlo en línea de comandos actuando sobre un fichero: `grep <flags> <expr_reg> <fichero>`
+* Podemos usarlo tras un pipe para hacer la búsqueda en la salida del comando: `<comando> | grep <flags> <expr_reg>`
+* Flags:
+  - -i -- ignore case
+  - -v -- saca las líneas que no coincidan
+  - -r -- Recursivo
+  - -A <n> -- Número de líneas después de la coincidencia que tenemos (after)
+  - -B <n> -- núnero de lineas antes de la coincidenccia (before)
+  - -w -- líneas que conitnen la palabra exacta
+  - -e -- múltiples OR
+  - -E -- Expresiones regulares complejas
+  
+Excluir comentarios : `grep -v '^[#;]'`
 
+Ya sabemos... **man grep**
 
 ***
 
