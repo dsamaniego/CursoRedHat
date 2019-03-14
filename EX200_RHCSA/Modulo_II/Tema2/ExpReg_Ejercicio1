@@ -17,6 +17,9 @@ códigos genericos de 3 letras (.com, .edu, .mil), 4 letras (.info, .jobs), o 6 
 
 Se puede consultar la RFC-5322: https://tools.ietf.org/html/rfc5322
 
+'^([a-zA-Z0-9_-]+)(\.[[a-zA-Z0-9_-]+)*@([a-zA-Z0-9-_]+\.)+[a-zA-Z]{2,6}$'
+Mas simple, pero con algún fallo: .*@[*.].*\..
+
 1 AMPLIADO - CON UN SCRIPT
 
 Hacer un script que dada una direccion de mail, si es correcta de el mensaje de "CORRECTA"
