@@ -158,6 +158,50 @@ Ya sabemos... **man grep**
 
 # Vim avanzado <a name="advanced_vim"></a>
 
+3 modos: 
+* comando: para meter comandos de manipulación del fichero.
+* insert: Manipular texto
+* execution: hacer transformaciones
+
+## Paquetes de vim.
+
+* vim-minimal: el incluido en la instalación mínima
+* vim-enhanced: Nos da algunos complementos como plugins
+  - Formatos
+  - Autocompletado
+  - Revisón de sintaxis
+* vim-X11: gvim
+
+### Modo ejecución:
+
+* ! <comando> -- Ejecuta el comando
+* r <file> -- Inserta el fichero
+* r! <comando> -- Inserta salida del comando
+
+### Registros.
+Hay unos cuantos buffers [a-z][0-9]
+
+Los especiales, del 0 al 9 van guardando las últimas 10 copias que hacemos.
+Podemos guardar cosas en los otros registros con: `"<letra_reg><operación>`, p.ej. `"t3yy` guarda 3 líneas en el registro t, y `"tp`, pega lo que tenemos en el registro t.
+
+Los registros con nombre se conservan entre sesiones.
+
+Estos búffers se mantienen entre diferentes ficheros abiertos en la misma sesión de vi.
+
+### Sustituciones.
+
+`:rango s/patron/cadena/flags`
+
+Rango puede ser:
+* una línea.
+* un intervalo de líneas (n,m)
+* un fichero
+* % todas las líneas del documento (pero solo sustituye la primera ocurrencia).
+* en modo visual: '> ó '<
+* Flags:
+  - i: ignore case.
+  - g: aplica en todas las apariciones
+
 ***
 
 # Programación de tareas <a name="task_sched"></a>
