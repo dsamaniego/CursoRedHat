@@ -2,6 +2,16 @@
 2. [Expresiones regulares y grep](#regular_expressions)
 3. [Vim avanzado](#advanced_vim)
 4. [Programación de tareas](#task_sched)
+5. [Prioridades](#priority)
+6. [Control de acceso a ficheros (ACLs)](#acls)
+7. [Manejo de SELinux](#selinux)
+8. [Conexión a redes](#redes)
+9. [Añadir discos, particiones y sistemas de ficheros](#discos)
+10. [Logical Volume Management (LVM)](#lvm)
+11. [Network Storage NFS](#nfs)
+12. [Networ Storage SMB](#smb)
+13. [Troubleshooting](#troubleshooting)
+14. [Limitar comunicaciones de red](#firewalld)
 
 ***
 
@@ -94,11 +104,13 @@ También podemos modificar un fichero ya existente, luego podremos validar la si
 
 ### Pasos
 
-1. Crear un fichero de configuración kickstart
-2. Publicar el fichero para el instalador: 
-  * `ks=<medio>` indica dónde está el fichero (nfs, http, https, cd-rom, hd).  
-  Normalmente se lo diremos en la línea de arranque del kernel, pero hay virtualizadores donde podemos pasarle este parámetro.
-3. Arrancar Anaconda y apuntar al fichero de configuración.
+1. Crear un fichero de configuración kickstart (**system-config-kickstart**).
+2. Usar un editor de texto para añadir montajes al fichero de kickstart.
+3. Chequear la correción del fichero (**kasvalidator**).
+4. Publicar el fichero para el instalador: 
+  * `ks=<medio>` indica dónde está el fichero (nfs, http, https, cd-rom, hd).
+5. Arrancar Anaconda y apuntar al fichero de configuración.  
+  Normalmente se lo diremos en la línea de arranque del kernel, pero hay virtualizadores donde podemos pasarle este parámetro. 
 
 ***
 
@@ -206,3 +218,43 @@ Rango puede ser:
 
 # Programación de tareas <a name="task_sched"></a>
 
+
+***
+
+Prioridades <a name="priority"></a>
+
+***
+
+Control de acceso a ficheros (ACLs) <a name="acls"></a>
+
+***
+
+Manejo de SELinux <a name="selinux"></a>
+
+***
+
+Conexión a redes <a name="redes"></a>
+
+***
+
+Añadir discos, particiones y sistemas de ficheros <a name="discos"></a>
+
+***
+
+Logical Volume Management (LVM) <a name="lvm"></a>
+
+***
+
+Network Storage NFS <a name="nfs"></a>
+
+***
+
+Network Storage SMB <a name="smb"></a>
+
+***
+
+Troubleshooting <a name="troubleshooting"></a>
+
+***
+
+Limitar comunicaciones de red <a name="firewalld"></a>
