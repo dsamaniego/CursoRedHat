@@ -273,8 +273,7 @@ crontab <fichero> --> sustituye el crontab por el fichero proporcionado
 * Permite líneas vacías
 * Permite comentarios (#)
 * Permite definir variables de entorno (afectarán a todas las líneas que tengas debajo), especialmente interesantes son:
-  - SHELL: Especifica el shell por defecto
-  - MAILTO: Especifica un mail al que enviar correo cuando salta el cron
+
 * Formato de las líneas:
 minuto hora dia-mes mes dia-semana comando
 * Valores:
@@ -288,7 +287,64 @@ crontab -u <user> --> (sólo root) usa el crontab de usuario
 
 ## Cron del sistema
 
+No están definidos como los cron de los usuarios del sistema, tiene un campo más, que es el usuario en nombre del que se lanzan los comandos del cron.
 
+Ficheros relacionados:
+* `/etc/crontab`: Este es el fichero principal del sistema relacionado con el cron
+* `/etc/cron.d/*`: personalizaciones del sistema, y los paquetes que añaden cosas en el cron, se meten aquí
+  - Tenrá ejecuciones del sistema programadas.
+* `/etc/anacrontab`: Aquí se configuran todos los scrips que se pueden correr cada día, semana o mes:
+  - `/etc/cron.hourly`
+  - `/etc/cron.daily`
+  - `/etc/cron.weekly`
+  - `/etc/cron.montly`
+  - En todos esos sule faltar el primero, pero está en `/etc/cron.d/0hourly`, que es para los que se ejecutan cada hora.
+  - Los scripts que dejemos en estas rutas tendrán que tener permisos de ejecución.
+  
+El parámetro: job-idenfier, se usa para identificar el job, pero esta forma asegura que el sistema se lanza con la periodiciad indicada.
+
+### Variables
+* **SHELL**: Especifica el shell por defecto
+* **MAILTO**: Especifica un mail al que enviar correo cuando salta el cron
+* **RANDOM_DELAY**: en los daily, weekly y monthly, definen el rango de horas en el que se va a ejecutar.
+
+## Ficheros temporales
+
+**systemd-tmpfiles**
+
+Systemd nos arranca el sistema y de loprimero que arranca es _systemd-tmpfiles-setup_ que ejecuta `systemd-tmpfilse --create --remove`
+
+Lee los ficheros de configuración que tiene la unidad:
+* `/usr/lib/tmpfiles.d/*.conf`: (RPMS)
+* `/run/tmpfiles.d/*.conf`: Donde meterán algunos programas sus ficheros temporales. (daemons y procesos), volátil.
+* `/etc/tmpfiles.d/*.conf`: la ruta de adminsitrador (adminstrador)
+  - Lee los ficheros que tiene definidos como temporales y los crea.
+  - Cada cierto tiempo según una unidad *systemd_tmpfiles-clean.timer* define cada cuanto tiene que purgar los ficheros termporales (más información en _/usr/lib/systemd/system/systemd-tmpfiles-clean.timer_).  
+    La definiciń es algo así:
+    ~~~bash
+    [Timer]
+    OnBootSec=15min
+    OnUnitActiveSec=1d
+    ~~~
+    Si arranca borra a los 15 minutos y si está arrancado, limpia cada día.
+    (Internamente hace un `stat fichero`, consulta los mtime, ctime, atime, y si alguno de estos valores superan 1 día, el sistema los purga).
+  - siempre podremos hacer un purgado manual con `systemd-tmpfiles --clean`
+  
+Orden de prioridad de abajo a arriba.
+
+### Configuración de los fichreos.
+
+**man 5 tmpfiles.d**
+
+Sintaxis del fichero:
+_tipo path permisos uid gid antigüedad argumento_  
+Donde:
+  * tipo: d- directoro, L- link simbólico, D- crea el directorio y si ya existe lo vacía
+  * path: la ruta
+  * modo: los permisos que daríamos con chroot
+  * uid y gid que tendrá el fichero
+  * antigüedad: al alcanzar dicha antigüedad, se purga, si no tiene valor no se purga.
+  * argumento (si es necesario)
 
 ***
 
