@@ -394,7 +394,7 @@ Incluye una serie de colas [a-z] ordenadas por prioridad, con lo que podemos sep
 root puede ver todos los trabajos, el usuario sólo los que ha lanzado el.
 
 Al final de la ejecución, nos manda un mail.  
-**NOTA:** Si en vez de un mail, queremos ver la salida por pantalla, redirigir la salida. (para eso, podemos ver el terminal en el que estamos con `w -l` y luego hacer `echo $(comando) > /dev/pts/*`
+**NOTA:** Si en vez de un mail, queremos ver la salida por pantalla, redirigir la salida. (para eso, podemos ver el terminal en el que estamos con `w -f` y luego hacer `echo $(comando) > /dev/pts/*`
 
 ### Comandos
 
@@ -406,6 +406,7 @@ Al final de la ejecución, nos manda un mail.
   - usuario
 * `at -c <num_job>`: Muestra la tarea y su entorno
 * `atrm <num_job>`: Borra la tarea
+* `at -q <cola> <time_spec>`: Manda el trabajo a la cola indicada.
 
 ### TIMESPEC
 
@@ -415,7 +416,76 @@ Tiempo absoluto: 5 pm August 3 2019
 Tiempos relativos:
 * teatime tomorrow (teatime son las 16:00)
 * noon + 4 days
-* midnight + 1 week
+* midnight + 1 weekSYSTEM CONFIGURATION AND MANAGEMENT
+• Route IP traffic and create static routes.
+• Use iptables to implement packet filtering and configure network address translation (NAT).
+• Use /proc/sys and sysctl to modify and set kernel runtime parameters.
+• Configure a system to authenticate using Kerberos.
+• Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
+• Produce and deliver reports on system utilization (processor, memory, disk, and network).
+• Use shell scripting to automate system maintenance tasks.
+• Configure a system to log to a remote system.  
+
+NETWORK SERVICES
+
+Network services are an important subset of the exam objectives. RHCE candidates should be 
+capable of meeting the following objectives for each of the network services listed below:
+• Install the packages needed to provide the service.
+• Configure SELinux to support the service.
+• Configure the service to start when the system is booted.
+• Configure the service for basic operation.
+• Configure host-based and user-based security for the service.
+
+HTTP/HTTPS
+• Configure a virtual host.
+• Configure private directories.SYSTEM CONFIGURATION AND MANAGEMENT
+• Route IP traffic and create static routes.
+• Use iptables to implement packet filtering and configure network address translation (NAT).
+• Use /proc/sys and sysctl to modify and set kernel runtime parameters.
+• Configure a system to authenticate using Kerberos.
+• Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
+• Produce and deliver reports on system utilization (processor, memory, disk, and network).
+• Use shell scripting to automate system maintenance tasks.
+• Configure a system to log to a remote system.
+• Configure a system to accept logging from a remote system.
+
+NETWORK SERVICES
+Network services are an important subset of the exam objectives. RHCE candidates should be 
+capable of meeting the following objectives for each of the network services listed below:
+
+• Install the packages needed to provide the service.
+• Configure SELinux to support the service.
+• Configure the service to start when the system is booted.
+• Configure the service for basic operation.
+• Configure host-based and user-based security for the service:
+HTTP/HTTPS
+• Configure a virtual host.
+• Configure private directories.
+• Deploy a basic CGI application.
+• Configure group-managed content.
+DNS
+• Configure a caching-only name server.
+• Configure a caching-only name server to forward DNS queries.
+Note: Candidates are not expected to configure master or slave name servers.
+FTP
+• Configure anonymous-only download.
+NFS
+• Provide network shares to specific clients.
+• Provide network shares suitable for group collaboration.
+SMB
+• Provide network shares to specific clients.
+• Provide network shares suitable for group collaboration.
+SMTP
+• Configure a mail transfer agent (MTA) to accept inbound email from other systems.
+• Configure an MTA to forward (relay) email through a smart host.
+SSH
+• Configure key-based authentication.
+• Configure additional options described in documentation.
+NTP
+• Synchronize time using other NTP pervice.
+• Configure the service to start when the system is booted.
+• Configure the service for basic operation.
+• Configure host-based and user-based security for the service.
 
 ***
 
