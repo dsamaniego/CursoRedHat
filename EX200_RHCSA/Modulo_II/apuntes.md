@@ -258,6 +258,36 @@ Tiempos relativos:
 
 ## cron
 
+Si queremos ejecutar algo varias veces de forma periodica, es mejor usar cron.
+
+* Paquete: cronie
+* demonio: crond
+
+crontab -e --> para editar el crontab
+crontab -r --> Borra el crontab del usuario
+crontab -l --> Muestra el crontab del usuario
+crontab <fichero> --> sustituye el crontab por el fichero proporcionado
+  
+### Formato del fichero.
+
+* Permite líneas vacías
+* Permite comentarios (#)
+* Permite definir variables de entorno (afectarán a todas las líneas que tengas debajo), especialmente interesantes son:
+  - SHELL: Especifica el shell por defecto
+  - MAILTO: Especifica un mail al que enviar correo cuando salta el cron
+* Formato de las líneas:
+minuto hora dia-mes mes dia-semana comando
+* Valores:
+  - * --> comodín
+  - números
+  - Dias de la semana (0 -> SUNDAY, ... 7 -> SUNDAY)
+  - Puedo marcar intervalos x-y, , listas x,y, combinaciones: x-y,z, periódicas \*/5 (cada 5 unidades)
+  - **OJO**, los días no los parsea, es decir no podemos decir el día de la semana que caiga en cierto núemro.
+  - **OJO**, Si el comando tiene un singo `%`sin escapar, se trata como un salto de línea y todo lo que va detrás se pasa al comando como _stdin_
+crontab -u <user> --> (sólo root) usa el crontab de usuario
+
+## Cron del sistema
+
 
 
 ***
@@ -286,16 +316,16 @@ Tiempos relativos:
 
 ***
 
-Network Storage NFS <a name="nfs"></a>
+# Network Storage NFS <a name="nfs"></a>
 
 ***
 
-Network Storage SMB <a name="smb"></a>
+# Network Storage SMB <a name="smb"></a>
 
 ***
 
-Troubleshooting <a name="troubleshooting"></a>
+# Troubleshooting <a name="troubleshooting"></a>
 
 ***
 
-Limitar comunicaciones de red <a name="firewalld"></a>
+# Limitar comunicaciones de red <a name="firewalld"></a>
