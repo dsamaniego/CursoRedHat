@@ -115,6 +115,168 @@ También podemos modificar un fichero ya existente, luego podremos validar la si
 ***
 
 # Expresiones regulares y grep <a name="regular_expressions"></a>
+* List, create, delete partitions on MBR and GPT disks
+* Create and remove physical volumes, assign physical volumes to volume groups, and create and delete logical volumes
+* Configure systems to mount file systems at boot by Universally Unique ID (UUID) or label
+* Add new partitions and logical volumes, and swap to a system non-destructively
+
+# Create and configure file systems
+
+* Create, mount, unmount, and use vfat, ext4, and xfs file systems
+* Mount and unmount CIFS and NFS network file systems
+* Extend existing logical volumes
+* Create and configure set-GID directories for collaboration
+* Create and manage Access Control Lists (ACLs)
+* Diagnose and correct file permission problems
+
+# Deploy, configure, and maintain systems
+
+* Configure networking and hostname resolution statically or dynamically
+* Schedule tasks using at and cron
+* Start and stop services and configure services to start automatically at boot
+* Configure systems to boot into a specific target automatically
+* Install Red Hat Enterprise Linux systems as virtual guests
+* Configure systems to launch virtual machines at boot 
+* Configure network services to start automatically at boot 
+* Configure a system to use time services
+* Install and update software packages from Red Hat Network, a remote repository, or from the local file system
+* Update the kernel package appropriately to ensure a bootable system
+* Modify the system bootloader
+
+# Manage users and groups
+
+* Create, delete, and modify local user accounts
+* Change passwords and adjust password aging for local user accounts
+* Create, delete, and modify local groups and group memberships
+* Configure a system to use an existing authentication service for user and group information
+
+# Manage security
+
+* Configure firewall settings using firewall-config, firewall-cmd, or iptables
+* Configure key-based authentication for SSH
+* Set enforcing and permissive modes for SELinux
+* List and identify SELinux file and process context
+* Restore default file contexts
+* Use boolean settings to modify system SELinux settings
+* Diagnose and address routine SELinux policy violations
+# Understand and use essential tools
+
+* Access a shell prompt and issue commands with correct syntax
+* Use input-output redirection (>, >>, |, 2>, etc.)
+* Use grep and regular expressions to analyze text
+* Access remote systems using ssh
+* Log in and switch users in multiuser targets
+* Archive, compress, unpack, and uncompress files using tar, star, gzip, and bzip2
+* Create and edit text files
+* Create, delete, copy, and move files and directories
+* Create hard and soft links
+* List, set, and change standard ugo/rwx permissions
+* Locate, read, and use system documentation including man, info, and files in /usr/share/doc
+
+Note: Red Hat may use applications during the exam that are not included in Red Hat Enterprise Linux for the purpose of evaluating candidate's abilities to meet this objective.
+
+# Operate running systems
+
+* Boot, reboot, and shut down a system normally
+* Boot systems into different targets manually
+* Interrupt the boot process in order to gain access to a system
+* Identify CPU/memory intensive processes, adjust process priority with renice, and kill processes
+* Locate and interpret system log files and journals
+* Access a virtual machine's console
+* Start and stop virtual machines
+* Start, stop, and check the status of network services
+* Securely transfer files between systems
+
+# Configure local storage
+
+* List, create, delete partitions on MBR and GPT disks
+* Create and remove physical volumes, assign physical volumes to volume groups, and create and delete logical volumes
+* Configure systems to mount file systems at boot by Universally Unique ID (UUID) or label
+* Add new partitions and logical volumes, and swap to a system non-destructively
+
+# Create and configure file systems
+
+* Create, mount, unmount, and use vfat, ext4, and xfs file systems
+* Mount and unmount CIFS and NFS network file systems
+* Extend existing logical volumes
+* Create and configure set-GID directories for collaboration
+* Create and manage Access Control Lists (ACLs)
+* Diagnose and correct file permission problems
+
+# Deploy, configure, and maintain systems
+
+* Configure networking and hostname resolution statically or dynamically
+* Schedule tasks using at and cron
+* Start and stop services and configure services to start automatically at boot
+* Configure systems to boot into a specific target automatically
+* Install Red Hat Enterprise Linux systems as virtual guests
+* Configure systems to launch virtual machines at boot
+* Configure network services to start automatically at boot
+* Configure a system to use time services
+* Install and update software packages from Red Hat Network, a remote repository, or from the local file system
+* Update the kernel package appropriately to ensure a bootable system
+* Modify the system bootloader
+
+# Manage users and groups
+
+* Create, delete, and modify local user accounts
+* Change passwords and adjust password aging for local user accounts
+* Create, delete, and modify local groups and group memberships
+* Configure a system to use an existing authentication service for user and group information
+
+# Manage security
+
+* Configure firewall settings using firewall-config, firewall-cmd, or iptables
+* Configure key-based authentication for SSH
+* Set enforcing and permissive modes for SELinux
+* List and identify SELinux file and process context
+* Restore default file contexts
+* Use boolean settings to modify system SELinux settings
+* Diagnose and address routine SELinux policy violations
+st, create, delete partitions on MBR and GPT disks
+* Create and remove physical volumes, assign physical volumes to volume groups, and create and delete logical volumes
+* Configure systems to mount file systems at boot by Universally Unique ID (UUID) or label
+* Add new partitions and logical volumes, and swap to a system non-destructively
+
+# Create and configure file systems
+
+* Create, mount, unmount, and use vfat, ext4, and xfs file systems
+* Mount and unmount CIFS and NFS network file systems
+* Extend existing logical volumes
+* Create and configure set-GID directories for collaboration
+* Create and manage Access Control Lists (ACLs)
+* Diagnose and correct file permission problems
+
+# Deploy, configure, and maintain systems
+
+* Configure networking and hostname resolution statically or dynamically
+* Schedule tasks using at and cron
+* Start and stop services and configure services to start automatically at boot
+* Configure systems to boot into a specific target automatically
+* Install Red Hat Enterprise Linux systems as virtual guests
+* Configure systems to launch virtual machines at boot 
+* Configure network services to start automatically at boot 
+* Configure a system to use time services
+* Install and update software packages from Red Hat Network, a remote repository, or from the local file system
+* Update the kernel package appropriately to ensure a bootable system
+* Modify the system bootloader
+
+# Manage users and groups
+
+* Create, delete, and modify local user accounts
+* Change passwords and adjust password aging for local user accounts
+* Create, delete, and modify local groups and group memberships
+* Configure a system to use an existing authentication service for user and group information
+
+# Manage security
+
+* Configure firewall settings using firewall-config, firewall-cmd, or iptables
+* Configure key-based authentication for SSH
+* Set enforcing and permissive modes for SELinux
+* List and identify SELinux file and process context
+* Restore default file contexts
+* Use boolean settings to modify system SELinux settings
+* Diagnose and address routine SELinux policy violations
 
 ## Expresiones regulares
 
@@ -218,30 +380,66 @@ Rango puede ser:
 
 # Programación de tareas <a name="task_sched"></a>
 
+## at
+
+Cuando queramos que algo se ejecute en un determinado momento, pero no siempre, usaremos este programa.
+
+**Demonio:** atd
+**Paquete:** at
+
+Incluye una serie de colas [a-z] ordenadas por prioridad, con lo que podemos separar los trabajos y organizarlos según su importancia/prioridad.
+
+¿para que es útil? Normalmente, todo lo que hacemos con at, lo podemos hacer con cron, nos puede ayudar para desactivar algún servicio con el que estamos trabajando y que nos puede dejar fritos, así recuperamos el control.
+
+root puede ver todos los trabajos, el usuario sólo los que ha lanzado el.
+
+Al final de la ejecución, nos manda un mail.  
+**NOTA:** Si en vez de un mail, queremos ver la salida por pantalla, redirigir la salida. (para eso, podemos ver el terminal en el que estamos con `w -l` y luego hacer `echo $(comando) > /dev/pts/*`
+
+### Comandos
+
+* `at <TIMESPEC>`: Nos abrirá un subshell para crear los comandos que queremos lanzar. Le podemos pasar por stdin el script que queremos que ejecute.
+* `atq` ~ `at -l`: Nos muestra información de las colas de at:
+  - Número de trabajo
+  - Fecha y hora programada
+  - cola del trabajo
+  - usuario
+* `at -c <num_job>`: Muestra la tarea y su entorno
+* `atrm <num_job>`: Borra la tarea
+
+### TIMESPEC
+
+Referencia: `/usr/share/doc/at-*/timespec`
+
+Tiempo absoluto: 5 pm August 3 2019
+Tiempos relativos:
+* teatime tomorrow (teatime son las 16:00)
+* noon + 4 days
+* midnight + 1 week
 
 ***
 
-Prioridades <a name="priority"></a>
+# Prioridades <a name="priority"></a>
 
 ***
 
-Control de acceso a ficheros (ACLs) <a name="acls"></a>
+# Control de acceso a ficheros (ACLs) <a name="acls"></a>
 
 ***
 
-Manejo de SELinux <a name="selinux"></a>
+# Manejo de SELinux <a name="selinux"></a>
 
 ***
 
-Conexión a redes <a name="redes"></a>
+# Conexión a redes <a name="redes"></a>
 
 ***
 
-Añadir discos, particiones y sistemas de ficheros <a name="discos"></a>
+# Añadir discos, particiones y sistemas de ficheros <a name="discos"></a>
 
 ***
 
-Logical Volume Management (LVM) <a name="lvm"></a>
+# Logical Volume Management (LVM) <a name="lvm"></a>
 
 ***
 
