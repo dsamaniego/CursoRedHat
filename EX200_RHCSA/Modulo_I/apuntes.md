@@ -160,7 +160,293 @@ Dispositivos especiales del sistema:
 * `/dev/null`--> es un sumidero, todo lo que dirijamos a él se pierde.
 * `/dev/zero`--> Si queremos meter ceros como entrada.
 
-### Redirecciones de salida
+### Redirecciones de salida26
+
+• Use shell scripting to automate system maintenance tasks.
+
+27
+
+• Configure a system to log to a remote system.  
+
+28
+
+​
+
+29
+
+NETWORK SERVICES
+
+30
+
+​
+
+31
+
+Network services are an important subset of the exam objectives. RHCE candidates should be 
+
+32
+
+capable of meeting the following objectives for each of the network services listed below:
+
+33
+
+• Install the packages needed to provide the service.
+
+34
+
+• Configure SELinux to support the service.
+
+35
+
+• Configure the service to start when the system is booted.
+
+36
+
+• Configure the service for basic operation.
+
+37
+
+• Configure host-based and user-based security for the service.
+
+38
+
+​
+
+39
+
+HTTP/HTTPS
+
+40
+
+• Configure a virtual host.
+
+41
+
+• Configure private directories.SYSTEM CONFIGURATION AND MANAGEMENT
+
+42
+
+• Route IP traffic and create static routes.
+
+43
+
+• Use iptables to implement packet filtering and configure network address translation (NAT).
+
+44
+
+• Use /proc/sys and sysctl to modify and set kernel runtime parameters.
+
+45
+
+• Configure a system to authenticate using Kerberos.
+
+46
+
+• Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
+
+47
+
+• Produce and deliver reports on system utilization (processor, memory, disk, and network).
+
+48
+
+• Use shell scripting to automate system maintenance tasks.
+
+49
+
+• Configure a system to log to a remote system.
+
+50
+
+• Configure a system to accept logging from a remote system.
+
+51
+
+​
+
+52
+
+NETWORK SERVICES
+
+53
+
+Network services are an important subset of the exam objectives. RHCE candidates should be 
+
+54
+
+capable of meeting the following objectives for each of the network services listed below:
+
+55
+
+​
+
+56
+
+• Install the packages needed to provide the service.
+
+57
+
+• Configure SELinux to support the service.
+
+58
+
+• Configure the service to start when the system is booted.
+
+59
+
+• Configure the service for basic operation.
+
+60
+
+• Configure host-based and user-based security for the service:
+
+61
+
+HTTP/HTTPS
+
+62
+
+• Configure a virtual host.
+
+63
+
+• Configure private directories.
+
+64
+
+• Deploy a basic CGI application.
+
+65
+
+• Configure group-managed content.
+
+66
+
+DNS
+
+67
+
+• Configure a caching-only name server.
+
+68
+
+• Configure a caching-only name server to forward DNS queries.
+
+69
+
+Note: Candidates are not expected to configure master or slave name servers.
+
+70
+
+FTP
+
+71
+
+• Configure anonymous-only download.
+
+72
+
+NFS
+
+73
+
+• Provide network shares to specific clients.
+
+74
+
+• Provide network shares suitable for group collaboration.
+
+75
+
+SMB
+
+76
+
+• Provide network shares to specific clients.
+
+77
+
+• Provide network shares suitable for group collaboration.
+
+78
+
+SMTP
+
+79
+
+• Configure a mail transfer agent (MTA) to accept inbound email from other systems.
+
+80
+
+• Configure an MTA to forward (relay) email through a smart host.
+
+81
+
+SSH
+
+82
+
+• Configure key-based authentication.
+
+83
+
+• Configure additional options described in documentation.
+
+84
+
+NTP
+
+85
+
+• Synchronize time using other NTP pervice.
+
+86
+
+• Configure the service to start when the system is booted.
+
+87
+
+• Configure the service for basic operation.
+
+88
+
+• Configure host-based and user-based security for the service.ce.
+
+89
+
+​
+
+90
+
+## HTTP/HTTPS
+
+91
+
+• Configure a virtual host.
+
+92
+
+• Configure private directories.SYSTEM CONFIGURATION AND MANAGEMENT
+
+93
+
+• Route IP traffic and create static routes.
+
+94
+
+• Use iptables to implement packet filtering and configure network address translation (NAT).
+
+95
+
+• Use /proc/sys and sysctl to modify and set kernel runtime parameters.
+
+96
+
+• Configure a system to authenticate using Kerberos.
+
+97
+
+• Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
 
 Ojo, los operadores de fusión más modernos ( &>file &>>file) puede que no funcionen en shells antigüas.
 
@@ -1162,6 +1448,9 @@ Comandos que hacen pupa:
 * yum remove <nombre_paquete> - Borra el paquete
    - Si hay paquetes que dependen de él, también me los quita (porque ya no van a funcionar).
    - Esto es una pega, porque si desinstalamos por error y lo volvemos a instalar, no arreglamos las dependencias rotas.
+* yum reinstall <nombre_paquete> - Reinstala el paquete (muy útil cuando nos hemos cargado algo).
+   - hacemos primero yum provides <loquenoshemoscargado>
+   - yum reinstall <paquete> 
 
 ### Grupos
  
@@ -1186,7 +1475,293 @@ OJO: Si le tiramos este comando, nos va a mostrar los paquetes que forman parte 
    en este caso, podemos decirle al sistema que nos marque al grupo que sólo instale lso paquetes predeterminados u obligatorios que existan.
    
 * `yum group install <grupo>`
-* `yum group mark install <group>` --> marca que el grupo está instalado, y todos los paquetes que nos faltan por instalar de obligatorios y predeterminados, se nos instalaran (en la versión anterior esto no era así, si teníamos la paquetería instalada, el grupo se consideraba que estaba instalado).
+* `yum group mark install <group>` --> marca que el grupo está instalado, y todos los paquetes que nos faltan por instalar de obligatorios y predeterminados, se nos instalaran (en la versión anterior esto no era así, si teníamos la paquetería instalada, el grupo se consideraba que estaba instalado).26
+
+• Use shell scripting to automate system maintenance tasks.
+
+27
+
+• Configure a system to log to a remote system.  
+
+28
+
+​
+
+29
+
+NETWORK SERVICES
+
+30
+
+​
+
+31
+
+Network services are an important subset of the exam objectives. RHCE candidates should be 
+
+32
+
+capable of meeting the following objectives for each of the network services listed below:
+
+33
+
+• Install the packages needed to provide the service.
+
+34
+
+• Configure SELinux to support the service.
+
+35
+
+• Configure the service to start when the system is booted.
+
+36
+
+• Configure the service for basic operation.
+
+37
+
+• Configure host-based and user-based security for the service.
+
+38
+
+​
+
+39
+
+HTTP/HTTPS
+
+40
+
+• Configure a virtual host.
+
+41
+
+• Configure private directories.SYSTEM CONFIGURATION AND MANAGEMENT
+
+42
+
+• Route IP traffic and create static routes.
+
+43
+
+• Use iptables to implement packet filtering and configure network address translation (NAT).
+
+44
+
+• Use /proc/sys and sysctl to modify and set kernel runtime parameters.
+
+45
+
+• Configure a system to authenticate using Kerberos.
+
+46
+
+• Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
+
+47
+
+• Produce and deliver reports on system utilization (processor, memory, disk, and network).
+
+48
+
+• Use shell scripting to automate system maintenance tasks.
+
+49
+
+• Configure a system to log to a remote system.
+
+50
+
+• Configure a system to accept logging from a remote system.
+
+51
+
+​
+
+52
+
+NETWORK SERVICES
+
+53
+
+Network services are an important subset of the exam objectives. RHCE candidates should be 
+
+54
+
+capable of meeting the following objectives for each of the network services listed below:
+
+55
+
+​
+
+56
+
+• Install the packages needed to provide the service.
+
+57
+
+• Configure SELinux to support the service.
+
+58
+
+• Configure the service to start when the system is booted.
+
+59
+
+• Configure the service for basic operation.
+
+60
+
+• Configure host-based and user-based security for the service:
+
+61
+
+HTTP/HTTPS
+
+62
+
+• Configure a virtual host.
+
+63
+
+• Configure private directories.
+
+64
+
+• Deploy a basic CGI application.
+
+65
+
+• Configure group-managed content.
+
+66
+
+DNS
+
+67
+
+• Configure a caching-only name server.
+
+68
+
+• Configure a caching-only name server to forward DNS queries.
+
+69
+
+Note: Candidates are not expected to configure master or slave name servers.
+
+70
+
+FTP
+
+71
+
+• Configure anonymous-only download.
+
+72
+
+NFS
+
+73
+
+• Provide network shares to specific clients.
+
+74
+
+• Provide network shares suitable for group collaboration.
+
+75
+
+SMB
+
+76
+
+• Provide network shares to specific clients.
+
+77
+
+• Provide network shares suitable for group collaboration.
+
+78
+
+SMTP
+
+79
+
+• Configure a mail transfer agent (MTA) to accept inbound email from other systems.
+
+80
+
+• Configure an MTA to forward (relay) email through a smart host.
+
+81
+
+SSH
+
+82
+
+• Configure key-based authentication.
+
+83
+
+• Configure additional options described in documentation.
+
+84
+
+NTP
+
+85
+
+• Synchronize time using other NTP pervice.
+
+86
+
+• Configure the service to start when the system is booted.
+
+87
+
+• Configure the service for basic operation.
+
+88
+
+• Configure host-based and user-based security for the service.ce.
+
+89
+
+​
+
+90
+
+## HTTP/HTTPS
+
+91
+
+• Configure a virtual host.
+
+92
+
+• Configure private directories.SYSTEM CONFIGURATION AND MANAGEMENT
+
+93
+
+• Route IP traffic and create static routes.
+
+94
+
+• Use iptables to implement packet filtering and configure network address translation (NAT).
+
+95
+
+• Use /proc/sys and sysctl to modify and set kernel runtime parameters.
+
+96
+
+• Configure a system to authenticate using Kerberos.
+
+97
+
+• Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
    
 ### Historia
 
