@@ -393,17 +393,35 @@ Nomenclatura:
 * Ojo, cambiar los permisos del grupo con chmod, no cambia los permisos del grupo propietario, cambia la máscara.
 * Si hay permisos especiales, paraece una cuarta fila al principio de las ACLs, `#flags: sst`
 
+Resolución de permisos de acceso.  
+Usuario propietario --> usuarios nominales --> grupo propietario --> grupos nosminales ---> others
 ### Defaults ACL
 
 Sólo se aplican a los directorios, funcionan con herencia, las ACLs de un directorio pasan a sus hijos.
-* Los ficheros hijos heredan las standar definidas de las defaults del padre
-* los directorios hijos heredan las defaults del padre como sus standar y sus defaults
+* Los ficheros hijos heredan las standar definidas de las defaults del padre.
+* los directorios hijos heredan las defaults del padre como sus standar y sus defaults.
+* Las propagaciones no se llevan el permiso de ejecución **para ficheros**.
 
 La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _default:_)
 
 ## Manejo de ACLs
 
+* **getfact** --> Obtiene acls
+  - R recursiva, puedes obtener de forma recursiva las acls de una ruta para plancharlas en otro arbol igual.
+* **setfact** --> setea acls
+  - -m modificar
+  - -R recursivo
+  - -x borrar
+  
+### Ejemplos
 
+* Plancha acl de un fichero a otro: `getfactl file1 |setfactl --set-file=- file2`
+* Lo mismo recursivo: `getfactl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
+* Modificar usuario propietario: `setfacl -m u::rX file`: aplica permisos x de forma recursiva a directoros pero no a ficheros. **OJO:** en cuanto sea ejecutable para alguien, le aplicará la X al fichero.
+* Modficar propietarios (idem para grupos, other y mascaras): `setfacl -m u::rws fich/dir`
+* Modificar nominales: (idem para grupos): `u:1005:rwx file/dir`
+* Modificar defaults: (simplemente poner delante d:): `d:u:1005:rx file/idr`
+  - Al meter una de las defaults, me mete las de todo el mundo.
 
 ***
 
