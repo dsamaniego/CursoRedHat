@@ -411,7 +411,9 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 * **setfact** --> setea acls
   - -m modificar
   - -R recursivo
-  - -x borrar
+  - -x borrar (hay que especificar lo que hay queborar).
+  - -k Borrar defaults
+  - -b borrar todas
   
 ### Ejemplos
 
