@@ -355,6 +355,56 @@ Donde:
 
 # Control de acceso a ficheros (ACLs) <a name="acls"></a>
 
+Nos permiten granularizar permisos.
+
+En RHEL7, tanto ext4 como xfs admiten ACLs y las tienen configuradas por defecto como activas (en versiones anteriores había que activarlas).
+
+¿Qué permiten? Granularizar permisos
+
+¿Cómo se ve qeu algo tiene ACLs?
+
+`ls -l`, la salida tiene algo así como -rwxr-x-r--+ ..., el + nos indica que tiene ACLs aplicadas.
+
+p.ej.: -rwxrwxrwx+ root root fichero, los permisos de grupo, ya no son los permisos del grupo propietario, sino la máscara de las ACLs.
+
+Para saber en este caso los permisos del grupo, necesito sacar más información con las ACLs.
+
+**getfacl _fichero_** Nos da la información del fichero.
+~~~bash
+# file: fichero
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+~~~
+Fijarse que tenemos un "::", por lo demás son los permisos normales. Pues bien, lo que hay entre esos dos puntos, son las ACLs.
+
+Nomenclatura:
+* Nominal: tiene un nombre puesto entre los dos puntos, y los permisos se aplicarán a eso, puede haber usuarios y grupos.
+  - u:<usuario ó uid>:<permisos>
+  - m:<grupo ó uid>:<permisos>
+* Genérico: se aplican los permisos al usuario y grupo propietarios.
+* Máscara: Es un limitador, determina los máximos permisos efectivos que pueden tener usuarios nominales, grupos nominales y grupo propietario, a los que no afecta es al usuario propietario y a others.
+  - La máscara se recalcula cada vez que se cambia alguno de los permisos... así que hay que verificarla cada vez que cambiemos alguno de los permisos.
+  - **OJO** Buena costumbre, revisar la máscara cada vez que hay un cambio en la ACL por si hay que meterla a capón.
+  - La máscara es el OR entre los permisos afectados.
+* Esto se puede aplicar a directorios, con lo que va a permitir a usuarios distintos del propieratio y del grupo propietario crear y borrar ficheros.
+* Ojo, cambiar los permisos del grupo con chmod, no cambia los permisos del grupo propietario, cambia la máscara.
+* Si hay permisos especiales, paraece una cuarta fila al principio de las ACLs, `#flags: sst`
+
+### Defaults ACL
+
+Sólo se aplican a los directorios, funcionan con herencia, las ACLs de un directorio pasan a sus hijos.
+* Los ficheros hijos heredan las standar definidas de las defaults del padre
+* los directorios hijos heredan las defaults del padre como sus standar y sus defaults
+
+La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _default:_)
+
+## Manejo de ACLs
+
+
+
 ***
 
 # Manejo de SELinux <a name="selinux"></a>
