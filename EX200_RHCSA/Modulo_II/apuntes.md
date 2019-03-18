@@ -12,6 +12,7 @@
 12. [Networ Storage SMB](#smb)
 13. [Troubleshooting](#troubleshooting)
 14. [Limitar comunicaciones de red](#firewalld)
+AP. [Apéndice: Comandos útiles](#apendix)
 
 ***
 
@@ -385,3 +386,17 @@ Donde:
 ***
 
 # Limitar comunicaciones de red <a name="firewalld"></a>
+
+
+***
+
+# Apéndice: Comandos útiles <a name="apendix"></<>
+  
+* __tr__: sustituye un carácter por otro 
+* __cut__: Extrae campos
+  - -d 'char' = delimitador
+  - f<n> = campo
+* __awk__: Que contarte
+* __sort__: Ordenar
+* __sed__: Operaciones con cadenas
+* __uniq__: Elimina registros duplicados (se suele aplicar después de un sort)
