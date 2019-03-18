@@ -10,3 +10,12 @@ SOLUCION.
 meteremos esta línea (si es que no está) en /etc/tmpfiles.d/tmp.conf
 
 d /tmp 1777 root root 20d
+
+SOLUCIÖN:
+vim /etc/tmpfiles.d/test.conf
+# type Path UID GID Age Argument
+d /test 1777 root root 20d -
+
+para ver que funciona, rebotar la máquina.
+
+Nota: El man tmpfiles.d explica los detaleles de la configuración y tiene un ejemplo
