@@ -12,7 +12,7 @@
 12. [Networ Storage SMB](#smb)
 13. [Troubleshooting](#troubleshooting)
 14. [Limitar comunicaciones de red](#firewalld)
-AP. [Apéndice: Comandos útiles](#apendix)
+15. [Apéndice: Comandos útiles](#apendix)
 
 ***
 
@@ -433,11 +433,55 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 * Modificar defaults: (simplemente poner delante d:): `d:u:1005:rx file/idr`
   - Al meter una de las defaults, me mete las de todo el mundo.
   
-
-
-***https://start.fedoraproject.org/
+***
 
 # Manejo de SELinux <a name="selinux"></a>
+
+SELinux (_Security Enhanced Linux_) es una capa de seguridad para sistemas Linux creado por el NSA. Es una seguridad basada en objetos y con reglas más sofisticadas que las de permisos y ACLs. 
+
+Es un conjunto de reglas de seguridad sobre objetos que nos permite definir niveles de seguridad que se aplicarán sobre:
+* Archivos
+* Directorios
+* Puertos
+* Procesos
+
+Controla que los procesos puedan escribir sólo en su ruta "default". Con lo que en sistemas fuertemente customizados será un quebradero de cabeza.
+
+Etiquetas de SELinux:
+* USER (\_u)
+* ROLE (\_r)
+* TYPE (\_t) (este es el que vamos a tratar aquí).
+* SENSITIVE (\_s)
+
+Políticas: Acciones que va a tomar SELinux respecto a las etiquetas
+* targeted: Se pueden ver en `/etc/selinux/config`
+* minimun
+* mls
+
+Modos:
+* enforcing: Obliga que se cumplan las reglas.
+* permisive: Avisa cuando no se cumplen las reglas, pero deja.
+* disabled: deja pasar todo.
+
+Cuando se pone a disabled, se necesita un reinicio y se borran todas las etiquetas. Lo malo, es que si luego se quiere meter de nuevo en enforcing, hay que reiniciar y tiene que reetiquetarse el sistema -y esto tarda un huevo.
+
+## Comandos últiles.
+
+* Para ver las políticas de algo: `semanage fcontext -l | grep <lo_que_sea>`
+* Para ver los booleanos: `semanage boolean -l` ó `getsebool -a`
+* Para ver prolíticas en procesos `ps -axZ` (p.ej: `ps -ZC httpd` nos muestra las etiquetas de Apache).
+* Para ver lo que hay aplicado de SELinux sobre un archivo/directorio: `ls -lZ <fichero>`
+* Obtener el modo de funcionamiento de SELinux: `getenforce`
+* Cambiar el modo de funionamiento: `setenforce n` donde:
+  - 0 --> Permissive
+  - 1 --> Enforcing
+  - Los cambios de funcionamiento con setenforce son temporales (en runtime).
+  - Para ponerlo permanente, hay que editar el fichero `/etc/selinux/config` y reiniciar.
+* En un arranque, podemos cambiar el modo de selinux en el modo de kernel con el parámetro extra en las líneas de kernel.
+  - enforcing=1 (enforce)
+  - enforcing=0 (permisibe)
+  - selinux=0 (disabled)
+  
 
 ***
 
