@@ -351,6 +351,13 @@ Donde:
 
 # Prioridades <a name="priority"></a>
 
+Las prioridades están asociadas al nivel de nice de los procesos, cuanto mayor sea el número nice, menos prioritario es y mas tarda en coger tiempo de CPU.
+
+Hay 40 niveles nice que van de -20 a 19, los negativos sólo los puede gestionar root, y los positivos todos los usuarios.
+
+Todos los shell nacen con nice=0, y el usuario propietario lo único que puede hacer es cambiar su prioridad subiendo el nivel nice (es decir lo único que pueden hacer los usuarios normales es bajar la prioridad).
+
+
 ***
 
 # Control de acceso a ficheros (ACLs) <a name="acls"></a>
@@ -408,14 +415,15 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 
 * **getfact** --> Obtiene acls
   - R recursiva, puedes obtener de forma recursiva las acls de una ruta para plancharlas en otro arbol igual.
-* **setfact** --> setea acls
+* **setfact _flags_ _fich_** --> setea acls
   - -m modificar
   - -R recursivo
   - -x borrar (hay que especificar lo que hay queborar).
   - -k Borrar defaults
   - -b borrar todas
+  - -d establece acls defautl (mejor hacerlo con los parámetros)
   
-### Ejemplos
+### Ejemploshttps://start.fedoraproject.org/
 
 * Plancha acl de un fichero a otro: `getfactl file1 |setfactl --set-file=- file2`
 * Lo mismo recursivo: `getfactl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
@@ -424,8 +432,10 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 * Modificar nominales: (idem para grupos): `u:1005:rwx file/dir`
 * Modificar defaults: (simplemente poner delante d:): `d:u:1005:rx file/idr`
   - Al meter una de las defaults, me mete las de todo el mundo.
+  
 
-***
+
+***https://start.fedoraproject.org/
 
 # Manejo de SELinux <a name="selinux"></a>
 
