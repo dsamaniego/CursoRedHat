@@ -351,11 +351,29 @@ Donde:
 
 # Prioridades <a name="priority"></a>
 
-Las prioridades están asociadas al nivel de nice de los procesos, cuanto mayor sea el número nice, menos prioritario es y mas tarda en coger tiempo de CPU.
+Dado que hay más procesos que cores en los procesadores, para que un sistema multitarea de la sensación de tal, tiene que recurrir a alguna estrategia de reparto de los cores entre los procesos. Linux y otros sistemas operativos resuelven esto con el _time-slicing_. El _process scheduler_ del sistema rápidamente alterna entre procesos en un core dando al usuario la impresión de que hay varios procesos corriendo al mismo tiempo.
+
+## Prioridades relativas
+
+Como no todos los procesos son iguales, tiene que haber alguna manera de decirl al _process scheduler_ que un proceso es más importante que otro, esto se consigue con las prioridades.
+
+**SCHED_OTHER (SCHED_NORMAL)** La política que se aplica a la mayoría de los procesos, pero hay otra políticas. Los procesos con esta política tiene una prioridad relativa, que está asociada al nivel de nice de los procesos, cuanto mayor sea el número nice, menos prioritario es y mas tarda en coger tiempo de CPU.
 
 Hay 40 niveles nice que van de -20 a 19, los negativos sólo los puede gestionar root, y los positivos todos los usuarios.
 
 Todos los shell nacen con nice=0, y el usuario propietario lo único que puede hacer es cambiar su prioridad subiendo el nivel nice (es decir lo único que pueden hacer los usuarios normales es bajar la prioridad).
+
+Dado que procesos que cogen mucha CPU pueden impactar negativamente al rendimiento del sistema, sólo el usuario **root** (más, precisamente, todos los usuarios que tengan la capacidad **CAP_SYS_NICE**) está capacitado para poner valores negativos de nice y bajar el nivel de nice de los procesos.
+
+## Manejo del nice
+
+* Ver los niveles nice:
+  - `top`: Nos muestra dos columnas de interes: **NI** con el nivel nice actual y **PR** que muestra en nivel nice en una escala más grande de prioridades en que nice=-20 == pr=0 y nice=19 == pr=39. Los niveles por debajo corresponden a prioridades del sistema.
+  - `ps axo pid,comm,nice,cls --sort=-nice` Muestra los procesos ordenados por nice.
+    + se pueden ver procesos con nice "-" que indica que no tienen nice, con el campo _cls_ vemos la política de schedule, donde **TS** corresponde con *SCHED_NORMAL*
+* `nice -n <nice> <comando> &`: Lanzar un proceso con otro nivel de nice. Recordar que usuarios sin privilegios pueden lanzar sólo procesos con nice entre 0 y 19 y sólo root (y sus amigos) con nice entreo -20 y -1
+* `renice -n <nice> <PID>`: Cambiar nivel de nice
+  - También podemos usar el **top** para cambiar el nivel de nice (pulstar **r**, el PID y nos pedirá el nuevo nivel de nice)
 
 ***
 
@@ -422,7 +440,7 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
   - -b borrar todas
   - -d establece acls defautl (mejor hacerlo con los parámetros)
   
-### Ejemploshttps://start.fedoraproject.org/
+### Ejemplos
 
 * Plancha acl de un fichero a otro: `getfactl file1 |setfactl --set-file=- file2`
 * Lo mismo recursivo: `getfactl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
