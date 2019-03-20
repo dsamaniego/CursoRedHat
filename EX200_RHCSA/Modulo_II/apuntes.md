@@ -545,6 +545,9 @@ Paquete necesario: **setroubleshoot-server** (rpm). Lee mensajes de `/var/log/au
 
 Una vez hecho esto, con el comando `sealert -l <UUID>` podremos explorarlo ó `sealert -a /var/log/audit/audit.log` lo cual es mucho más extenso.
 
+****OJO DE CARA AL EXAMEN**** 
+No siempre la solución que nos da el sealert es la válida para el exámen, normalmente lo que que buscan es que apliquemos contextos a rutas, así que mejor investigar un poco mas.
+
 ***
 
 # Conexión a redes <a name="redes"></a>
@@ -581,7 +584,7 @@ Una vez hecho esto, con el comando `sealert -l <UUID>` podremos explorarlo ó `s
 * __tr__: sustituye un carácter por otro 
 * __cut__: Extrae campos
   - -d 'char' = delimitador
-  - f<n> = campo
+  - f n = campo
 * __awk__: Que contarte
 * __sort__: Ordenar
 * __sed__: Operaciones con cadenas
