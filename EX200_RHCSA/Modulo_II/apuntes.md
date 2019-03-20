@@ -357,7 +357,6 @@ Hay 40 niveles nice que van de -20 a 19, los negativos sólo los puede gestionar
 
 Todos los shell nacen con nice=0, y el usuario propietario lo único que puede hacer es cambiar su prioridad subiendo el nivel nice (es decir lo único que pueden hacer los usuarios normales es bajar la prioridad).
 
-
 ***
 
 # Control de acceso a ficheros (ACLs) <a name="acls"></a>
@@ -447,41 +446,104 @@ Es un conjunto de reglas de seguridad sobre objetos que nos permite definir nive
 
 Controla que los procesos puedan escribir sólo en su ruta "default". Con lo que en sistemas fuertemente customizados será un quebradero de cabeza.
 
-Etiquetas de SELinux:
+**Etiquetas** de SELinux para diferentes contextos:
 * USER (\_u)
 * ROLE (\_r)
-* TYPE (\_t) (este es el que vamos a tratar aquí).
-* SENSITIVE (\_s)
+* TYPE (\_t) En este contexto se basa la política basada en etiquetas (que es la políica por defecto)
+* SENSITIVITY (\_s)
 
-Políticas: Acciones que va a tomar SELinux respecto a las etiquetas
-* targeted: Se pueden ver en `/etc/selinux/config`
+**Políticas**: Acciones que va a tomar SELinux respecto a las etiquetas. Por defecto la política no permite ninguna interacción a no ser que una regla explicita permita el acceso. Si no hay regla, no hay acceso.
+* targeted: Es la política por defecto. Se pueden ver en `/etc/selinux/config`
 * minimun
 * mls
 
-Modos:
+**Modos** de SELinux:
 * enforcing: Obliga que se cumplan las reglas.
 * permisive: Avisa cuando no se cumplen las reglas, pero deja.
 * disabled: deja pasar todo.
 
 Cuando se pone a disabled, se necesita un reinicio y se borran todas las etiquetas. Lo malo, es que si luego se quiere meter de nuevo en enforcing, hay que reiniciar y tiene que reetiquetarse el sistema -y esto tarda un huevo.
 
-## Comandos últiles.
+### Comandos últiles.
 
 * Para ver las políticas de algo: `semanage fcontext -l | grep <lo_que_sea>`
 * Para ver los booleanos: `semanage boolean -l` ó `getsebool -a`
 * Para ver prolíticas en procesos `ps -axZ` (p.ej: `ps -ZC httpd` nos muestra las etiquetas de Apache).
 * Para ver lo que hay aplicado de SELinux sobre un archivo/directorio: `ls -lZ <fichero>`
+
+## Modos de SELinux
+
+Con fines de troubleshooting, se puede desactivar temporalmente SELinux usando los modos de SELinux
 * Obtener el modo de funcionamiento de SELinux: `getenforce`
 * Cambiar el modo de funionamiento: `setenforce n` donde:
-  - 0 --> Permissive
-  - 1 --> Enforcing
-  - Los cambios de funcionamiento con setenforce son temporales (en runtime).
-  - Para ponerlo permanente, hay que editar el fichero `/etc/selinux/config` y reiniciar.
-* En un arranque, podemos cambiar el modo de selinux en el modo de kernel con el parámetro extra en las líneas de kernel.
+  - 0 --> _Permissive_: Escribe en el log, pero no deniega accesos.
+  - 1 --> _Enforcing_: Escribe en el log y niega accesos
+  - Los cambios de funcionamiento con setenforce son temporales (en runtime). Para hacerlos permanentes, hay que editar el fichero `/etc/selinux/config` y reiniciar.
+
+En un arranque, podemos cambiar el modo de selinux en el modo de kernel con el parámetro extra en las líneas de kernel.
   - enforcing=1 (enforce)
   - enforcing=0 (permisibe)
   - selinux=0 (disabled)
-  
+
+## Contextos SELinux
+
+SELinux es un conjunto de reglas de seguridad que determina qué proceso puede acceder a qué ficheros, directorios y puertos. Cada fichero, proces, directory y puerto tiene una etiqueta de seguridad especial llamada **contexto SELinux**.
+
+Un **contexto** es un nombre que es usado por la politica de SELinux para determinar que proceso puede acceder a qué fichero, directorio o puerto. 
+
+Los contextos se ven con `ls -Z`.
+
+Cuando creamos un fichero/directorio, hereda el contexto del padre. Cuando copiamos manteniendo todo (`cp -a <fichero>`) o movemos, nos llevamos el contexto, así que hay que ser muy consciente de ello, y habrá que hacer una restauración de contexto:
+
+* `chcon -t <tipo_conexto> fichero`: cambia el contexto de un fichero de forma permanente.
+* `restorecon -FvvR <fich/dir>`: Restaura el contexto del fichero según las reglas de SELinux, es decir, va consultando el `semanage fcontext -l` para ir restaurando los permisos.
+
+Si añadimos nuevas rutas y luego nos lo queremos llevar a otros sistemas, tendremos que llevarnos las rutas nueva customizadas.
+
+### Añadir reglas.
+
+`semanage fcontext` consulta o modifica las reglas que `restorecon` usa restaura. Suele ser habitual no tener instalado semanage, con lo que hay que instalarlo.
+* semanage: policycoreutils-Python
+* restorecon: policycoreutils
+
+#### Comando `semanage {fcontext|boolean}`
+Opciones:
+* -l --> list
+* -a --> añadir
+* -d --> borrar
+* -t <tipo_contexto_t>
+* regla --> para ver ejemplos de reglas, nada mejor que hacer `semanage fcontext -l`
+
+Con esto, definimos la regla, luego hay que plancharla (con `restorecon`).
+
+## Booleanos SELinux
+
+Para obtener información, necesitamos el paquete **selinux-policy-devel**, y sacamos: `man -k _selinux` (si no sale después de instalar el paquete, `mandb`)
+
+Son switches que cambian el comportamiento de las reglas de SELinux, son políticas que pueden estar habilitadas o no. Se usan por los administradores de seguridad para tunear políticas.
+
+* `getsebool <booleano>`: Muestra el valor actual del booleano SELinux (con el flag -a sin booleano, lista todos los booleanos).
+* `semanage boolean -l`: Prácticamente hace lo mismo, pero muestra su valor actual, el valor por defecto y una descripción.
+  - -C -> nos muestra los que hemos manipulado
+* `setsebool <booleano> {on|off}`: para activar/desactivar el booleano que sea. El cambio no es permanente.
+  - -P -> lo hacemos permanente
+
+## Puertos
+
+Ya los veremos en el curso de ingeniero... de todas formas.
+
+Para ver los puertos controlados con SELinux: `semanage port -l` veremos los puertos y servicios asociados, además, tendremos que contrastar con lo que tengamos definidos en `/etc/services`.
+
+## Troubleshooting
+
+1. SELinux trabaja correctamente.
+2. Contexto erróneo (revisar que fichero está dando el problema y restaurarlo si es necesario).
+3. Somos demasiado restrictivos con el acceso (solución manipulando los booleanos).
+4. Hay un bug en SELinux (poco probable) --> reportar a soporte.
+
+Paquete necesario: **setroubleshoot-server** (rpm). Lee mensajes de `/var/log/audit/audit.log` y los pasa resumidos a `/var/log/messages`. Si _auditd_ no está corriendo habrá que habilitarlo y arrancarlo.
+
+Una vez hecho esto, con el comando `sealert -l <UUID>` podremos explorarlo ó `sealert -a /var/log/audit/audit.log` lo cual es mucho más extenso.
 
 ***
 
