@@ -568,11 +568,82 @@ No siempre la solución que nos da el sealert es la válida para el exámen, nor
 
 ***
 
-# Conexión a redes <a name="redes"></a>
+# Conexión a redes LDAP - IPA<a name="redes"></a>
+
+## Usar LDAP y Kerberos
+
+Para configurar RHEL7 para que use servicios de administración centralizada de identidad se necesitan varios demonios y ficheros:
+* `/etc/openldap/ldap.conf`: Información acerca del servidor LDAP.
+* `/etc/krb5.conf`: Información sobre la infraestructura de Kerberos
+* `/etc/sssd/sssd.conf`: Configuración del _System Security Services Daemon_ que es responsable de recabar y cachear la información de usuario y de autenticación.  
+  El demonio sssd tiene que estar habilitado y corriendo antes de que el sistema pueda usar cualquier servicio de los otros.
+* `/etc/nsswitch.conf`: Indica al sistema qué servicios de información y autenticación usar.
+* `/etc/pam.d/*`: Configura cómo los servicios tienen que usar la autenticación.
+* `/etc/openlap/cacerts`: Almacen de las CAs (_Certificate Authorities_) contra las que se tienen que validar los certificados SSL que identifican los servidores LDAP.
+
+Dado que es facil equivocarse, hay una utilidad **authconfig** que engloba tres herramientas para hacer la configuración:
+* **authconfig**: Se instala con el paquete _authconfig_. Herramienta por línea de comandos con comandos largos y complicados.
+* **authconfig-tui**: Versión interactiva de la anterior, guiada por menús, se puede usar vía ssh.
+* **authconfig-gtk**: Versión con interfáz gráfica.
+
+### Parámetros mínimos de LDAP
+
+* Host name de los servidores LDAP.
+* Base DN (_distinguished name_) de la parte del arbos de LDAP en el que el sistema tiene que buscar a los usuarios. Esta información nos la tiene que proporcionar el administrador de LDAP.
+* Si se usa SSL/TLS para encriptar las comunicaciones, nos tienen que proporcionar el certificado raíz.
+
+### Parámetros mínimos de Kerberos
+
+Si el sistema usa un systema centralizado Kerberos para autenticación:
+* Kerberos _realm_: Dominio de máquinas que usan el conjunto de servidores y usuarios de Kerberos para autenticación.
+* Uno o más KDCs (_Key Distribution Center_): El hostname del servidor Kerberos.
+* Host name de uno o mas _admin servers_: La máquina con la que los usuarios tienen que comunicarse cuando quieran hacer modificaciones. Suele ser el KDC, pero puede ser otra máquina distinta.
+
+### Configuración.
+
+Para configurar, usar el **authconfig-gtk**.
+
+**OJO**: hay un bug en la versión _authconfig-6.2.8-8.el7_ que resulta en una '#' en `/etc/sssd/sssd.conf` en el campo _Realm_, simplemente hay que quitar el comentario. Si se usa **authconfig**, asegurarse de usar **--krb5realm=** y luego chequear `/etc/krb5.conf` y `/etc/sssd/sssd.conf`.
+Una vez configurado todo, podemos chequear que todo ha ido bien con: `getent passwd <USERNAME>`
+
+## Usar un IPA Server
+
+**IPA** = Identity, Policy and Auditing
+
+Un IPA Server provee LDAP y Kerberos combinados en una suite administrada con un conjunto de herramientas web.
+
+Se puede usar **authconfig** para configurar todo, pero hay una herramienta especializada: **ipa-client-install**, provisto por el paquete **ipa-client**.
+
+Cuando se lanza, busca a través del DNS provisto por el sistema un servidor IPA del que obtener la configuración, en caso de no encontrarlo, preguntará la configuración (nombre de dominio y un realm). También necesitará un nombre de usuario y la contraseña.
+
+## Unirse a un Active Directory
+
+Se pueden hacer de dos formas:
+* Instalar _samba-winbind_ y configurar **windbind** a través de **authcofig**
+* Instalar los paquetes **sssd** y **realm** y usarlos para unierse al AD.
+
+### Ejemplo.
+
+~~~bash
+# Instalar paquete
+$ sudo yum -y install realmd
+# Descubrir la configuración
+$ sudo realm discover domain.example.com
+# Unirse al Active Directory (instalará los paquetes necesarios y configurará sssd, pam y /etc/nsswitch.conf
+$ sudo realm join domain.example.com # habrá que meter la constraseña de Admin, si no usar el parámetro --user
+# Habilitar el uso de AD.
+# A todo el mundo
+$ sudo realm permit --realm domain.example.com --all
+# A cieros usuarios:
+$ sudo realm permit --realm domain.example.com DOMAIN\\usuario1 DOMAIN\\usuario2 ...
+~~~
+
+Por defecto los usuarios deberá unsar FQN (ipauser@ipa.example.com) para usuarios IPA, o DOMAIN\user para usuarios del AD., para deshabilitarlo, cambiar **use_fully_qualified_names** en `/etc/sssd/sssd.conf` a _False_ o borrar la línea, luego reiniciar el servicio.
 
 ***
 
 # Añadir discos, particiones y sistemas de ficheros <a name="discos"></a>
+
 
 ***
 
