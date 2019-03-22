@@ -1,0 +1,10 @@
+Todo hay que hacerlo en la maquina virtual serverX. 
+Hacer primero un reset de serverX. Los sistema de archivos y el espacio swap tienen que estar accesibles después de un reboot.
+
+En el disco /dev/vdb:
+
+1. Crear un sistema de archivos xfs montado en /bkup de 5GiB. Darle el label : BACKUP
+
+2. Crear un spacio swap en una partición lógica de 2Gib . Darle el label : SWAP2
+
+3. Crear una partición de 1 GiB con un sistema de archivos ext4 montada en /material . Darle el label : MATERIAL

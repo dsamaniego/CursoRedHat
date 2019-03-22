@@ -1,0 +1,35 @@
+
+
+You must do all exersices in serverX machine, after you reset it.
+
+Exercise 1.
+
+
+1. Use the fdisk or gdisk command to add 3 new partitions to /dev/vdb disk, each about 256, 512 and 2048 megabytes in size, respectively. Set the filesystem labels of each newly created partition to "8e" (Linux LVM). 
+
+2. Use the pvcreate command to initialize each of the newly created partitions as physical volumes. 
+
+3 Use the vgcreate command to create a volume group named "vol_group" with the last two physical volumes, and a physical extent size of 32 megaibytes. Leave the first physical volume unused. 
+
+4. Use the lvcreate command to create a logical volume named "logvol1", which is  1024 megabytes in size. 
+Do the same for a logical volume named "logvol2", also 1024 megabytes in size. 
+
+5. Format the logical volumes "logvol1" and "logvol2" with ext4 and xfs filesystems, respectively.
+
+6. Create the mount points (directories) /lvm1 and /lvm2. Mount the logical volumes "logvol1" and "logvol2" to the respective mount points. 
+
+7. Create entries within your /etc/fstab file so that the logical volumes are mounted automatically at bootup. Reboot your machine, and confirm that the mounts are automatically performed. 
+
+8. Bonus Track: Rename de volume group "vol_group" to "groupVol". Rename the logical volume "logvol2" to "lv2".
+
+
+Exercise 2. 
+ 
+1. Expand the logical volume and its file system to dynamically grow the mounted filesystem on logical volume "lv2" by 21 logical extents.
+
+2. Try to reduce the volume group "groupVol" by one physical volume, could you do it without lose any logical volume? If not, don't do it.
+
+3. Delete the logical volume "logvol1". Now, remove your first physical volume from the volume group "groupVol", could you do it without lose any logical volume?
+
+4. Create a snapshot volume of "lv2" called "snap_lv2" with 50 megaibytes.
+

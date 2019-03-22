@@ -1,0 +1,12 @@
+Todo hay que hacerlo en la máquina virtual serverX. 
+Hacer primero un reset de serverX.
+
+En el disco /dev/vdb
+
+1. Crear un volumen lógico llamado "lv_bkup" de 82 extents en un grupo de volúmenes llamado "vg_bkup" donde cada extent son 8Mib. El volumen lógico deberá montarse de manera permente en /bkup y tendrá que tener un sistema de archivos xfs.
+
+2. Crear de manera persistente un espacio swap de 256Mib en una partición primaria o lógica.
+
+3. Crear un volumen lógico llamado "lv_aplications" en el grupo de volumenes "vg_bkup" de  2GiB con un sistema de archivos ext4, accesible al boot. En este sistema de archivos crear unos cuantos ficheros con datos.
+
+4. Crear un snapshot de "lv_aplications" de 32Mib. Modificar los ficheros creados en el punto 3. Montar el snapshot y ver los ficheros que tiene. 
