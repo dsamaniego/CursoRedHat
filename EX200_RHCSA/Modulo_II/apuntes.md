@@ -5,9 +5,9 @@
 5. [Prioridades](#priority)
 6. [Control de acceso a ficheros (ACLs)](#acls)
 7. [Manejo de SELinux](#selinux)
-8. [Conexión a redes](#redes)
+8. [Conexión de usuarios con LDAP e IPA](#redes)
 9. [Añadir discos, particiones y sistemas de ficheros](#discos)
-10. [Logical Volume Management (LVM)](#lvm)
+10. [Adminsitrar Logical Volume Management (LVM)](#lvm)
 11. [Network Storage NFS](#nfs)
 12. [Networ Storage SMB](#smb)
 13. [Troubleshooting](#troubleshooting)
@@ -27,7 +27,7 @@ comandos
 ...<software>
 %packages
 ..
-%end
+%endhttps://start.fedoraproject.org/
 %pre
 ...<scripts>
 %end
@@ -521,7 +521,7 @@ Si añadimos nuevas rutas y luego nos lo queremos llevar a otros sistemas, tendr
 ### Añadir reglas.
 
 `semanage fcontext` consulta o modifica las reglas que `restorecon` usa restaura. Suele ser habitual no tener instalado semanage, con lo que hay que instalarlo.
-* semanage: policycoreutils-Python
+* semanage: policycoreutils-Pythondminsitrar Logical Volume Management
 * restorecon: policycoreutils
 
 #### Comando `semanage {fcontext|boolean}`
@@ -565,17 +565,17 @@ Una vez hecho esto, con el comando `sealert -l <UUID>` podremos explorarlo ó `s
 
 ****OJO DE CARA AL EXAMEN**** 
 No siempre la solución que nos da el sealert es la válida para el exámen, normalmente lo que que buscan es que apliquemos contextos a rutas, así que mejor investigar un poco mas.
-
+dminsitrar Logical Volume Management
 ***
 
-# Conexión a redes LDAP - IPA<a name="redes"></a>
+# Conexión de usuarios con LDAP e IPA<a name="redes"></a>
 
 ## Usar LDAP y Kerberos
 
 Para configurar RHEL7 para que use servicios de administración centralizada de identidad se necesitan varios demonios y ficheros:
 * `/etc/openldap/ldap.conf`: Información acerca del servidor LDAP.
 * `/etc/krb5.conf`: Información sobre la infraestructura de Kerberos
-* `/etc/sssd/sssd.conf`: Configuración del _System Security Services Daemon_ que es responsable de recabar y cachear la información de usuario y de autenticación.  
+* `/etc/sssd/sssd.conf`: Configuración del _System Security Services Daemon_ que es responshttps://start.fedoraproject.org/able de recabar y cachear la información de usuario y de autenticación.  
   El demonio sssd tiene que estar habilitado y corriendo antes de que el sistema pueda usar cualquier servicio de los otros.
 * `/etc/nsswitch.conf`: Indica al sistema qué servicios de información y autenticación usar.
 * `/etc/pam.d/*`: Configura cómo los servicios tienen que usar la autenticación.
@@ -612,12 +612,12 @@ Una vez configurado todo, podemos chequear que todo ha ido bien con: `getent pas
 
 Un IPA Server provee LDAP y Kerberos combinados en una suite administrada con un conjunto de herramientas web.
 
-Se puede usar **authconfig** para configurar todo, pero hay una herramienta especializada: **ipa-client-install**, provisto por el paquete **ipa-client**.
+Se puede usar **authconfig** para configurar todo, pero hay una herramdminsitrar Logical Volume Managementienta especializada: **ipa-client-install**, provisto por el paquete **ipa-client**.
 
 Cuando se lanza, busca a través del DNS provisto por el sistema un servidor IPA del que obtener la configuración, en caso de no encontrarlo, preguntará la configuración (nombre de dominio y un realm). También necesitará un nombre de usuario y la contraseña.
 
 ## Unirse a un Active Directory
-
+https://start.fedoraproject.org/
 Se pueden hacer de dos formas:
 * Instalar _samba-winbind_ y configurar **windbind** a través de **authcofig**
 * Instalar los paquetes **sssd** y **realm** y usarlos para unierse al AD.
@@ -644,10 +644,86 @@ Por defecto los usuarios deberá unsar FQN (ipauser@ipa.example.com) para usuari
 
 # Añadir discos, particiones y sistemas de ficheros <a name="discos"></a>
 
+Si nos añaden un disco SCSI, podemos ver la tarjeta y la posición: `lsscsi`, hay que instalar un paquete
 
 ***
 
-# Logical Volume Management (LVM) <a name="lvm"></a>
+# Administrar Logical Volume Management (LVM) <a name="lvm"></a>
+
+## Conceptos
+
+* **Physical Device (PD)**: Tanto un disco como una partición.
+* **Physical Volume (PV)**: Agrupación de  PD
+* **Physical Extension (PE)**: BLoque de almacenamiento más pequeño asociado a un PV. (partición física)
+* **Volume Group (VG)**: Agrupación de PE. al crear el VG, decidimos el tamaño de las PE.
+* **Logical Volume (LV)**: Particiones lógicas de un VG. (para estas es transparente el VG).
+* **Logical Extension (LE)**: Cada LE se corresponde (no mirror, con una PE), (en mirror, con 2 PE). Las LE, serán múltiplos de PE.
+
+## Manejo
+
+### Creación
+
+Al crear la partición física (PD), RH recomienda usar particiones MBR (0x8e)
+1. Crear la partición física: fdisk /dev/vdb (ó gdisk /dev/vdb)
+2. Crear volumenes físico: `pvcreate /dev/vdb1 /dev/vdb2`
+  - listarlos: `pvs`
+3. Crear VG: (mirar en el man de qué tamaño crear las PEs): `vgcreate vgdata /dev/vdb1 /dev/vdb2`
+  - listarlos: `vgs`
+4. Crear LV: `lvcrate -n lvdata -L 2G vgdata` (G --> GiB)
+  - Posibles valores de las Ls
+    * -L 2G -- 2 GiB
+    * -L +128M -- amplia 128M
+  - Posibles valores de las l's (en unidades de PE).
+    * -l 80 -- 80 PEs
+    * -l +80 -- amplia 80 PEs
+    * -l 50%FREE -- 50% de las PE libres
+    * -l +50%FREE -- amplia con el 50% de las PE libres
+  - Creará un dispositivo: 
+    * Dispositivo: `/dev/vgdata/lvdata`
+    * Mapeo del Kernel: `/dev/mapper/vgdata-lvdata`
+5. Formateo el FS: `mkfs -t ext4 /dev/vgdata/lvdata`
+6. Monto: `mount /dev/vgdata/lvdata /mnt`
+  - si quiero automontaje, meterlo en el `/etc/fstab`.
+  
+### Borrado 
+
+Si queremos remover completamente todo:
+1. Desmonto: `umount`
+2. Borrar el LV: `lvremove /dev/vgdata/lvdata`
+3. Borrar el VG: `vgremove vgdata`
+4. Borrar el PV: `pvremove /dev/vdb1 /dev/vdb2`
+
+Nos quedarán dos particiones mondas y lirondas.
+
+### Consulta
+* Listar: pvs, vgs, lvs
+* Ver información más concreta:
+  - PV: `pvdisplay /dev/vdb1`
+  - VG: `vgdisplay <name>`
+  - LV: `lvdisplay /dev/vg-name/lv-name`
+  
+### Extender VG
+
+1. Si necesitamos una partición habrá que usar fdisk ó gdisk
+2. Cramos un nuevo PV: `pvcreate /dev/vdx`
+3. Extendemos: `vgextend vgdatos /dev/vdx`
+4. Comprobamos que la operación haaya sido correcta
+
+### Reducir VG
+
+1. Si tiene datos hay que liberar la PV: `pvmove /dev/dvx`
+2. Reducirmos el VG: `vgreduce vgdatos /dev/vdx`
+3. Comporobamos que la operación ha sido correcta.
+
+### Extender LV
+
+1. Comprobar que tenemos espacio para extender: `vgdisplay vgdatos`
+2. Extendemos: `lvextend -{l|L} <valor> /dev/vgdatos/lvdatos`
+3. Agrandamos el fileSystem:
+  - **xfs** --> `xfs_growfs /pto/montaje` 
+  - **ext4** --> `resize2fs /dev/vgdatos/lvdatos`
+  - También tenemos el flab -r (--resize) del lvextend que hace esto sin necesidad de tener que redimensionar el FS.
+4. Comprobamos.
 
 ***
 
