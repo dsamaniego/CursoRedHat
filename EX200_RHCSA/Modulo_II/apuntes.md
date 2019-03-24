@@ -644,7 +644,110 @@ Por defecto los usuarios deberá unsar FQN (ipauser@ipa.example.com) para usuari
 
 # Añadir discos, particiones y sistemas de ficheros <a name="discos"></a>
 
-Si nos añaden un disco SCSI, podemos ver la tarjeta y la posición: `lsscsi`, hay que instalar un paquete
+El particionado permite dividir el disco duro en múltiples áreas lógicas de almacenamiento llamadas particiones. Separando los discos en particiones, los administradores pueden usar las diferentes particiones para diferentes funciones.
+
+Tener siempre presente los difrentes [múltiplos del byte](https://physics.nist.gov/cuu/Units/binary.html).
+
+## Particionado del disco
+
+### MBR
+
+_Master Boot Record_ indican cómo se particiona el disco en sistema que corren firmware BIOS.
+* Soporta un máximo de 4 particiones primarias
+* En sistemas Linux, con el uso de particiones extendidas y lógicas, un administrador puede crear hasta 15 particiones (3 primarias y 12 extendidas en la partición primaria restante).
+* El tamaño máximo de la partición es de 2 TiB (dado que usa 32 bits para almacenar info de la partición).
+
+Para manejar las particiones MBR se usa `fdisk /dev/<disco>`
+
+**OJO** Hasta que no se escribe la tabla de particiones (opción **w**), no se guardan los cambios.
+
+### GPT
+
+_GUID Partition Table_ se usa en sistemas que usan UEFI (_Unified Extensible Firmware Inteface_).
+* Por defecto soportan 128 particiones.
+* Usa 64 bits para direcciones lógicas de bloque, por lo que admite particiones de hasta 8 ZiB (8 billones de TiB) si usuamos bloques de 512 bytes (si usamos bloques de 4.096 bytes, la capacidad aumenta en 8 veces hasta 64 ZiB).
+* Tiene redundancia en la tabla de particiones, la primaria reside al inicio del disco y la secundaria al final.
+* Usa CRC checksum (_Cyclic Redundacy Check_) para detectar errores y corruncione en la cabecera GPT y la tabla de particiones.
+
+Para manejar las particiones GPT se usa `gdisk /dev/<disco>`, fdisk se puede usar pero la parte que soporta GPT es experimental, por lo que no se recomienda su uso.
+
+**OJO** Hasta que no se escribe la tabla de particiones (opción **w**), no se guardan los cambios.
+
+### Pasos para crear una partición.
+
+1. Como root, ejecutar fdisk o gdisk
+2. Pedir una nueva partición **n**
+3. Especificar el número de partición.
+4. Especificar la localización en el disco donde empezará la nueva partición.
+5. Especificar la última localización donde terminará la partición (también se pueden usar tamaños KiB, MiB, GiB, TiB, PiB).
+6. Definir el tipo de partición.
+7. Escribir la tabla de particiones y salir.
+8. Indicar al kernel que relea la tabla de particiones del dispositivo: `partprobe <dispositivo>` ó `partprobe`.
+
+### Pasos para borrar una partición.
+
+1. Como root, ejecutar fdisk o gdisk
+2. Identificar la partición a borrar (**p** imprime la tabla de particiones).
+3. Borrar la partición: **d**, nos pedirá la partición a borrar, que hemos identificado en el paso anterior.
+4. Escribimos la tabla de particiones **w** y salimos.
+5. Indicamos al kernel que relea la tabla de particiones del dispositivo.
+
+**NOTA:** Si nos añaden un disco SCSI, podemos ver la tarjeta y la posición: `lsscsi`, hay que instalar el paquete del mismo nombre.
+
+## Crear sistemas de ficheros.
+
+Una vez que tengamos hechas las particiones, todavía no las podemos usar en el sistema, primero hay que darlas el formato adecuado y después montarlas.
+
+La aplicación **mkfs** es la encargada de dar formato a la partición. Si no se especifica otra cosa, el tipo de file system por defecto es _ext2_, RH admite muchos formatos, los mas usados son _xfs_ que es el tipo por defecto que aplica anaconda durante la instalación y _ext4_.
+
+~~~bash
+root@system# mkfs -t {ext4|xfs|...} /dev/<particion>
+~~~
+
+## Montar el FileSystem
+
+Una vez formateado, para que se pueda usar, la partición tiene que montarse en algún sitio, para esto se tiene que crear un directorio vacio donde se montará llamado **punto de montaje**
+
+Para ver lo que hay montado en el sistema: `mount -a`
+
+### Montaje manual
+
+Simplemente se dice que se monte y donde.
+
+~~~bash
+root@system# mount /dev/<particion> <punto_montaje>
+~~~
+
+Esta es la mejor forma de ver si el particionado que se ha hecho funciona, pero hay que tener en cuenta que una vez reiniciado el sistema, el montaje se pierde.
+
+### Montaje automático
+
+Para que no se pierdan los montajes, hay que hacerlos automáticos. Para ello, habrá que añadir una líena en el fichero `/etc/fstab` con un formato determinado, valores separados por espacios. Cada campo tiene un significado.
+
+1. Dispositivo: se puede dar el UUID obtenido mediante `blkid` ó el dispositivo.
+2. Punto de montaje
+3. Tipo de file system
+4. Opciones de montado (ver `man mount`)
+5. Flag dump: usado junto con el comando `dump` para hacer backup del contenido del dispositivo.
+6. Flag fsck. Indica si se tiene que chequear el FS en el arranque y su orden.
+
+## Swap
+
+El spacio de swap es un area de disco que usa el kernel de Linux para paginar las páginas inactivas en memoria. La swap es mucho mas lenta que la RAM, ya que reside en disco, el uso de la swap debe mantenerse en el mínimo posible.
+
+Para crear espacio de swap, hay que seguir estos  tres pasos:
+1. Crear una partición.
+2. Poner el tipo de partición a 82 (Linux Swap).
+3. Formatear la signatura de swap al dispositivo.
+
+Los puntos 1 y 2 se hacen como cualquier partición, en punto 3: `mkswap  <particion>`
+
+Para disponibilizar la swap hay que activarlo. `swapon <particion>`, con `swapon -a` se activan todas las particiones de swap del `/etc/fstab`. Para quitarlo, `swapoff`, este comando sólo tendrá éxito si ningún dato swapeado está siendo escrito en ese momento.
+
+Para que los cambios sean permanentes hay que ponerlo en `/etc/fstab`, la línea sería algo similar a la siguiente:
+~~~text
+UUID=<uuid> swap swap defaults 0 0
+~~~
 
 ***
 
