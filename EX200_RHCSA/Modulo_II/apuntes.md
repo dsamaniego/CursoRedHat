@@ -756,9 +756,9 @@ UUID=<uuid> swap swap defaults 0 0
 ## Conceptos
 
 * **Physical Device (PD)**: Tanto un disco como una partición.
-* **Physical Volume (PV)**: Agrupación de  PD
+* **Physical Volume (PV)**: Agrupación de PD
 * **Physical Extension (PE)**: BLoque de almacenamiento más pequeño asociado a un PV. (partición física)
-* **Volume Group (VG)**: Agrupación de PE. al crear el VG, decidimos el tamaño de las PE.
+* **Volume Group (VG)**: Agrupación de PE. Al crear el VG, decidimos el tamaño de las PE.
 * **Logical Volume (LV)**: Particiones lógicas de un VG. (para estas es transparente el VG).
 * **Logical Extension (LE)**: Cada LE se corresponde (no mirror, con una PE), (en mirror, con 2 PE). Las LE, serán múltiplos de PE.
 
@@ -766,11 +766,13 @@ UUID=<uuid> swap swap defaults 0 0
 
 ### Creación
 
-Al crear la partición física (PD), RH recomienda usar particiones MBR (0x8e)
-1. Crear la partición física: fdisk /dev/vdb (ó gdisk /dev/vdb)
+Al crear la partición física (PD), RH recomienda usar particiones tipo MBR (0x8e)
+1. Crear la partición física: `fdisk /dev/vdb` (ó `gdisk /dev/vdb`)
 2. Crear volumenes físico: `pvcreate /dev/vdb1 /dev/vdb2`
   - listarlos: `pvs`
-3. Crear VG: (mirar en el man de qué tamaño crear las PEs): `vgcreate vgdata /dev/vdb1 /dev/vdb2`
+3. Crear VG: (mirar en el man de qué tamaño crear las PEs): 
+  - Sin especificar tamaño: `vgcreate vgdata /dev/vdb1 /dev/vdb2`
+  - Especificando el tamaño del extent: `vgcreate -s 8M vgdata /dev/vdb1 /dev/vdb2`
   - listarlos: `vgs`
 4. Crear LV: `lvcrate -n lvdata -L 2G vgdata` (G --> GiB)
   - Posibles valores de las Ls
@@ -825,12 +827,146 @@ Nos quedarán dos particiones mondas y lirondas.
 3. Agrandamos el fileSystem:
   - **xfs** --> `xfs_growfs /pto/montaje` 
   - **ext4** --> `resize2fs /dev/vgdatos/lvdatos`
-  - También tenemos el flab -r (--resize) del lvextend que hace esto sin necesidad de tener que redimensionar el FS.
+  - También tenemos el flag -r (--resize) del lvextend que hace esto sin necesidad de tener que redimensionar el FS.
 4. Comprobamos.
+
+
+### Snapshots
+
+Dentro del mismo VG, son LV que apuntan a otro LV, de forma que ambos están sincronizados.
+
+En el snapshot están los inodos que apuntan a los del LV original, cuando se modifica un fichero, en el snapshot se van copiando los chunks que cambian. 
+
+Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . Se usa para extraer datos de la BD y luego hacer backup sin necesidad de parar la BB.DD.
+
+#### Operativa.
+
+* Cramos un sanpshot de lvdata, del tamaño iniical de 1 G.  
+  `lvcreate -s -L 1G -n lvdata_snap /dev/vgdata/lvdata`
+* Restaurar snapshot:   
+  `lvconvert --merge <snapshot>`
 
 ***
 
 # Network Storage NFS <a name="nfs"></a>
+
+NFS (_Network File System_): Protocolo estandar usado por sistemas tipo -nix como el protocolo nativo de FS en red.
+
+En RHEL7 - nfsv4 (si no está disponible, pues las anteriores).
+* v4 sólo usa TCP
+* v3 y anteriores usa TCP/UDP
+
+El mecanismo es una exportación (con un origen de red) que montamos en un punto de montaje. La nomenclatura suele ser `serverX:/ruta/nfs/exportado`
+
+Cómo lo montamos:
+* Montaje manual (mount)
+* Montaje permanente (`/etc/fstab`)
+* Automount
+
+## Seguridad
+
+Podemos usar uno o varios métodos de seguridad, añadiendo a la opción de montaje: **sec=metodo**. El servidor puede usar varios sistemas de seguridad, en cliente sólo uno:
+* **none**: Acceso anónimo en a los archivos de NFS (usando el usuario _nfsnobody_)
+* **sys**: Acceso con los estándares de Linux usuario:grupo
+* **krb5**: Los clientes tienen que autenticarse con Kerberos y luego los permisos estándar de Linux.
+* **krb5i**: Agrega criptografía a los datos de ida y vuelta para asegurar que los datos no han sido alterados.
+* **krb5p**: Añade cifrado en todas las peticiones entre cliente y servidor (esto tiene un impacto en el rendimiento).
+
+Necesitaremos:
+* Un fichero `/etc/krb5.keytab` que nos proveerá nuestro administrador de seguridad. La mayoría de los problemas viene de descargar este fichero (tiene que ser binario y tener los contextos de SELinux).
+* Un servicio **nfs-secure** proporcionado por el paqeute _nfs-utils_ y lo tenemos que tener started y enabled. Esto también puede ser una posible fuente de errores.
+
+## Montajes
+
+### Montaje estándar
+
+1. Identificar las exportaciones del servidor NFS:
+  - En nfsv2 y nfsv3 está el comando `showmount -e <NFSserver>
+  - En nfsv4 (comor root)
+    a. mkdir /pto/montaje
+    b. mount server:/ /pto/montaje
+    c. cd /pto/montaje
+    d. ls --> muestra las exportaciones.
+2. Creamos un punto de montaje dfinitivo: mkdir /destino
+3. Montamos manualmente o añadimos a fstab
+  - **Manual**: `mount -t nfs -o sync server:/<dir_compartido> /pto_montaje`
+    · sync --> escribe inmediatamente los cambios
+    · async --> no escribe inmediaitamente
+    . por defecto, el método de seguridad es _sys_
+  - **/etc/fstab**:
+    `server:/<dir_compartido> /pto_montaje nfs  sec=krb5p,sync 0 0`
+
+### Montaje automático
+
+Servicio de automontaje (**autofs**), nos permitirá montar bajo demanda los NFSs que necesitemos, y los desmonta cuando dejan de usarse. Cuando el usuario haga un cd a ciertos directorios, automáticamente se montarán.
+
+Ventajas:
+* No se necesitan privilegios de root (hay que respetar los permisos del sistema).
+* No tienen por qué aparecer en el fstab.
+* Gestiona mejor las conexiones de red.
+* Es de la parte cliente.
+* Tiene las mismas opciones de montaje que si lo hiceramos manualmente.
+* Añade flexibilidad con los puntos de montaje.
+
+Tres tipos de automontaje
+* Directo
+* Indirecto
+* Con comodines
+
+Por defecto el montaje es asíncrono, por eso, antes de desmontar un USB se suelen mandar 2 o 3 `sync` para que escriba los datos en el USB antes de desmontar.
+
+#### Pasos para hacer un automontaje.
+
+1. Instalar el software necesario: `yum install -y autofs`.
+2. Crear el fichero de asignación maestra en `/etc/auto.master.d/*.autofs`.
+  - Identifica el directorio base usado para los puntos de montaje.
+  - Asocia el directorio con los archivos de asignación para crear los automontajes.
+  
+Podemos definir el tipo de filesystem (--fstype), si queremos que sea estricto (-strict) y opción (--ghost).
+    
+##### Montajes indirectos
+
+Definimos debajo de qué vamos a pivotar los montajes
+
+~~~text
+/shares  /etc/auto.indirecto  # montajes indirectos
+/-       /etc/auto.directo    # montajes directos
+/compart /etc/auto.comodines  # montajes con comodines
+~~~
+
+Supongamos que tenemos un montaje `/shares/work` y un `/shares/prueba`
+
+~~~text
+cat /etc/auto.indirecto
+work    -rw,sync  serverX:/export/work
+prueba  -rw,sync  serverY:/nfsexport/test
+~~~
+ 
+##### Montajes directos
+
+Pongo un anclaje sobre el que pivoto.
+
+~~~text
+cat /etc/auto.directo
+/mnt/novedad  -rw   serverX:/directo/novedades
+/mnt/pruebas  -rw   serverY:/directo/novedades
+~~~
+
+##### Montajes con comodines
+
+~~~ text
+cat /etc/auto.comodines
+* -rw,sync  serverX:/compartido/&
+~~~
+
+Si hago un cd a un directorio que coincida con /compartido/PEPE, como tengo en el _autofs_ una entrada que comienza con "/compartido", si se exporta algo en serverX:/compartido/PEPE, me lo montará en /compartido/PEPE.
+
+Caso típico de uso, en el autofs tenemos definido:  
+`/home/guests  /etc/auto.comodines`  
+y en /etc/auto.comodines:  
+`* -rw,sync  serverX:/home/&`
+
+Así cuando hagamos `cd /home/guests/ldapuserX`, nos montará directamente `serverX:/home/ldapuserX`
 
 ***
 
