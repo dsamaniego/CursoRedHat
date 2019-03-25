@@ -881,19 +881,19 @@ Necesitaremos:
 ### Montaje estándar
 
 1. Identificar las exportaciones del servidor NFS:
-  - En nfsv2 y nfsv3 está el comando `showmount -e <NFSserver>`
-  - En nfsv4 (comor root)
-    · mkdir /pto/montaje
-    · mount server:/ /pto/montaje
-    · cd /pto/montaje
-    · ls --> muestra las exportaciones.
+  * En nfsv2 y nfsv3 está el comando `showmount -e <NFSserver>`
+  * En nfsv4 (comor root)
+    - mkdir /pto/montaje
+    - mount server:/ /pto/montaje
+    - cd /pto/montaje
+    - ls --> muestra las exportaciones.
 2. Creamos un punto de montaje dfinitivo: mkdir /destino
 3. Montamos manualmente o añadimos a fstab
-  - **Manual**: `mount -t nfs -o sync server:/<dir_compartido> /pto_montaje`
-    · sync --> escribe inmediatamente los cambios
-    · async --> no escribe inmediaitamente
-    . por defecto, el método de seguridad es _sys_
-  - **/etc/fstab**:
+  * **Manual**: `mount -t nfs -o sync server:/<dir_compartido> /pto_montaje`
+    - sync --> escribe inmediatamente los cambios
+    - async --> no escribe inmediaitamente  
+      por defecto, el método de seguridad es _sys_
+  * **/etc/fstab**:
     `server:/<dir_compartido> /pto_montaje nfs  sec=krb5p,sync 0 0`
 
 ### Montaje automático
