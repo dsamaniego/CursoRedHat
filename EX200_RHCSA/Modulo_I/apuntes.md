@@ -17,7 +17,6 @@
 15. [Virtualización](#virtualization)
    
 # Introducción al curso <a name="introduccion"></a>
-[kiosk@foundation12 ~]$ find /etc -name passwd 2> /dev/null |tee /dev/pts/1 > ~/encontrados4.txt
 
 ## Máquinas
 
@@ -53,13 +52,15 @@ Control de la configruación de gnome: `gnome-control-center`. Entre otras tiene
 
 ### Opciones de lenguaje
 
-La configuración del lenguaje de cada usuario en gnome se guarda en: /var/lib/AccountService/users/${USER}
+La configuración del lenguaje de cada usuario en gnome se guarda en: `/var/lib/AccountService/users/${USER}`
 Para establecer un lenguaje para un comando:
 * `$ LANG=<codigo> <comando>`, con de código es uno de los admitidos 
 * `localectl list-locales`, muestra todos los códigos
-* Si accedemos a la máquina por ssh: `loadkeys es` (se pierde cada vez que se reinicie la máquina).
+
+Si accedemos a la máquina por ssh: `loadkeys es` (se pierde cada vez que se reinicie la máquina).
 * Podemos tocar a mano el fichero `/etc/vconsoles.conf`
-* La manera más cómoda es cambiarlo en el entorno gráfico.
+
+La manera más cómoda es cambiarlo en el entorno gráfico.
 
 ***
 
@@ -67,7 +68,7 @@ Para establecer un lenguaje para un comando:
 
 ## Entorno gráfico
 
-El entorno gráfico por defecto en RHEL7 es Gnome3, que corre sobre XWConceptos<a name="file_conceptsindow. Tiene dos modos: _classic_ y _modern_.
+El entorno gráfico por defecto en RHEL7 es Gnome3, que corre sobre XWindow. Tiene dos modos: _classic_ y _modern_.
 
 Cuando se entra por primera vez, se hace un setup inicial al ejecutarse `/usr/libexec/gnome-initial-setup`, (en cualquier momento podemos volver a lanzarlo para reconfigurar el entorno), después arranca el _Gnome Help_, al que siempre se puede ir pulsando **F1** o, desde un terminal ejecutando `yelp`, o desde el menú: **Application --> Documentation --> Help**.
 
@@ -83,14 +84,15 @@ Aquí hay que poner los atajos de teclado etc...
 
 Los directorios en RHEL (como en todos los sabores Linux) se organizan en forma de árbol invertido en el que arriba está el directorio root (**/**).
 
-En una jerarquí a LVM se encapsulan los directorios, como mínimo:
+En una jerarquía LVM se encapsulan los directorios, como mínimo:
 * raíz (**/**)
 * arranque (**/boot**), será una partición separada con las imágenes estáticas de arranque.
 
 ## Conceptos
 
-* **Persistencia**: Se refiere a la resistencia a "sobrevivir" a los reinicios, los ficheros persistentes guardan cambios que se conservan entre reinicios. **IMPORTANTE: En el exámen todo tiene que quedar persistente, ya que hay varios reinicios.**
-* **Runtime**: Cambios que se conservan mientras está encendida la máquina.
+* **Persistencia**: Se refiere a la resistencia a "sobrevivir" a los reinicios, los ficheros persistentes guardan cambios que se conservan entre reinicios.  
+   **IMPORTANTE:** En el exámen todo tiene que quedar persistente, ya que hay varios reinicios.
+* **Runtime**: Los cambios se conservan mientras está encendida la máquina.
 
 ## Manejo de ficheros
 
@@ -99,7 +101,9 @@ En una jerarquí a LVM se encapsulan los directorios, como mínimo:
 
 ## File Globbing
 
-Para negar expresiones complejas de _file globbing_, meter un signo de exclamación entre los corchetes de apertura, por ejemplo: Ningun caracter alfabético: **[![:alpha:]]**
+Ver anexos entregados en clase.
+
+Para negar expresiones complejas de _file globbing_, meter una tilde circumfleja entre los corchetes de apertura, por ejemplo: Ningun caracter alfabético: **[^[:alpha:]]**
 
 ## Sustitución de comandos
 
