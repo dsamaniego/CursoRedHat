@@ -17,7 +17,6 @@
 15. [Virtualización](#virtualization)
    
 # Introducción al curso <a name="introduccion"></a>
-[kiosk@foundation12 ~]$ find /etc -name passwd 2> /dev/null |tee /dev/pts/1 > ~/encontrados4.txt
 
 ## Máquinas
 
@@ -53,11 +52,12 @@ Control de la configruación de gnome: `gnome-control-center`. Entre otras tiene
 
 ### Opciones de lenguaje
 
-La configuración del lenguaje de cada usuario en gnome se guarda en: /var/lib/AccountService/users/${USER}
+La configuración del lenguaje de cada usuario en gnome se guarda en: `/var/lib/AccountService/users/${USER}`
 Para establecer un lenguaje para un comando:
 * `$ LANG=<codigo> <comando>`, con de código es uno de los admitidos 
 * `localectl list-locales`, muestra todos los códigos
-* Si accedemos a la máquina por ssh: `loadkeys es` (se pierde cada vez que se reinicie la máquina).
+
+Si accedemos a la máquina por ssh: `loadkeys es` (se pierde cada vez que se reinicie la máquina).
 * Podemos tocar a mano el fichero `/etc/vconsoles.conf`
 * La manera más cómoda es cambiarlo en el entorno gráfico.
 
@@ -67,7 +67,7 @@ Para establecer un lenguaje para un comando:
 
 ## Entorno gráfico
 
-El entorno gráfico por defecto en RHEL7 es Gnome3, que corre sobre XWConceptos<a name="file_conceptsindow. Tiene dos modos: _classic_ y _modern_.
+El entorno gráfico por defecto en RHEL7 es Gnome3, que corre sobre XWindow. Tiene dos modos: _classic_ y _modern_.
 
 Cuando se entra por primera vez, se hace un setup inicial al ejecutarse `/usr/libexec/gnome-initial-setup`, (en cualquier momento podemos volver a lanzarlo para reconfigurar el entorno), después arranca el _Gnome Help_, al que siempre se puede ir pulsando **F1** o, desde un terminal ejecutando `yelp`, o desde el menú: **Application --> Documentation --> Help**.
 
@@ -89,7 +89,8 @@ En una jerarquí a LVM se encapsulan los directorios, como mínimo:
 
 ## Conceptos
 
-* **Persistencia**: Se refiere a la resistencia a "sobrevivir" a los reinicios, los ficheros persistentes guardan cambios que se conservan entre reinicios. **IMPORTANTE: En el exámen todo tiene que quedar persistente, ya que hay varios reinicios.**
+* **Persistencia**: Se refiere a la resistencia a "sobrevivir" a los reinicios, los ficheros persistentes guardan cambios que se conservan entre reinicios.  
+   **IMPORTANTE:** En el exámen todo tiene que quedar persistente, ya que hay varios reinicios.
 * **Runtime**: Cambios que se conservan mientras está encendida la máquina.
 
 ## Manejo de ficheros
@@ -99,13 +100,13 @@ En una jerarquí a LVM se encapsulan los directorios, como mínimo:
 
 ## File Globbing
 
-Para negar expresiones complejas de _file globbing_, meter un signo de exclamación entre los corchetes de apertura, por ejemplo: Ningun caracter alfabético: **[![:alpha:]]**
+Para negar expresiones complejas de _file globbing_, meter un signo de tilde **^** entre los corchetes de apertura, por ejemplo: Ningun caracter alfabético: **[^[:alpha:]]**
 
 ## Sustitución de comandos
 
 Tenemos dos formas de invocar un comando en línea de comandos:
 - `$(comando)`
-- \``comando`\`
+- `\`comando\``
 
 Las dos son equivalentes, pero la primera opción permite anidamiento, por ejemplo:
 
@@ -160,293 +161,7 @@ Dispositivos especiales del sistema:
 * `/dev/null`--> es un sumidero, todo lo que dirijamos a él se pierde.
 * `/dev/zero`--> Si queremos meter ceros como entrada.
 
-### Redirecciones de salida26
-
-• Use shell scripting to automate system maintenance tasks.
-
-27
-
-• Configure a system to log to a remote system.  
-
-28
-
-​
-
-29
-
-NETWORK SERVICES
-
-30
-
-​
-
-31
-
-Network services are an important subset of the exam objectives. RHCE candidates should be 
-
-32
-
-capable of meeting the following objectives for each of the network services listed below:
-
-33
-
-• Install the packages needed to provide the service.
-
-34
-
-• Configure SELinux to support the service.
-
-35
-
-• Configure the service to start when the system is booted.
-
-36
-
-• Configure the service for basic operation.
-
-37
-
-• Configure host-based and user-based security for the service.
-
-38
-
-​
-
-39
-
-HTTP/HTTPS
-
-40
-
-• Configure a virtual host.
-
-41
-
-• Configure private directories.SYSTEM CONFIGURATION AND MANAGEMENT
-
-42
-
-• Route IP traffic and create static routes.
-
-43
-
-• Use iptables to implement packet filtering and configure network address translation (NAT).
-
-44
-
-• Use /proc/sys and sysctl to modify and set kernel runtime parameters.
-
-45
-
-• Configure a system to authenticate using Kerberos.
-
-46
-
-• Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
-
-47
-
-• Produce and deliver reports on system utilization (processor, memory, disk, and network).
-
-48
-
-• Use shell scripting to automate system maintenance tasks.
-
-49
-
-• Configure a system to log to a remote system.
-
-50
-
-• Configure a system to accept logging from a remote system.
-
-51
-
-​
-
-52
-
-NETWORK SERVICES
-
-53
-
-Network services are an important subset of the exam objectives. RHCE candidates should be 
-
-54
-
-capable of meeting the following objectives for each of the network services listed below:
-
-55
-
-​
-
-56
-
-• Install the packages needed to provide the service.
-
-57
-
-• Configure SELinux to support the service.
-
-58
-
-• Configure the service to start when the system is booted.
-
-59
-
-• Configure the service for basic operation.
-
-60
-
-• Configure host-based and user-based security for the service:
-
-61
-
-HTTP/HTTPS
-
-62
-
-• Configure a virtual host.
-
-63
-
-• Configure private directories.
-
-64
-
-• Deploy a basic CGI application.
-
-65
-
-• Configure group-managed content.
-
-66
-
-DNS
-
-67
-
-• Configure a caching-only name server.
-
-68
-
-• Configure a caching-only name server to forward DNS queries.
-
-69
-
-Note: Candidates are not expected to configure master or slave name servers.
-
-70
-
-FTP
-
-71
-
-• Configure anonymous-only download.
-
-72
-
-NFS
-
-73
-
-• Provide network shares to specific clients.
-
-74
-
-• Provide network shares suitable for group collaboration.
-
-75
-
-SMB
-
-76
-
-• Provide network shares to specific clients.
-
-77
-
-• Provide network shares suitable for group collaboration.
-
-78
-
-SMTP
-
-79
-
-• Configure a mail transfer agent (MTA) to accept inbound email from other systems.
-
-80
-
-• Configure an MTA to forward (relay) email through a smart host.
-
-81
-
-SSH
-
-82
-
-• Configure key-based authentication.
-
-83
-
-• Configure additional options described in documentation.
-
-84
-
-NTP
-
-85
-
-• Synchronize time using other NTP pervice.
-
-86
-
-• Configure the service to start when the system is booted.
-
-87
-
-• Configure the service for basic operation.
-
-88
-
-• Configure host-based and user-based security for the service.ce.
-
-89
-
-​
-
-90
-
-## HTTP/HTTPS
-
-91
-
-• Configure a virtual host.
-
-92
-
-• Configure private directories.SYSTEM CONFIGURATION AND MANAGEMENT
-
-93
-
-• Route IP traffic and create static routes.
-
-94
-
-• Use iptables to implement packet filtering and configure network address translation (NAT).
-
-95
-
-• Use /proc/sys and sysctl to modify and set kernel runtime parameters.
-
-96
-
-• Configure a system to authenticate using Kerberos.
-
-97
-
-• Configure a system as an iSCSI initiator that persistently mounts an iSCSI target.
+### Redirecciones de salida
 
 Ojo, los operadores de fusión más modernos ( &>file &>>file) puede que no funcionen en shells antigüas.
 
@@ -477,10 +192,10 @@ Ejemplos:
 ***
 
 # Usuarios y grupos <a name="user_group_mngmt"></a>
- https://github.com/JHicarArmendariz/Chuletas
-Cada proceso y fichero tiene un usuario propietario.
 
-Para ver la cuenta de usuario: comando **id**
+Cada proceso y fichero tiene un usuario propietario.
+**
+Para ver la cuenta de usuario: comando **id**, para ver los usuarios conectados **w -u**
 
 Los usuarios se identifican en el sistema por su UID.
 
@@ -490,9 +205,9 @@ La configuración del usuario está en el fichero `/etc/passwd`, que contiene so
 3. UID (el de root es 0)
 4. GID, grupos del usuario, 1 principal y el resto secundarios.
    Cuando creamos el usuario se crea un grupo principal con el mismo nombre que el usuario
-5. GECOS: String que usamos para identificar el usuario.
+5. GECOS: String que usamos para identificar el usuario y poner comentarios
 7. $HOME: directorio raíz del usuario
-8. shell del usuario (podemos tener o `/sbin/nologin` -para evitar que el usuario no haga login ,por ejemplo, si va a usar servicios del sistema pero no necesita acceso a la shell de sistema ni manipular ficheros del sistema; o `/bin/false`, si no queremso que use nada de nuestro sistema).
+8. shell del usuario (podemos tener o `/sbin/nologin` -para evitar que el usuario haga login, por ejemplo, si va a usar servicios del sistema pero no necesita acceso a la shell de sistema ni manipular ficheros del sistema; o `/bin/false`, si no queremos que use nada de nuestro sistema).
 
 Configuración de grupos, `/etc/group`:
 1. nombre
@@ -500,7 +215,7 @@ Configuración de grupos, `/etc/group`:
 3. GID
 4. miembros del grupo
 
-Relación de usuarios y grupos.
+## Relación de usuarios y grupos.
 
 Un usuario puede tener **exactamente** un grupo principal, que es el GID que viene en el `/etc/passwd` y se corresponderá con una entrada del `/etc/group`. De hecho a este grupo se le llama _grupo privado_.
 
@@ -525,7 +240,7 @@ Dado que tiene todos los privilegios, tiene una capacidad ilimitada de romper el
  * `sudo <username>`
    * Nos permite ejecutar lo que tengamos permitido en la configuración de sudo como usuario al que hemos escalado privilegios.
    * Nos pide el passwd del usuario que quiere escalar privilegios, con lo que no distribuimos la contraseña de root.
-   * Con la opción **-i** nos permite abrir una shell con los privilegios del usuario con mayores privilegios.
+   * Con la opción **-i** nos permite abrir una shell con los privilegios del usuario con mayores privilegios que nos permitan nuestros permisos de su.
    * En RHEL7: Si tenemos un usuario que pertenece al grupo **wheel** también tendrá privilegios en el fichero `sudoers`  
       Si hacemos un `visudo`, vemos la entrada por el grupo:
       ~~~bash
