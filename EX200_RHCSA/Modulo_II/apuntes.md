@@ -881,12 +881,12 @@ Necesitaremos:
 ### Montaje estándar
 
 1. Identificar las exportaciones del servidor NFS:
-  - En nfsv2 y nfsv3 está el comando `showmount -e <NFSserver>
+  - En nfsv2 y nfsv3 está el comando `showmount -e <NFSserver>`
   - En nfsv4 (comor root)
-    a. mkdir /pto/montaje
-    b. mount server:/ /pto/montaje
-    c. cd /pto/montaje
-    d. ls --> muestra las exportaciones.
+    · mkdir /pto/montaje
+    · mount server:/ /pto/montaje
+    · cd /pto/montaje
+    · ls --> muestra las exportaciones.
 2. Creamos un punto de montaje dfinitivo: mkdir /destino
 3. Montamos manualmente o añadimos a fstab
   - **Manual**: `mount -t nfs -o sync server:/<dir_compartido> /pto_montaje`
@@ -993,3 +993,4 @@ Así cuando hagamos `cd /home/guests/ldapuserX`, nos montará directamente `serv
 * __sort__: Ordenar
 * __sed__: Operaciones con cadenas
 * __uniq__: Elimina registros duplicados (se suele aplicar después de un sort)
+* __wget__: trae recurso de internet:`wget -O <fich_salida> http://<ruta_fichero_a_descargar>`
