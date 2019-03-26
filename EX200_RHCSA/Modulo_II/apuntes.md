@@ -10,8 +10,8 @@
 10. [Adminsitrar Logical Volume Management (LVM)](#lvm)
 11. [Network Storage NFS](#nfs)
 12. [Networ Storage SMB](#smb)
-13. [Troubleshooting](#troubleshooting)
-14. [Limitar comunicaciones de red](#firewalld)
+13. [Firewall: limitar comunicaciones de red](#firewalld)
+14. [Troubleshooting del arranque](#troubleshooting)
 15. [Apéndice: Comandos útiles](#apendix)
 
 ***
@@ -42,10 +42,10 @@ Los comentarios van en líneas precedidas por #
 
 ### Comandos de instalación
 
-* **url** Especifica donde está el medio de instalación
+* **url** Especifica dónde está el medio de instalación
 * **repo** Donde encontrar los paquetes para la instalación.
 * **text** Sólo instala en modo texto
-* **vnc** Habilita para ver lainstalación remotamente.
+* **vnc** Habilita para ver la instalación remotamente.
 * **askmethod** 
 
 ### Comandos de particionado
@@ -55,11 +55,11 @@ Los comentarios van en líneas precedidas por #
 * **ignoredisk** Se pueden especificar discos que se ignoran en la instalación.
 * **bootloader** Especifica donde instalar el _bootloader_
 * **volgroup,logvol** Crea grupos de volúmenes y volúmenes lógicos de LVM.
-* **zerombr** Se usa con sistemas a los que queremos formar el borrado del MBR.
+* **zerombr** Se usa con sistemas a los que queremos forzar el borrado del MBR.
 
 ### Comandos de networking
 
-* **network** Configuraicón de red
+* **network** Configuración de red
 * **firewall** Habilita firewall en el arranque
 
 ### Comandos de configuración del OS
@@ -74,6 +74,7 @@ Los comentarios van en líneas precedidas por #
 * **group,user** Crea usuarios y grupos locales.
 
 ### Otros comandos
+
 * **logging** Configura los logs de la instalación.
 * **firstboot** Le dice si hay que lanzar el procedimiento de primer arranque en la instalación o no.
   - Si está habilitado, realiza la configuración de una serie de parámetros de la máquina en el primer arranque.
@@ -99,9 +100,9 @@ Scripts que se ejecutan tras la instalación
 
 ## Despliegue de un nuevo sistema virtual con Kickstart
 
-Hay una utilidad que ayuda a configurar el fichero de Kickstart: **system-config-kickstart**, .
+Hay una utilidad que ayuda a configurar el fichero de Kickstart: **system-config-kickstart**.
 
-También podemos modificar un fichero ya existente, luego podremos validar la sintaxis con **ksvalidator** por si hemos metido la pata. (En nuestro sistema siempre habrá un fichero de configuración: `/root/anaconda-ks.cfg`
+También podemos modificar un fichero ya existente, luego podremos validar la sintaxis con **ksvalidator** por si hemos metido la pata. En nuestro sistema siempre habrá un fichero de configuración: `/root/anaconda-ks.cfg` que contiene lo que se hizo en nuestro sistema en la instalación, puede ser un buen punto de partida para generar un fichero de kickstart. Además, nos servirá si queremos hacer instalaciones clonicas.
 
 ### Pasos
 
@@ -131,6 +132,7 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 * Final de línea: `{exp_reg}$`
 
 ### Limitación de palabras
+
 * Comienzo de palabra: `'\<{exp_reg}'`
 * Fin de palabra: `'{exp_reg}\>'`
 
