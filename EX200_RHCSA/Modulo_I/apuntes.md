@@ -59,7 +59,8 @@ Para establecer un lenguaje para un comando:
 
 Si accedemos a la máquina por ssh: `loadkeys es` (se pierde cada vez que se reinicie la máquina).
 * Podemos tocar a mano el fichero `/etc/vconsoles.conf`
-* La manera más cómoda es cambiarlo en el entorno gráfico.
+
+La manera más cómoda es cambiarlo en el entorno gráfico.
 
 ***
 
@@ -83,7 +84,7 @@ Aquí hay que poner los atajos de teclado etc...
 
 Los directorios en RHEL (como en todos los sabores Linux) se organizan en forma de árbol invertido en el que arriba está el directorio root (**/**).
 
-En una jerarquí a LVM se encapsulan los directorios, como mínimo:
+En una jerarquía LVM se encapsulan los directorios, como mínimo:
 * raíz (**/**)
 * arranque (**/boot**), será una partición separada con las imágenes estáticas de arranque.
 
@@ -91,6 +92,7 @@ En una jerarquí a LVM se encapsulan los directorios, como mínimo:
 
 * **Persistencia**: Se refiere a la resistencia a "sobrevivir" a los reinicios, los ficheros persistentes guardan cambios que se conservan entre reinicios.  
    **IMPORTANTE:** En el exámen todo tiene que quedar persistente, ya que hay varios reinicios.
+
 * **Runtime**: Cambios que se conservan mientras está encendida la máquina.
 
 ## Manejo de ficheros
@@ -101,6 +103,8 @@ En una jerarquí a LVM se encapsulan los directorios, como mínimo:
 ## File Globbing
 
 Para negar expresiones complejas de _file globbing_, meter un signo de tilde **^** entre los corchetes de apertura, por ejemplo: Ningun caracter alfabético: **[^[:alpha:]]**
+
+Ver anexos entregados en clase.
 
 ## Sustitución de comandos
 
