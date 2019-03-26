@@ -9,7 +9,7 @@
 9. [Añadir discos, particiones y sistemas de ficheros](#discos)
 10. [Adminsitrar Logical Volume Management (LVM)](#lvm)
 11. [Network Storage NFS](#nfs)
-12. [Networ Storage SMB](#smb)
+12. [Network Storage SMB](#smb)
 13. [Firewall: limitar comunicaciones de red](#firewalld)
 14. [Troubleshooting del arranque](#troubleshooting)
 15. [Apéndice: Comandos útiles](#apendix)
