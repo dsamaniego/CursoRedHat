@@ -20,7 +20,7 @@
 
 **Anaconda** es el instalador que usa RHEL, necesita que el que está haciendo la instalación le responda a una serie de preguntas acerca de la configuracion del sistema.
 
-**Kickstart** es el sistema para hacer instalaciones desatendidas del sistema (coge un fichero de texto con las respuestas). Se basa en un fichero dividido en secciones, con el siguiente formato:
+**Kickstart** es el sistema para hacer instalaciones desatendidas (coge un fichero de texto con las respuestas que daríamos en una instalación manual). Se basa en un fichero dividido en secciones, con el siguiente formato:
 
 ~~~text
 comandos
@@ -54,23 +54,28 @@ Los comentarios van en líneas precedidas por #
 * **part** Especifica los parámetros para crear la partición.
 * **ignoredisk** Se pueden especificar discos que se ignoran en la instalación.
 * **bootloader** Especifica donde instalar el _bootloader_
-* **volgroup,logvol** Crea grupos de volúmenes y volúmenes lógicos de LVM.
+* **volgroup, logvol** Crea grupos de volúmenes y volúmenes lógicos de LVM.
 * **zerombr** Se usa con sistemas a los que queremos forzar el borrado del MBR.
 
 ### Comandos de networking
 
-* **network** Configuración de red
-* **firewall** Habilita firewall en el arranque
+* **network** Configuración de red  
+  ej: `network --device=eth0 --bootproto=dhcp`
+* **firewall** Habilita firewall en el arranque.  
+  ej: `firewall --enabled --service=ssh`
 
 ### Comandos de configuración del OS
 
 * **lang** Especifica el idioma
 * **keyboard** Especifica el tipo de teclado
-* **timezone** Definie tz, NTP y reloj HW.
-* **auth** Especificar las opciones de autenticación. **OBLIGATORIO**
-* **rootpw** Contraseña de root (podemos ponerla en texto plano o cifrada)
-* **selinux** habilitar o no SELinux
-* **services** Indica que servicios estarán habilitados en el arranque
+* **timezone** Define tz, NTP y reloj HW.
+* **auth** Especificar las opciones de autenticación. **OBLIGATORIO**  
+  ej: `auth --usesshadow --enablemd5 --passalgo=sha512`
+* **rootpw** Contraseña de root (podemos ponerla en texto plano o cifrada)  
+  ej: `rootpw --iscrypted $6$sfseiiosK$dks332ñlkds3i....2993kad` para cifrarla, ver el script en el material extra.
+* **selinux** habilitar o no SELinux  
+  ej: `selinux --enforcing`
+* **services** Indica qué servicios estarán habilitados en el arranque (`--disabled=... --enabled=...`)
 * **group,user** Crea usuarios y grupos locales.
 
 ### Otros comandos
@@ -102,21 +107,29 @@ Scripts que se ejecutan tras la instalación
 
 Hay una utilidad que ayuda a configurar el fichero de Kickstart: **system-config-kickstart**.
 
-También podemos modificar un fichero ya existente, luego podremos validar la sintaxis con **ksvalidator** por si hemos metido la pata. En nuestro sistema siempre habrá un fichero de configuración: `/root/anaconda-ks.cfg` que contiene lo que se hizo en nuestro sistema en la instalación, puede ser un buen punto de partida para generar un fichero de kickstart. Además, nos servirá si queremos hacer instalaciones clonicas.
+También podemos modificar un fichero ya existente, luego podremos validar la sintaxis con **ksvalidator** por si hemos metido la pata.
+
+En nuestro sistema siempre habrá un fichero de configuración: `/root/anaconda-ks.cfg` que contiene lo que se hizo en la instalación, puede ser un buen punto de partida para generar un fichero de kickstart. Además, nos servirá si queremos hacer instalaciones clónicas.
 
 ### Pasos
 
 1. Crear un fichero de configuración kickstart (**system-config-kickstart**).
 2. Usar un editor de texto para añadir montajes al fichero de kickstart.
-3. Chequear la correción del fichero (**kasvalidator**).
+3. Chequear la correción del fichero (**ksvalidator**).
   * Si no disponemos de él habrá que instalarlo: `yum install pykickstart`
   * Tener en cuenta que lo que hace es una validación sintáctica, y no valida las direcivas _%pre_, _%post_ ni _%packages_.
 4. Publicar el fichero para el instalador: 
-  * `ks=<medio>` indica dónde está el fichero (nfs, http, https, cd-rom, hd).
+  * `ks=http://server/dir/file`
+  * `ks=ftp://server/dir/file`
+  * `ks=nfs:server:/dir/file`
+  * `ks=hd:device:/dir/file`
+  * `ks=cdrom:/dir/file`
 5. Arrancar Anaconda y apuntar al fichero de configuración.  
   Normalmente se lo diremos en la línea de arranque del kernel, pero hay virtualizadores donde podemos pasarle este parámetro. 
   - Sistemas con BIOS: `append initrd=initrd.img inst.ks=<ruta a ks.cfg>`
   - Sistemas con UEFI (grub2): `kernel vmlinuz inst.ks=<ruta a ks.cfg>`
+
+Cuando instalemos en máquinas virtuales, usaremos el **virt-manager**, donde podremos especificar la URL del kickstart; en máquinas físicas, tendremos que interrumpir el proceso de arranque y pasarle una de las opciones de ks para indicarle donde está el instalador.
 
 ***
 
