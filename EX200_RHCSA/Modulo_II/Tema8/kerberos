@@ -1,0 +1,30 @@
+Kerberos
+----------
+Perro de tres cabezas que custodiaba las puertas del Hades en la mitología griega
+
+Desarrollado por el MIT en los 80 y cono cido internamente como prouyecto Athena
+
+KDC: Key distribution center
+
+AS: Authentication Server
+
+TGS: Ticket Granting Service
+
+SPN: Service Principle Name
+
+
+http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-rg-es-4/s1-kerberos-works.html
+
+ Kerberos es diferente de los métodos de autenticación de nombre de usuario/contraseña. En vez de validar cada usuario para cada servicio de red, Kerberos usa encriptación simétrica y un tercero, un KDC, para autentificar los usuarios a un conjunto de servicios de red. Una vez que el usuario se ha autentificado al KDC, se le envía un ticket específico para esa sesión de vuelta a la máquina del usuario y cualquier servicio kerberizado buscará por el ticket en la máquina del usuario en vez de preguntarle al usuario que se autentifique usando una contraseña.
+
+Cuando un usuario en una red kerberizada se registra en su estación de trabajo, su principal se envía al KDC en una petición para un TGT desde el servidor de autenticación (AS). Esta petición puede ser enviada por el programa de conexión para que sea transparente al usuario o puede ser enviada por el programa kinit después de que el usuario se registre.
+
+El KDC verifica el principal en su base de datos. Si lo encuentra, el KDC crea un TGT,el cual es encriptado usando las llaves del usuario y devuelto al usuario.
+
+El programa login en la máquina del cliente o kinit descifra el TGT usando la contraseña del usuario La contraseña del usuario es usada únicamente en la máquina del cliente y no es enviada sobre la red.
+
+El TGT, se configura para que caduque después de un cierto período de tiempo (usualmente 10 horas) y es almacenado en la caché de credenciales de la máquina del cliente. Se coloca un tiempo de caducidad de manera que un TGT comprometido sólo es de utilidad para un intruso por un período corto de tiempo. Una vez que el TGT es emitido, el usuario no tiene que reingresar la contraseña al KDC sino hasta que el TGT caduque o se desconecte y vuelva a conectarse.
+
+Cuando el usuario necesita acceder a un servicio de red, el software cliente usa el TGT para pedir un nuevo ticket para ese servicio en específico al servidor de otorgamiento de tickets, TGS. El ticket para el servicio es usado para autentificar el usuario a ese servicio de forma transparente.
+
+

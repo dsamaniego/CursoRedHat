@@ -1,0 +1,29 @@
+EJERCICIO AUTOFS 2 
+-------------------
+
+Hacer reset de serverX antes de empezar.
+
+En /docsMarta de serverX, montar el recurso /documentos de server0 con automonter.
+
+En /docsRHEL de serverX, montar el recurso /content/ de server0 con automonter.
+
+
+1. Instalamos: sudo yum install -y autofs
+2. Activamos y arrancamos.
+	sudo systemctl enable autofs
+	sudo systemctl start autofs
+3. Creamos los directorios
+	sudo mkdir /docsMarta
+	sudo mkdir /docsRHEL
+4. Configuramos montajes directos.
+	sudo vim /etc/auto.master.d/directos.autofs
+	----------------
+	/-	/etc/auto.directos
+	----------------
+	sudo vim /etc/auto.directos
+	----------------
+	/docsMarta	-rw,sync	server0:/documentos
+	/docsRHEL	-rw,sync	server0:/content/
+	----------------
+
+

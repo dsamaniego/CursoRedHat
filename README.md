@@ -1,4 +1,4 @@
 # README
 
-* **EX200_RHSA** Preparación para RedHat System Administrator
+* **EX200_RHCSA** Preparación para RedHat Certified System Administrator
 * **EX300_RHCE** Preparación para RedHat Certified Engineer

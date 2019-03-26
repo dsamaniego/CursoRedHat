@@ -92,7 +92,8 @@ En una jerarquía LVM se encapsulan los directorios, como mínimo:
 
 * **Persistencia**: Se refiere a la resistencia a "sobrevivir" a los reinicios, los ficheros persistentes guardan cambios que se conservan entre reinicios.  
    **IMPORTANTE:** En el exámen todo tiene que quedar persistente, ya que hay varios reinicios.
-* **Runtime**: Los cambios se conservan mientras está encendida la máquina.
+
+* **Runtime**: Cambios que se conservan mientras está encendida la máquina.
 
 ## Manejo de ficheros
 
@@ -101,15 +102,15 @@ En una jerarquía LVM se encapsulan los directorios, como mínimo:
 
 ## File Globbing
 
-Ver anexos entregados en clase.
+Para negar expresiones complejas de _file globbing_, meter un signo de tilde **^** entre los corchetes de apertura, por ejemplo: Ningun caracter alfabético: **[^[:alpha:]]**
 
-Para negar expresiones complejas de _file globbing_, meter una tilde circumfleja entre los corchetes de apertura, por ejemplo: Ningun caracter alfabético: **[^[:alpha:]]**
+Ver anexos entregados en clase.
 
 ## Sustitución de comandos
 
 Tenemos dos formas de invocar un comando en línea de comandos:
 - `$(comando)`
-- \``comando`\`
+- `\`comando\``
 
 Las dos son equivalentes, pero la primera opción permite anidamiento, por ejemplo:
 
@@ -195,10 +196,10 @@ Ejemplos:
 ***
 
 # Usuarios y grupos <a name="user_group_mngmt"></a>
- https://github.com/JHicarArmendariz/Chuletas
-Cada proceso y fichero tiene un usuario propietario.
 
-Para ver la cuenta de usuario: comando **id**
+Cada proceso y fichero tiene un usuario propietario.
+**
+Para ver la cuenta de usuario: comando **id**, para ver los usuarios conectados **w -u**
 
 Los usuarios se identifican en el sistema por su UID.
 
@@ -208,9 +209,9 @@ La configuración del usuario está en el fichero `/etc/passwd`, que contiene so
 3. UID (el de root es 0)
 4. GID, grupos del usuario, 1 principal y el resto secundarios.
    Cuando creamos el usuario se crea un grupo principal con el mismo nombre que el usuario
-5. GECOS: String que usamos para identificar el usuario.
+5. GECOS: String que usamos para identificar el usuario y poner comentarios
 7. $HOME: directorio raíz del usuario
-8. shell del usuario (podemos tener o `/sbin/nologin` -para evitar que el usuario no haga login ,por ejemplo, si va a usar servicios del sistema pero no necesita acceso a la shell de sistema ni manipular ficheros del sistema; o `/bin/false`, si no queremso que use nada de nuestro sistema).
+8. shell del usuario (podemos tener o `/sbin/nologin` -para evitar que el usuario haga login, por ejemplo, si va a usar servicios del sistema pero no necesita acceso a la shell de sistema ni manipular ficheros del sistema; o `/bin/false`, si no queremos que use nada de nuestro sistema).
 
 Configuración de grupos, `/etc/group`:
 1. nombre
@@ -218,7 +219,7 @@ Configuración de grupos, `/etc/group`:
 3. GID
 4. miembros del grupo
 
-Relación de usuarios y grupos.
+## Relación de usuarios y grupos.
 
 Un usuario puede tener **exactamente** un grupo principal, que es el GID que viene en el `/etc/passwd` y se corresponderá con una entrada del `/etc/group`. De hecho a este grupo se le llama _grupo privado_.
 
@@ -243,46 +244,49 @@ Dado que tiene todos los privilegios, tiene una capacidad ilimitada de romper el
  * `sudo <username>`
    * Nos permite ejecutar lo que tengamos permitido en la configuración de sudo como usuario al que hemos escalado privilegios.
    * Nos pide el passwd del usuario que quiere escalar privilegios, con lo que no distribuimos la contraseña de root.
-   * Con la opción **-i** nos permite abrir una shell con los privilegios del usuario con mayores privilegios.
+   * Con la opción **-i** nos permite abrir una shell con los privilegios del usuario con mayores privilegios que nos permitan nuestros permisos de su.
    * En RHEL7: Si tenemos un usuario que pertenece al grupo **wheel** también tendrá privilegios en el fichero `sudoers`  
       Si hacemos un `visudo`, vemos la entrada por el grupo:
       ~~~bash
       %wheel  ALL=(ALL) ALL
       ~~~
       Características:
+      * Que indica que usuarios del grupo wheel puede hacer sudo desde todas las terminales a todos los usuarios del sistema y ejecutar cualquier comando.
       * en el último ALL, podemos sustituir por:
-         - NOPASSWD:NOEXEC:<comando>, que significa que no nos pide el passwd para hacer sudo, pero no nos dejaría ejecutar con privilegios.
-      Que indica que usuarios del grupo wheel puede hacer sudo desde todas las terminales a todos los usuarios del sistema y ejecutar cualquier comando.
-      En vi, si ejecutamos sudo vi, podremos ejecutar comandos como root ejecutando lo siguiente:  
-         `:r! <comando>`
+         - `NOPASSWD:NOEXEC:<comando>`, que significa que no nos pide el passwd para hacer sudo, pero no nos dejaría ejecutar con privilegios. 
+         - En vi, si ejecutamos sudo vi, podremos ejecutar comandos como root ejecutando lo siguiente: `:r! <comando>`
    * Deja logs en `/var/log/secure` de todas las acciones hechas por los usuarios.
    * Los ficheros de configuración están en `/etc/sudoers.d/*`
    * El fichero principal es el `/etc/sudoers` (para editarlo hay que usar **visudo** que hace chequeos de formato y si la cagamos no nos deja guardar.
    * No podremos usar sudo si nuestro usuario o el grupo no está metido en el fichero sudoers
-   * Los ficheros de configuración que hay colgando de `/etc/sudoers.d/*` tienen preferencia sobre el `/etc/sudoers` (en general, las que estén en `/etc/<srv>.d/*`, tienen preferencia sobre lo que viene en `/usr/lib`
-**_IMPORTANTE_**: si hacemos sudo <comando> > fichero y el usuario no tiene permisos para escribir el fichero, no podrá hacerlo, ya que por una parte se ejecuta el comando como el usuario destino, y luego se escribe el fichero como usuario origen.
+   * Los ficheros de configuración que hay colgando de `/etc/sudoers.d/*` tienen preferencia sobre el `/etc/sudoers` (en general, las que estén en `/etc/<srv>.d/*`, tienen preferencia sobre lo que viene en `/usr/lib`).
    * `sudo -l` nos lista los permisos que tiene el usuario
    
+**_IMPORTANTE_**: si hacemos `sudo <comando> > fichero` y el usuario no tiene permisos para escribir el fichero, no podrá hacerlo, ya que por una parte se ejecuta el comando como el usuario destino, y luego se escribe el fichero como usuario origen.
+
 Esto, no impide que cuando vayamos a trabajar con entornos gráficos, lo que nos restringe los permisos es el _Policy Kit_ de GNOME.
 
 ## Administración de usuarios
 
-Crear usuarios **useradd \<usuario>**, nos añadirá una línea en `/etc/passwd`
-Una vez añadido el usuario, tendremos que configurarlo, ya que nos lo crea sin contraseña.
+Crear usuarios `useradd <usuario>`, nos añadirá una línea en `/etc/passwd`. Una vez añadido el usuario, tendremos que configurarlo, ya que nos lo crea sin contraseña. 
 
-Fichero inportante: /etc/login.defs
+Es mejor política poner la contraseña después con el comando `passwd` porque si lo hacemos con `useradd -p <passwd> <user>` mete la contraseña que hayamos metido en el fichero `/etc/shadow` en texto plano sin cifrar.
+
+Fichero inportante: `/etc/login.defs`
 * Reglas y vigencias de las contraseñas.
 * rangos definidos en el sistema
 * UIDs y GIDs por defecto
-* si modificamos algo en este fichero, a los usuarios que ya existen en el sistema no los afecta, así que cuidadin con los conflictos.
+* si modificamos algo en este fichero, a los usuarios que ya existen en el sistema no los afecta, así que cuidadín con los conflictos.
 
 Todos los comandos generados de forma automática con el **useradd** se pueden modificar con **usermod**, la mayoría de los flags definidos en **useradd** se pueden usar en **useradd**.
 
 **TRUCO** Antes de modificar un usuario, hacer un **id** para tener un _backup_ del usuario por si la cagamos.
 
-Borrar usuarios con **userdel** (con la opción -r borra el $HOME del usuario), cuidadin... si creamos un usuario, lo borramos sin (-r) y volvemos a crear otro, este nuevo usuario coge el primer UID libre que será el que acabamos de dejar libre, con lo que este nuevo usuario puede coger permisos sobre ficheros no deseados, así que la mejor política es no borrar usuarios, sino bloquealos con `usermod -L <usuario>`
+Borrar usuarios con **userdel** (con la opción -r borra el $HOME del usuario).
 
-Para prevenir esto, como root, ejecutar: `find / -nouser -o -nogroup 2>/dev/null`
+**OJO:** Si creamos un usuario, lo borramos sin (-r) y volvemos a crear otro, este nuevo usuario coge el primer UID libre que será el que acabamos de dejar libre, con lo que este nuevo usuario puede coger permisos sobre ficheros no deseados, así que la mejor política es no borrar usuarios, sino bloquealos con `usermod -L <usuario>`
+
+Para prevenir esto, como root, ejecutar: `find / -nouser -o -nogroup 2>/dev/null` que nos devolverá todos los ficheros "huerfanos".
 
 ### Rangos de UIDs
 
@@ -297,18 +301,16 @@ Todos estos rangos se pueden manipular en el `/etc/login.defs`
 
 **Añadir un grupo:** `groupadd [-g <GID>] <nombre_gr>`, si no le ponemos GID, nos da el siguiente GID de los grupos que no son del sistema.
 **Renombrar un grupo:** `groupmod -n <nombre_nuevo> <nombre_antigüo>`  
-**Cambiar el GID:** `groupmod -g <nuevo_GID> <nombre_gr>`, a partir de ahí todos los grupos que creemos se irán numerando a partir de este (aunque no especifiquemos), pero los grupos de usuarios seguirán creándose con lso 1000..., esto se hace para que no colisionen los grupos de trabajo con los grupos de usuarios.  
+**Cambiar el GID:** `groupmod -g <nuevo_GID> <nombre_gr>`, a partir de ahí todos los grupos que creemos se irán numerando a partir de este (aunque no especifiquemos), pero los grupos de usuarios seguirán creándose con los 1000..., esto se hace para que no colisionen los grupos de trabajo con los grupos de usuarios.  
 **Borrar grupo:** `groupdel <grupo>`, lo que vale para el borrado de usuarios, vale para los grupos. Más ojo todavía porque puede haber varios usuarios 
 **Cambiar el grupo principal a un usuario:** `usermod -g <grupo> <username>`  
 **Añadir grupos secundarios:** `usermod -aG <lista_secundarios> <username>`, si no ponemos el -a, sustituiremos los grupos secundarios que tenga por los nuevos.  
 
 ### Contraseñas
 
-`/etc/shadow` guarda las contraseñas cifradas y las características de vigencia y caducidad d ela contraseña.
-
-Formato del fichero:
-name:password:lastchange:minage:maxage:warning:inactive:expire:blank, donde:
-* **name**: nombre dle usuario
+`/etc/shadow` guarda las contraseñas cifradas y las características de vigencia y caducidad de la contraseña con el siguiente formato:  
+`name:password:lastchange:minage:maxage:warning:inactive:expire:blank`, donde:
+* **name**: nombre del usuario
 * **password**: contraseña cifrada
 * **lastchange**: fecha del último cambio (epoch)
 * **minage**: Mínimo número de dias antes de poder cambiar la contraseña
@@ -319,7 +321,7 @@ name:password:lastchange:minage:maxage:warning:inactive:expire:blank, donde:
 
 #### Contraseña cifrada.
 
-El has de la contraseña almacena 3 datos separados por _'$':$N$semilla$passwdCifrada_  
+El hash de la contraseña almacena 3 datos separados por '$':_$N$semilla$passwdCifrada_ donde:
 **$N$** -- Algoritmo de cifrado 1-6 (6 por defecto)  
 **$semilla$** -- Semilla aleatoria para el cifrado  
 **$cif_passwd$** -- Contraseña + uid cifrado
@@ -332,7 +334,8 @@ authconfig --passalgo=<Algoritmo_cifrado> --update
 ~~~
 
 #### Vigencia de las contraseñas.
-Se cambian con `chage -m m -M M -W x -I i username` donde:
+
+Se cambian con `chage -m m -M M -W w -I i username` donde:
 * -m --> min days
 * -M --> max days
 * -W --> warn days
@@ -343,11 +346,11 @@ Si queremos forzar al cambio de contraseña en el siguiente login: `chage -d 0 <
 
 Si queremos forzar que una contraseña caduque un día concreto: `chage -E YYYY-MM-DD <username>`  
 En casos típicos, tipo, "que la contraseña caduque de aquí a x días" se puede ver la fecha en que cae con
-`date -d "+x days"
+`date -d "+x days"`
 
 Si queremos ver las configuraciones actuales de un usuario: `chage -l <username>`
 
-Se puede cambiar los valores por defecto modificando el fichero _/etc/login.defs_
+Se puede cambiar los valores por defecto modificando el fichero `/etc/login.defs`
 
 ### Restricción de acceso
 
@@ -355,7 +358,7 @@ Podemos bloquear una cuenta con `usermod -L <usermod>` o con `usermod -L -e N <u
 
 Importante, podemos tener un usuario sin bloquear pero que no puede acceder porque su constraseña ha caducado.
 
-Podemos impedir que un usuario no acceda a la shell cambiando su shell a `/sbin/nologin` o `/bin/false` (esta para que no pueda hacer nada de nada.
+Podemos impedir que un usuario acceda a la shell cambiando su shell a `/sbin/nologin` o `/bin/false` (esta para que no pueda hacer nada de nada.
 ~~~ bash
 usermod -s /sbin/nologin <username>
 ~~~
@@ -364,7 +367,7 @@ usermod -s /sbin/nologin <username>
 
 # Permisos <a name="perms"></a>
 
-Si hacemos un ls -l, vemos las sigueintes características:
+Si hacemos un ls -l, vemos las siguientes características:
 ~~~bash
 kiosk@foundation12 ~]$ ls -l /etc/yum.conf
 -rw-r--r--. 1 root root 813 Nov 26  2017 /etc/yum.conf
@@ -382,13 +385,13 @@ r --> listar el contendio del directorio
 w --> borrar o añadir ficheros  
 x --> puedo atravesar el directorio
 
-OJO al crear estructuras de directorios, a ver si podemos atravesarlos. y no se heredan los permisos como en el caso de Windows.
+**OJO** al crear estructuras de directorios, a ver si podemos atravesarlos y no se heredan los permisos como en el caso de Windows.
 
 Si quiero ver los permisos de un directorio: `ls -ld <directorio>`
 
 ## Cambiar permisos
 
-Se trabaja por grupos: - rwx rwx rwx   student  student  <fichero>, el propietario puede cambiar los permisos de todo.
+Se trabaja por grupos: `- rwx rwx rwx   student  student  <fichero>`, el propietario puede cambiar los permisos de todo.
 
 **Notación simbólica:** `chmod who what which <file/dir>`
    * _who_: u, g, o, a (usuario, grupo, othos, todos).
@@ -401,7 +404,9 @@ Se trabaja por grupos: - rwx rwx rwx   student  student  <fichero>, el propietar
 
 Permite cambiar el propietario y el grupo, `chwon owner:group <file/dir>`, admite recursivo (**-R**).
 
-Podemos cambiar el propietario (`chmod <user> <file/dir>`), el grupo (`chmod :<group> <file/dir>`) o los dos. El propietario sólo lo puede cambiar root, el grupo lo puede cambiar el usuario. Otra forma de cambiar el grupo es con `chgrp <group> <file/dir>`.
+Podemos cambiar el propietario (`chmod <user> <file/dir>`), el grupo (`chmod :<group> <file/dir>` / `chgrp <group> <file/dir>`) o los dos.
+
+El propietario sólo lo puede cambiar root, el grupo lo puede cambiar el usuario.
 
 ## Permisos especiales
 
@@ -421,14 +426,14 @@ Se puede meter otro octeto de permisos, en la x, si la hay, s, si no la hay una 
 * sticky-bit:
    * No tiene sentido en ficheros.
    * No permite al usuario eliminar ficheros de los que no son propietarios.
-   * Ejempo: /tmp cualquier usuario puede escribir en él, pero no puede borrar nada de lo que no sea propietario
+   * Ejempo: `/tmp` cualquier usuario puede escribir en él, pero no puede borrar nada de lo que no sea propietario
    
-Para asignar esto permisos se hace con chmod:
+Para asignar estos permisos se hace con chmod:
    * usuario: u+s
    * grupo: g+s
    * other: o+t
- localectl status
- En la notación octal, se añade otro dígito a la notación octal antes de los otros 3 dígitos.
+
+En la notación octal, se añade otro dígito a la notación octal antes de los otros 3 dígitos.
  
 ## Máscaras
 
@@ -446,7 +451,7 @@ Por seguridad no se dan permisos de ejecución por defecto a ningún fichero, ha
 Un proceso es una instancia corriendo o lanzada de un programa ejecutable, consiste en:
 * Espacio de direccines en memoria
 * Propiedades de seguridad
-* Una o mas hilos de ejecución
+* Uno o mas hilos de ejecución
 * Estado del proceso.
 
 El entorno de un proceso incluye:
@@ -458,7 +463,7 @@ El entorno de un proceso incluye:
 
 **ps**: 3 formatos de variables y un montón de flags.
    * - UNIX POXIX `ps -aux`
-   * -- Extendidas de GNU `ps --aux` https://github.com/JHicarArmendariz/Chuletas
+   * -- Extendidas de GNU `ps --aux`
    * (sin guion) BSD `ps aux`
    
 Cada uno hace una cosa distinta.
@@ -498,11 +503,11 @@ Si nos salimos de la shell, mataremos todos los jobs que estén en la shell, par
 Son interrupciones de SW enviadas al proceso.
 Principales señales (OJO, los números de las señales, varian según la plataforma, por lo que se suele usar el nombre de la señal).
 * **1 - SIGHUP** - _hangup_ Informa de la finalización de un proceso de un terminal.
-* **2 - SIGINT** - Interrupción del teclado. (CTRL-c)
+* **2 - SIGINT** - Interrupción del teclado. (CTRL-C)
 * **3 - SIGQUIT** - Como SIGINT pero genera un dump para depurar el proceso. (CTRL-\)
 * **9 - SIGKILL** - No se puede bloquear, provoca una finalización abrupta del programa.
 * **15 - SIGTERM** - Termina de forma ordenada, es la señal predeterminada.
-* **18 - SIGCONT** - Resume un proceso que está detenido (statuso Stop), y lo vuelve a lanzar.
+* **18 - SIGCONT** - Resume un proceso que está detenido (status Stop), y lo vuelve a lanzar.
 * **19 - SIGSTOP** - Suspende el proceso, no puede ser bloqueada o manejada
 * **20 - SIGTSTP** - Suspende el proceso, pero se puede bloquear (CTRL-z)
 
@@ -512,11 +517,11 @@ Para enviar una señal a un proceso: `kill -<signal> <PID>`
 Para enviar a varios:
 * `killall -<signal> <patrón_comando>` - usando expresiones regulares
 * `killall -<signal> <user> <patron_comando>` - Manda la señal a todos los comandos que cumplan el patrón del usuario especificado
-* `pkill` Permite usar creterio mas avanzados de selección_
-   * _-U <UID\>_ - para usuario
-   * _-G <GUID\>_ - para grupo
-   * _-P <PPID\>_ - mata a los hijos del proceso padre
-   * _-t <terminal\>_ - mata los procesos del terminal
+* `pkill` Permite usar criterios mas avanzados de selección
+   * _-U UID_ - para usuario
+   * _-G GUID_ - para grupo
+   * _-P PPID_ - mata a los hijos del proceso padre
+   * _-t terminal_ - mata los procesos del terminal
    
 Si queremos ver los usuarios de un terminal:
 * `who`
@@ -541,13 +546,14 @@ Por encima de 1, hay que analizar qué es lo que está pasando... si estoy pagin
 Para entender la carga: (https://www.tecmint.com/understand-linux-load-averages-and-monitor-performance/)
 
 ### campos del TOP
-VIRT --> se corresponde con (VSZ del ps).
-RES --> MEmoria física (RSS en ps)
-TIME --> Tiempo de CPU
-S --> Estado del proceso
 
-Shift+p --> te lo ordena por consumo de procesador
-Shift+m --> te lo ordena por consumo de memoria
+* VIRT --> se corresponde con (VSZ del ps).
+* RES --> Memoria física (RSS en ps)
+* TIME --> Tiempo de CPU
+* S --> Estado del proceso
+* Ordenar el top:
+   - Shift+p --> te lo ordena por consumo de procesador 
+   - Shift+m --> te lo ordena por consumo de memoria
 
 ***
 
@@ -558,7 +564,7 @@ Shift+m --> te lo ordena por consumo de memoria
    * su PID es 1 (tanto en systemd -RHEL7- y en init -RHEL6 y anteriores).
 * **Demonio** procesos que realizan tareas y se ejecutan en segundo plano.
    * Suelen acabar con la letra _d_
-   * Cuando quieren tener comunicación con otras partes del sistema, levanta un socket de systemd, o puede systemd levantar el socket y concederlo al demonio al que le toque, hasta que no tiene socket asignado, el daemos está aislado.
+   * Cuando quieren tener comunicación con otras partes del sistema, levanta un socket de systemd, o puede systemd levantar el socket y concederlo al demonio al que le toque, hasta que no tiene socket asignado, el daemon está aislado.
 * Un **servicio** hace referencia a uno o varios procesos daemon corriendo en el sistema.
 
 Todo esto no quita que haya cosas que se puedan contralar con **service** pero es un _legacy_.
@@ -566,7 +572,7 @@ Todo esto no quita que haya cosas que se puedan contralar con **service** pero e
 Que nos proporcina systemd:
 * Capacidades de paralelización en el arranque.
 * Inicio bajo demanda de los servicios.
-* Puede agrupar daemos relacionados.
+* Puede agrupar daemons relacionados.
 
 ## Comando _systemctl_
 
@@ -580,7 +586,7 @@ Systemctl administra Unidades, 3 tipos:
    * como ejemplo _cups_
 * **.path** - hacen referencia a la posibilidad de levantar/activar un servicio en función de si se ha dejado un fichero en una ruta.
 
-**NOTA:** Cuidado con para una unidad porque el path y el socket pueden activarlo.
+**NOTA:** Cuidado con parar una unidad porque el path y el socket pueden activarlo.
 Para ver el estado: `systemctl status name.type`  
 Estados: 
    * loaded.
@@ -588,6 +594,7 @@ Estados:
    * active (runing, exited, waiting, inactive)
 
 ### Usos
+
 * Comprobar si un servicio está activo: `systemctl is-active name.type`
 * Comprobar si está preparado para ejecutarse en el inicio: `systemctl is-enabled name.type`
 * Listar estado de los servicios `systemctl list-units --type=service` Nos muestra las activas, con _-all_ muestra todas, incluidas las inactivas.
@@ -608,9 +615,9 @@ Estados:
 
 ### Enmascaramiento.
 
-Para que ni el sistema ni un usuario levanten un servicio, se les enmascara, de forma que se borra el link simbólico que apunta al servicio, así nos aseguramos de que nadie accidentalmente nadie arranca el servicio.
+Para que ni el sistema ni un usuario levanten un servicio, se les enmascara, de forma que se borra el link simbólico que apunta al servicio, así nos aseguramos de que accidentalmente nadie arranca el servicio.
 
-Esto lo podemos hacer para que no podamos levantar dos servicios que entran en conflicto (como por ejemplo, network vs. NetworkManager, o iptables vs. firewalld).
+Esto lo podemos hacer para que no podamos levantar dos servicios que entran en conflicto (como por ejemplo, network vs. NetworkManager, iptables vs. firewalld ó chronid vs. ntpd).
 
 `systemctl [mask|umask] <unit>` Una vez hecho esto, no podrá arrancar bajo ningún concepto.
 
@@ -618,13 +625,13 @@ Esto lo podemos hacer para que no podamos levantar dos servicios que entran en c
 
 # Configurando y asegurando el servicio SSH <a name="openssh"></a>
 
-journalctl**OpenSSH - _Open Secure Shell_** - permite cifrar usando claves asimétricas entre dos máquinas.
+**OpenSSH - _Open Secure Shell_** - permite cifrar usando claves asimétricas entre dos máquinas.
 
 Qué necesitamos:
 * Una cuenta en el sistema remoto (IMPORTANTE: el usuario debe existir en el sistema remoto).
 * Una shell
 
-Podemos ver los usuarios que están conectados con `w -f`, que nos muestra los usuarios conectados, tanto en local, como remojournalctltos.
+Podemos ver los usuarios que están conectados con `w -f`, que nos muestra los usuarios conectados, tanto en local, como remotos.
 
 Comandos simples:
 * `ssh <remotehost>` - Sesión con el mismo usuario que el que tenemos en local.
@@ -660,7 +667,7 @@ Importante, los permisos de los ficheros:
 
 ## Configuración del servicio
 
-Fichero de configuracion: **/etc/ssh/sshd_config**. No suele ser habitual a root por ssh, es más lógico conectarse con un usuario que tenga capacidad de sudo.
+Fichero de configuracion: **/etc/ssh/sshd_config**. No suele ser habitual entrar con root por ssh, es más lógico conectarse con un usuario que tenga capacidad de sudo.
 
 Parámetros:
 * **PermitRootLogin** (_yes/no_) permite o deniega el acceso por ssh con root.
@@ -687,7 +694,7 @@ Tenemos dos tipos de logs:
 
 **/var/log/messages** - la mayoría de los mensajes menos los que tengan un fichero específico.  
 **/var/log/secure** - relacionado con autenticaciones y seguridad  
-**/var/lgo/maillog** - relacionado con los correos electrónicos  
+**/var/log/maillog** - relacionado con los correos electrónicos  
 **/var/log/cron** - relacionado con las tareas programadas  
 **/var/log/boot.log** - relacionado con el arranque  
 
@@ -699,7 +706,7 @@ Procesa los mensajes _facility.severity_
 
 Fichero de configuración en `/etc/rsyslog.conf` o en cualquier fichero `/etc/rsyslog.d/`.
 
-En el fichero de configuración, los logs vienen configurados en la forma: _facility.severity    <ruta_fich_log>_:
+En el fichero de configuración, los logs vienen configurados en la forma: `facility.severity    <ruta_fich_log>`:
 * Se pueden usar comodines para la severity y facility.
 * Podemos tener varios pares facility.severity en la misma línea.
 * Se pueden negar facilities con la severity _none_.
@@ -707,8 +714,8 @@ En el fichero de configuración, los logs vienen configurados en la forma: _faci
 
 ## Rotado de logs
 
-Fichero de configuracion: `/etc/logrotate.conf` o en `/etc/logrotate.d/*`
-Cuando se hago un rotado, se guardará el antigüo con un timestamp.
+Fichero de configuracion: `/etc/logrotate.conf` o en `/etc/logrotate.d/*`  
+Cuando se hago un rotado, se guardará el antigüo con un timestamp.  
 Después de cierto tiempo, se borran del histórico.
 
 Si no rota correctamente habría que revisar el cron.
@@ -717,8 +724,7 @@ Mas información `man 8 logrotate`
 
 ### Analizando una entrada de syslog.
 
-Las líneas viene en el formato:
-timestamp:host:programa:mensaje
+Las líneas viene en el formato: `timestamp:host:programa:mensaje`
 
 Podemos usar un `tail -f <fichero_log>`
 
@@ -731,12 +737,12 @@ Para comprobar configuraciones que hemos hecho en el syslog: `logger -p facility
 Hay una BB.DD. central de systemd que manda a journald. Los logs se almacenan en el `/run/log/journal` que es un fichero binario indexado. No se conservan entre reinicios (todo esto es el comportamiento por defecto y se puede cambiar).
 
 Para revisar todas las entradas de log que el sistema guarda usamos el comando **journalctl** hay que lanzarlo con root. 
-* **journalctl -n \<num>** Muestra las <num\> últimas líneas, sin no se le da valor, el defecto es 10
-* **journalctl -p \<severity>** Muestra los mensajes de cierta severidad y superiroes.
-* **journalctl -f** Va refrescando
-* **journal --since "YYYY-MM-DD_hh:mm:ss" --until "yyyy-mm-dd_hh:mm:ss"**
+* `journalctl -n <num>` Muestra las _num_ últimas líneas, sin no se le da valor, el defecto es 10
+* `journalctl -p <severity>` Muestra los mensajes de cierta severidad y superiroes.
+* `journalctl -f` Va refrescando
+* `journal --since "YYYY-MM-DD_hh:mm:ss" --until "yyyy-mm-dd_hh:mm:ss"`
    * Admite modificadores: yesteday, today, ...
-* **journalctl -o verbose** 
+* `journalctl -o verbose`
    * Modificadores del comando, me dan facilidad para acotar ciertas entradas.
       - _COMM -- comando
       - _PID -- busca por PID
@@ -750,7 +756,7 @@ Tenemos que crear una ruta paralela para hacerlo psersistente `/var/log/journal`
 
 Fichero de configuración en `/etc/systemd/journald.conf`.
 
-Por defecto el journal, no puede tener mas del 10% del sistema de ficheros, y tiene que dejar al menos el 15% libre. Estos límites se tocan el el fichero. Para ver estos límites: `journalctl |head -n 2`
+Por defecto el journal, no puede tener mas del 10% del sistema de ficheros, y tiene que dejar al menos el 15% libre. Estos límites se tocan en el fichero. Para ver estos límites: `journalctl |head -n 2`
 
 Para ver si está corriendo: `sysemctl status systemd-journald`
 
@@ -773,16 +779,16 @@ Ahora, como tenemos varios rebotes, podemos ver lo que hay desde el rebote _n_ c
 
 _Network Time Protocol_ Nos sirve para mantener nuestro servidor en la hora correcta.
 
-* **timedatectl** nos va a dar el status de tiempo del sistema.
-* **timedateclt list-timezones** da un listado de TZ.
-* **tzselect** nos ayuda a seleccionar la TimeZone
-* **timedatectl set-timezone <nombre\>** Cambia la hora a la de la TZ especificada
-* **timedatectl set-time hh:mm:ss** Cambia la hora (conviene antes de sincronizar con el NTP
-* **timedatectl set-ntp true** activa NTP
+* `timedatectl` nos va a dar el status de tiempo del sistema.
+* `timedateclt list-timezones` da un listado de TZ.
+* `tzselect` nos ayuda a seleccionar la TimeZone
+* `timedatectl set-timezone <nombre>` Cambia la hora a la de la TZ especificada
+* `timedatectl set-time hh:mm:ss` Cambia la hora (conviene antes de sincronizar con el NTP)
+* `timedatectl set-ntp true` activa NTP
 
 ### chronyd
 
-Se encarga de mantener el reloj de sistema dentro de unos parámetros. Va registrando la sincronía del reloj co respecto al servidor NTP,  con un `driftfile` que se configura en `/etc/chrony.conf`
+Se encarga de mantener el reloj de sistema dentro de unos parámetros. Va registrando la sincronía del reloj con respecto al servidor NTP, con un `driftfile` que se configura en `/etc/chrony.conf`
 
 Salvo casos especiales, configurar los NTP Pool Project como servidores NTP.
 
@@ -812,11 +818,12 @@ Todo se configura con `/etc/chrony.conf`
 
 * **Capa 4** - Aplicacion (SSH, HTTP, HTTPS, NFS, CIFS, SMTP, ...), los datos que se mueven están relacionados con estos protocolos.
 * **Capa 3** - Transporte (TCP, UDP) -- fichero `/etc/services`, aquí es donde tenemos que mirar los puertos de servicios (menos si está SELinux activo).
-   * Aquí hablaresmo de puertos e IP (socket)
+   * Aquí hablaremos de puertos e IP (socket)
 * **Capa 2** - Red o internet, transporta los datos a través de la red a un host, capa de conexiones entre redes. (ICMP).
 * **Capa 1** - Física o enlace, relacionado con las MACs (802.3 - Ethernet, 802.11 - Wireless), que deben identificar de manera unívoca una interfaz de red.
 
 ### Direcciones IP
+
 4 octetos (32 bits), incluyen la dir de red y de host.
 
 * Todos los hosts de la misma subred se comunican sin enrutador entre ellos.
@@ -825,7 +832,7 @@ Todo se configura con `/etc/chrony.conf`
 
 ### Enrrutamiento
 
-Para ver la tabla de rutas `netstat -nr` ó `ip route`.
+Para ver la tabla de rutas `netstat -nr` ó `ip route`.  
 El gateway nos sirve para enrutar a una red que no es la nuestra, para llegar a una ruta que no sea la de nuestro GW por defecto, tendrá que tener una ruta estática.
 
 En la tabla de rutas:
@@ -880,7 +887,7 @@ Requiere puerto, ip y protocolo.
    * -n -- numérico en vez de nombres (con nombres puede eternizarse para conectar con DNS)
    * -t -- TCP
    * -u -- UDP
-   * -l -- mustra los sockets a la escucha
+   * -l -- muestra los sockets a la escucha
    * -a -- muestra todos los sockets
    * -p -- proceso que usa el socket
  
@@ -893,14 +900,14 @@ Requiere puerto, ip y protocolo.
  * _conexion_ 
  
  Ficheros de configuración:
- * /etc/sysconfig/network-scripts/*
-   - ifcfg-<conexion> (uno por conexión)
+ * `/etc/sysconfig/network-scripts/*`
+   - `ifcfg-<conexion>` (uno por conexión)
    
 ## nmcli
 
 Es el CLI para controlar el NetworkManager. 
 
-El NetworkManager no puede estar corriendo a la vez que network (así que hay que enmascarar el network). para ver si está corriendo: `systemctl status NetworkManager`
+El NetworkManager no puede estar corriendo a la vez que network (así que hay que enmascarar el network). Para ver si está corriendo: `systemctl status NetworkManager`
 
 Tres seccines:
 * dev -- Dispositivos, 4 opciones:
@@ -973,7 +980,7 @@ Se puede meter un restart después de manipular el fichero, la manera "fina" es:
 * Cambiar el hostname: `hostnamectl set-hostname nombre`
 
 Estructura de búsqueda (el orden de búsqueda se establece en el fichero `/etc/nsswitch.conf`):
-1. /etc/hosts (mantiene concordancia nombre-ip)
+1. `/etc/hosts` (mantiene concordancia nombre-ip)
    * para lanzar consultas aquí: `getent hosts <hostname>`
 2. Consulta al DNS, que está configurado en `/etc/resolv.conf`
    ~~~ bash
@@ -995,7 +1002,7 @@ Para probar como funciona el DNS:
 
 ## Empaquetado
 
-TAR es una utilidad que permite empaquetar y/o comprimir una serie de ficheros en un solo fichreo.
+TAR es una utilidad que permite empaquetar y/o comprimir una serie de ficheros en un solo fichero.
 
 Se le pueden pasar los flags con o sin guión:
 * c --> crear
@@ -1005,10 +1012,10 @@ Se le pueden pasar los flags con o sin guión:
 * f --> donde está el fichero (el fichero tiene que ir detrás de la f).
 * p --> mantiene los permisos (de ejecución).
 
-La sentencia es: `tar <flags> archivo.tar <fich_1>...<fich_n>`
+La sentencia es: `tar <flags> archivo.tar <fich_1>...<fich_n>`  
 El empaquetado no conserva la barra, así la descompresión es relativa al directorio donde esté trabajando.
 
-El empaquetado empaqueta los fichreros y directorios que el usuario pueda leer. Almacena usuario, grupo y permisos, pero solo cuando descomprimamos con root conservaremos eso, si no, cogerán los del usuario que descomprima.
+El empaquetado empaqueta los ficheros y directorios que el usuario pueda leer. Almacena usuario, grupo y permisos, pero solo cuando descomprimamos con root conservaremos eso, si no, cogerán los del usuario que descomprima.
 
 Si queremos conservar SELinux y ACLs, tendremos que usar el flag **--xattrs**
 
@@ -1019,8 +1026,7 @@ Tipos de compresión permitidos:
 * bzip2 (flag **j**) -- Mejor compresion
 * xz (flag **J**) -- Mejor compresión de todos
 
-Necesitamos tener instalado el paquete del compresor.
-Al descomprimir, el tar detecta que tipo de algoritmo de compresión se usó, por lo que no es necesaro pasarle el flag.
+Necesitamos tener instalado el paquete del compresor. Al descomprimir, el tar detecta que tipo de algoritmo de compresión se usó, por lo que no es necesaro pasarle el flag.
 
 ## Copia entre sistemas
 
@@ -1060,7 +1066,7 @@ Hace un movimiento incremental entre directorios (estén o no en el mismo sistem
 
 Hay que hacer una sincronización inicial (hará lo mismo que el scp), y a partir de ahí sólo llevará los cambios.
 
-* -n: hacer un _dryrun_, con lo que nos aseguramos que no vamos a hacer ninǵu destrozo.
+* -n: hacer un _dryrun_, con lo que nos aseguramos que no vamos a hacer ningún destrozo.
 * -a: reune los flags:
    * -r: recursivo
    * -l: mantiene links simbólicos
@@ -1071,7 +1077,7 @@ Hay que hacer una sincronización inicial (hará lo mismo que el scp), y a parti
    * -D: sincroniza archivos de dispositivo
 * -H: se trae los hardLinks (así evitas tener que traerte dos veces los mismos datos).
 * -v: verboso
-* -A: mantiena ACLs
+* -A: mantiene ACLs
 * -x: mantiene SELinux
 
 Generalmente se copiará con -av, también se puede hacer entre dos directorios locales.
@@ -1108,13 +1114,14 @@ Para todo esto, hay que tener salida a internet.
 
 ## Paquetes RPM
 
-Es la forma de agrupar todos los fichreros que forman parte de un software.
+Es la forma de agrupar todos los ficheros que forman parte de un software.
 
 **IMPORTANTE** RPM se refiere a términos locales, YUM repositorios dinámicos, puede salir fuera. Los repositorios son conjuntos de paquetes.
 
-YUM resuelve dependencias (cosa qeu rpm no).
+YUM resuelve dependencias (cosa que rpm no).
 
-### Nomenclatura:
+### Nomenclatura
+
 nombre-versión-release.arquitectura.rpm
 - si no hay arquitectura: noarch, si no (x86_64, x86_32, i386, ...)
 - para instalar sólo necesitamos el nombre.
@@ -1122,7 +1129,7 @@ nombre-versión-release.arquitectura.rpm
 
 ### Composición
 
-Cada rpm tiene metadatos que podemos consultra:
+Cada rpm tiene metadatos que podemos consultar:
 * nombre
 * versión
 * release
@@ -1134,12 +1141,11 @@ Cada rpm tiene metadatos que podemos consultra:
 * changelog
 * otros detalles
    * Entre estos metadatos puedes tener scripts, que se pueden ejecutar en la instalación o en la desinstalación
-   * Firma GPG, (la clave pública estará disponible para comprobar la firma). - todos los paquetes lanzados por RH van firmados.
+   * Firma GPG, (la clave pública estará disponible para comprobar la firma ya que todos los paquetes lanzados por RH van firmados).
    
 Cuando vamos a actualizar, no se meten parches, se instalan versiones. Sólo se puede instalar un paquete por sistema (generalmente), uno de los paquetes que podemos tener versionados es el kernel.
 
 Cuando desinstalamos un paquete, también desinstala los paquetes dependientes de él, ya que no van a funcionar.
-
 
 ## YUM
 
@@ -1158,18 +1164,22 @@ Comandos informativos:
 * `yum provides <fichero>` - Me dice que paquete instala este fichero
 
 Comandos que hacen pupa:
-* yum install <nombre_paquete> - Instala el paquete y sus dependencias.
-* yum update <nombre_paquete> - Actualiza el paqeute y sus dependencias, si no ponemos el nombre del paquete, actualiza todos. Hace copias de seguridad de los ficheros de configuración incompatibles y crea otro limpio.
+* `yum install <nombre_paquete>` - Instala el paquete y sus dependencias.
+* `yum update <nombre_paquete>` - Actualiza el paquete y sus dependencias, si no ponemos el nombre del paquete, actualiza todos. Hace copias de seguridad de los ficheros de configuración incompatibles y crea otro limpio.
    - Si es un kernel, este es tipo _always install_, siempre se instala, aunque se indique con update.  
       Para ver los kernels que tenemos instalados: `yum list kernel` y para ver el kernel que se está usando `uname -r`.  
       El kernel en versiones anteriores se instalaba, es decir no había opción de update.
-* yum remove <nombre_paquete> - Borra el paquete
+* `yum remove <nombre_paquete>` - Borra el paquete
    - Si hay paquetes que dependen de él, también me los quita (porque ya no van a funcionar).
    - Esto es una pega, porque si desinstalamos por error y lo volvemos a instalar, no arreglamos las dependencias rotas.
+* `yum reinstall <nombre_paquete>` - Reinstala el paquete (muy útil cuando nos hemos cargado algo).
+   - hacemos primero `yum provides <loquenoshemoscargado>` y vemos qué paquete hay que instalar
+   - `yum reinstall <paquete>` 
 
 ### Grupos
  
 Agrupan paquetes y dan una funcionalidad completa, evidentemente al precio de perder el control de lo que se está instalando -puede que nos instale más cosas de las que necistamos.
+
 Dos tipos:
 * regular: un grupo de RPMs
 * Entorno: un grupo de grupos regulares.
@@ -1187,7 +1197,7 @@ OJO: Si le tiramos este comando, nos va a mostrar los paquetes que forman parte 
 - **+** No está instalado y para instalarlo hay que instalar el grupo.
 - **-** No está instalado y no se instalará (habría que instalarlo manualmente).
 - (sin marcador) El paquete está instalado individualmente  
-   en este caso, podemos decirle al sistema que nos marque al grupo que sólo instale lso paquetes predeterminados u obligatorios que existan.
+   en este caso, podemos decirle al sistema que nos marque al grupo que sólo instale los paquetes predeterminados u obligatorios que existan.
    
 * `yum group install <grupo>`
 * `yum group mark install <group>` --> marca que el grupo está instalado, y todos los paquetes que nos faltan por instalar de obligatorios y predeterminados, se nos instalaran (en la versión anterior esto no era así, si teníamos la paquetería instalada, el grupo se consideraba que estaba instalado).
@@ -1219,7 +1229,7 @@ gpgkey=url_public_key   # opcional (recomendable)
 En el repositorio tendríamos que  tener los paquetes rpm y un repodata con los metadatos del repositorio.
 * `yum repo list all`  --> devuelve lalista de todos los repositorios
 * **yum-config-manager** --> utilidad para manipular los repositorios que tenemos.
-   * `yum-config-manager --{enable|disable} <repositorio>` --> nos habilita este respositorio (en el fich de config, mete un _enabled=1_).  
+   * `yum-config-manager --{enable|disable} <repositorio>`: nos habilita este respositorio (en el fich de config, mete un _enabled=1_).  
       Podemos configurar repositorios de terceros editando un fichero *.repo en `/etc/yum.repos.d/*.repo`
    * `yum-config-manager --add-rep=<url>`, genera un fichero de repositorio basándose en la URL que le hemos pasado, una vez que tenemos el fichero, podemos manipularlo.
 * `rpm --import <url_clave>`: Importa la clave GPG
@@ -1229,7 +1239,7 @@ En el repositorio tendríamos que  tener los paquetes rpm y un repodata con los 
 
 Esto no nos resuelve dependencias así que ojito, mejor usar yum.
 * Para ver lo que tenemos instalado: `rpm -qa  |grep httpd`
-* `rpm -qf <fichero>` --> nos da las dependencias, trabaja en local, por loq ue si no tenemos el paqeute que provee el fichero, no nos devolverá nada.
+* `rpm -qf <fichero>` --> nos da las dependencias, trabaja en local, por lo que si no tenemos el paquete que provee el fichero, no nos devolverá nada.
 * `rpm -qp <paquete_local>.rpm` --> Nos muestra el paquete
 * `rpm -ql paquete` -- contenidos de un paquete instalado (añadir la -p si lo tenemos en local)
      - esto se usa para saber qué nos va a instalar el paquete (rpm -qlp paquete.rpm)
@@ -1262,7 +1272,7 @@ Cada sistema de ficheros es independiente de los otros.
 ### Comandos de consulta de discos
 
 - **lsblk** Muestra los discos de la máquina, sus particiones y donde están montadas
-- **blkid** Muestra los identificadores de los dispositivos montados (UUID)
+- **blkid** Muestra los identificadores de los dispositivos montados (UUID) y el tipo de FS.
 
 ## LVM (Logical Volumen Management)
 
@@ -1270,8 +1280,8 @@ Supongamos que tenemos un disco o una partición (`/dev/sdb`).
 Tenemos que crear un Phisycal Volume (PV) (`/dev/sdb`) (_pvcreate_)  
 Creamos un grupo de volúmenes (VG) al que le pondremos un nombre (`vg_datos`) (_vgcreate_), que tendrá el tamaño de los PV's que lo compongan.  
 cuando lo dividimos el resutlado son Physical Extensions (PE)  
-Troceamos en LogicalVolumen (LV) en Lógical Extensions (LE) (que deben tener el mismo tamaño de las PE). (`lvdatos1`)
-Formateamos el LV y lo montamos.
+Troceamos en LogicalVolumen (LV) en Lógical Extensions (LE) (que deben tener el mismo tamaño de las PE). (`lvdatos1`)  
+Formateamos el LV y lo montamos.  
 
 ¿Donde está la potencia?  
 Si necesitamos ampliar, podemos usar un nuevo PV con un disco adicional, que podemos añadir al VG, extiendo el LV en la cantidad necesaria.
@@ -1312,11 +1322,9 @@ p.ej:
 3. Creamos el punto de montaje: `mkdir /mnt/punto_montaje`
 4. Montamos: `mount /dev/vdb1 /mnt/pto_montaje`
 
-El punto de montaje, debe existir (así que primero de todo, hay que crear el punto de montaje)
+El punto de montaje debe existir (así que primero de todo, hay que crear el punto de montaje)
 
-Para desmontar: `umount /dev/vdb1` ó `umount /mnt/punto_montaje`
-
-Para desmontar no tiene que haber ningún proceso usando el punto de montaje...
+Para desmontar: `umount /dev/vdb1` ó `umount /mnt/punto_montaje`. Para desmontar no tiene que haber ningún proceso usando el punto de montaje...
 
 Par ver si hay alguien usando algo en una ruta: `lsof /ruta` ó `fuser /ruta`
 
@@ -1324,7 +1332,7 @@ Con `fuser -k /ruta` nos mata todos los procesos de usuario que estén usando es
 
 El único dispositivo que pueden montar los usuarios son los USB, en la ruta `/run/media/<user>/<label>`
 
-OJO con los montajes y desmontajes... si nos equivocamos y montamos sobre un directorio que está siendo usado o que tiene información, ocultaremos la información que estaba originalmente en el directorio. Si hacemos un listado del directorio, veremos lo que hay en el dispositivo montado NO lo que hay en el directorio. Nos podemos volver locos, porque si hacemos un df veremos un uso de disco y si hacemos un du, la suma no coincidirá con lo que hay en él.
+**OJO con los montajes y desmontajes**... si nos equivocamos y montamos sobre un directorio que está siendo usado o que tiene información, ocultaremos la información que estaba originalmente en el directorio. Si hacemos un listado del directorio, veremos lo que hay en el dispositivo montado NO lo que hay en el directorio. Nos podemos volver locos, porque si hacemos un df veremos un uso de disco y si hacemos un du, la suma no coincidirá con lo que hay en él.
 
 **Montajes bindeados (_bind mount_)** de un directorio sobre otro, se usa para encapsular espacios de usuarios.
 
@@ -1346,13 +1354,14 @@ Una nueva entrada en un directorio que hace referencia a un archivo ya existente
 
 No es un archivo regular (en un listado largo lo veremos con una l), es un puntero a un fichero (es lo más parcido que hay a los accesos directos de Windows).
 * Tienen que apuntar a un archivo o directorio existente.
-* Si borramos el fichero origne, el SL no desaparece, pero queda inconsistente.
+* Si borramos el fichero origen, el SL no desaparece, pero queda inconsistente.
 * No tienen que estar en el mismo sistema de ficheros.
 * Pueden usarse con directorios (el origen puede ser un directorio).
 
 `ln -s <fich_existente> <soft_link>`
 
 ### Operando con links
+
 Para ver si son hard links o no, en el listado largo, el segundo campo nos dice cuantos HL tiene.
 
 Para ver los inodos de cada fichero, dos opciones.
@@ -1382,7 +1391,7 @@ Mucho más potente que locate, se puede afinar mucho la búsqueda, puedes ejecut
 
 #### Casos de uso
 
-* `find <ruta> -name <nombre>`, Busca desde la ruta por el nombre, se pueden usar comodines en el nombre
+`find <ruta> -name <nombre>`, Busca desde la ruta por el nombre, se pueden usar comodines en el nombre
 * -iname -Case insensitive
 * -user - busca por usuario
 * -group - busca por grupo

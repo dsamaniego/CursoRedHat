@@ -1,0 +1,157 @@
+
+
+You must do all exersices in serverX machine, after you reset it.
+
+Exercise 1.
+
+
+1. Use the fdisk or gdisk command to add 3 new partitions to /dev/vdb disk, each about 256, 512 and 2048 megabytes in size, respectively. Set the filesystem labels of each newly created partition to "8e" (Linux LVM). 
+
+echo -en "n\np\n\n\n+256M\nt\n8e\nn\np\n\n\n+512M\nt\n2\n8e\nn\np\n\n\n+2048M\nt\n3\n8e\nw" | fdisk /dev/vdb
+
+
+2. Use the pvcreate command to initialize each of the newly created partitions as physical volumes. 
+
+  pvcreate /dev/vdb1 /dev/vdb2 /dev/vdb3
+
+3 Use the vgcreate command to create a volume group named "vol_group" with the last two physical volumes, and a physical extent size of 32 megaibytes. Leave the first physical volume unused. 
+
+  vgcreate vol_group -s 32M /dev/vdb2 /dev/vdb3
+  vgdisplay vol_group
+
+  --- Volume group ---
+  VG Name               vol_group
+  System ID             
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               2.44 GiB
+  PE Size               32.00 MiB
+  Total PE              78
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       78 / 2.44 GiB
+  VG UUID               7pcj8b-vl4t-7YBQ-1gWD-yYNL-GcBF-wSH9Z9
+
+4. Use the lvcreate command to create a logical volume named "logvol1", which is  1024 megabytes in size. 
+Do the same for a logical volume named "logvol2", also 1024 megabytes in size. 
+
+  lvcreate -n logvol1 -L 1M vol_group
+  lvcreate -n logvol2 -L 1M vol_group
+  lvdisplay
+
+  --- Logical volume ---
+  LV Path                /dev/vol_group/logvol1
+  LV Name                logvol1
+  VG Name                vol_group
+  LV UUID                6oNpT4-Ilo7-Apz3-NGlU-Cv1y-E5Yw-2W0qkI
+  LV Write Access        read/write
+  LV Creation host, time server0.example.com, 2018-05-08 12:06:28 +0200
+  LV Status              available
+  # open                 0
+  LV Size                32.00 MiB
+  Current LE             1
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           252:0
+   
+  --- Logical volume ---
+  LV Path                /dev/vol_group/logvol2
+  LV Name                logvol2
+  VG Name                vol_group
+  LV UUID                dkR7rs-gMkI-EqLr-k5Ld-m5T3-WM3K-VruotF
+  LV Write Access        read/write
+  LV Creation host, time server0.example.com, 2018-05-08 12:06:31 +0200
+  LV Status              available
+  # open                 0
+  LV Size                32.00 MiB
+  Current LE             1
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           252:1
+
+5. Format the logical volumes "logvol1" and "logvol2" with ext4 and xfs filesystems, respectively.
+
+   mkfs -t ext4 /dev/vol_group/logvol1
+   mkfs -t xfs /dev/vol_group/logvol2
+
+6. Create the mount points (directories) /lvm1 and /lvm2. Mount the logical volumes "logvol1" and "logvol2" to the respective mount points. 
+
+  mkdir /lvm1; mkdir /lvm2
+  mount -t ext4 /dev/vol_group/logvol1 /lvm1
+  mount -t xfs /dev/vol_group/logvol2 /lvm2
+
+
+7. Create entries within your /etc/fstab file so that the logical volumes are mounted automatically at bootup. Reboot your machine, and confirm that the mounts are automatically performed. 
+
+  echo "/dev/vol_group/logvol1 /lvm1 ext4 defaults 0 0" >> /etc/fstab
+  echo "/dev/vol_group/logvol2 /lvm2 xfs defaults 0 0" >> /etc/fstab
+  mount -a
+
+8. Bonus Track: Rename de volume group "vol_group" to "groupVol". Rename the logical volume "logvol2" to "lv2".
+
+   vgrename vol_group groupVol
+   lvrename groupVol logvol2 lv2
+   lvscan 
+ 
+  ACTIVE            '/dev/groupVol/logvol1' [32.00 MiB] inherit
+  ACTIVE            '/dev/groupVol/lv2' [32.00 MiB] inherit
+
+
+Exercise 2. 
+ 
+1. Expand the logical volume and its file system to dynamically grow the mounted filesystem on logical volume "lv2" by 21 logical extents.
+
+  vgdisplay groupVol    -> libres 76PE
+  lvextend -l +21 /dev/groupVol/lv2
+  lvdisplay /dev/groupVol/lv2
+
+   --- Logical volume ---
+  LV Path                /dev/groupVol/lv2
+  LV Name                lv2
+  VG Name                groupVol
+  LV UUID                dkR7rs-gMkI-EqLr-k5Ld-m5T3-WM3K-VruotF
+  LV Write Access        read/write
+  LV Creation host, time server0.example.com, 2018-05-08 12:06:31 +0200
+  LV Status              available
+  # open                 1
+  LV Size                704.00 MiB
+  Current LE             22
+  Segments               2
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           252:1
+
+2. Try to reduce the volume group "groupVol" by one physical volume, could you do it without lose any logical volume? If not, don't do it.
+
+  vgdisplay -> 55PE libres, 
+
+  miro los pv -> /dev/vdb2 -> 15PE, 0PE libres. 
+	         /dev/vdb3 -> 63PE, 55PE libres 
+    los PE de /dev/vdb2 pueden moverse a /dev/vdb3 pero no al revés
+    luego puedo quitar /dev/vdb2 pero no podría quitar /dev/vdb3
+
+3. Delete the logical volume "logvol1". Now, remove your first physical volume from the volume group "groupVol", could you do it without lose any logical volume?
+
+   lvremove /dev/groupVol/logvol1
+   pvmove /dev/vdb2
+   vgreduce groupVol /dev/vdb2
+   pvremove /dev/vdb2
+
+4. Create a snapshot volume of "lv2" called "snap_lv2" with 50 megaibytes.
+
+   lvcreate -s -n snap_lv2 -L 20M /dev/groupVol/lv2
+   
+

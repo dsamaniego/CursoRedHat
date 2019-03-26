@@ -1,0 +1,14 @@
+Hacer reset de desktopX antes de empezar.
+
+NOTA: El instructor ha realizado las tareas necesarias en el lado del servidor, en tu serverX.
+
+En desktopx, montar con automonter:
+
+-> Montaje directo:
+
+   El recurso /docs de serverX en /documentos de desktopX
+
+-> Montaje indirecto:
+   El recurso /marketing/videos y /marketing/folletos de serverX en /marketing de desktopX
+
+
