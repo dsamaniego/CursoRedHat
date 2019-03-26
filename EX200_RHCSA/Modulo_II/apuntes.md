@@ -18,7 +18,7 @@
 
 # Automatización de la instalación <a name="kickstart"></a>
 
-**Anaconda** es el instalador que necesita que el que está haciendo la instalación le responda a una serie de preguntas.
+**Anaconda** es el instalador que usa RHEL, necesita que el que está haciendo la instalación le responda a una serie de preguntas acerca de la configuracion del sistema.
 
 **Kickstart** es el sistema para hacer instalaciones desatendidas del sistema (coge un fichero de texto con las respuestas). Se basa en un fichero dividido en secciones, con el siguiente formato:
 
@@ -27,7 +27,7 @@ comandos
 ...<software>
 %packages
 ..
-%endhttps://start.fedoraproject.org/
+%end
 %pre
 ...<scripts>
 %end
