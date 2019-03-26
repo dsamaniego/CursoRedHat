@@ -59,7 +59,7 @@ Los comentarios van en líneas precedidas por #
 
 ### Comandos de networking
 
-* **network** Configuraicón de red
+* **network** Configuración de red
 * **firewall** Habilita firewall en el arranque
 
 ### Comandos de configuración del OS
@@ -108,10 +108,14 @@ También podemos modificar un fichero ya existente, luego podremos validar la si
 1. Crear un fichero de configuración kickstart (**system-config-kickstart**).
 2. Usar un editor de texto para añadir montajes al fichero de kickstart.
 3. Chequear la correción del fichero (**kasvalidator**).
+  * Si no disponemos de él habrá que instalarlo: `yum install pykickstart`
+  * Tener en cuenta que lo que hace es una validación sintáctica, y no valida las direcivas _%pre_, _%post_ ni _%packages_.
 4. Publicar el fichero para el instalador: 
   * `ks=<medio>` indica dónde está el fichero (nfs, http, https, cd-rom, hd).
 5. Arrancar Anaconda y apuntar al fichero de configuración.  
   Normalmente se lo diremos en la línea de arranque del kernel, pero hay virtualizadores donde podemos pasarle este parámetro. 
+  - Sistemas con BIOS: `append initrd=initrd.img inst.ks=<ruta a ks.cfg>`
+  - Sistemas con UEFI (grub2): `kernel vmlinuz inst.ks=<ruta a ks.cfg>`
 
 ***
 
