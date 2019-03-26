@@ -1,1 +1,1 @@
-Montar de forma persistente un recurso exportado por serverX llamado practica en /samba de desktopX y comprobar que funciona accediendo al contenido de un file. El usuario samba es pepe y su password samba es perez.
+Montar de forma persistente un recurso exportado por server0 llamado practica en /samba de desktopX y comprobar que funciona accediendo al contenido de un file. El usuario samba es pepe y su password samba es perez.
