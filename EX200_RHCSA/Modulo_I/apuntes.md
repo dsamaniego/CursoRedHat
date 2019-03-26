@@ -157,11 +157,11 @@ Un proceso en ejecución tiene 4 flujos:
 ## Redirecciones
 
 Operadores de redirección:
-* **>** Escribe en un fichero, si existe, lo sobreescribe y si no existe lo crea
+* **>** Escribe en un fichero, si existe, lo sobreescribe y si no existe lo crea  
    `echo -ne "user=pepe\npassw=pepon\n" > fichero`  
-   los flags ne, indican que ignore el newline y el caracter de escape
+   los flags **-ne**, indican que ignore el newline y el caracter de escape
 * **>>** Append, si existe, añade al fichero y si no lo crea.
-* **<** Entrada desde teclado, es típico en el caso de edición de ficheros:  
+* **<** y **<<** Entrada desde teclado, es típico en el caso de edición de ficheros:  
    ~~~bash
    $ cat > fichero.txt <<EOF
    > Vamos escribiendo líneas
@@ -170,7 +170,6 @@ Operadores de redirección:
    ....
    > hasta que pulsemos Ctrd+D
    ~~~
-   
 
 Dispositivos especiales del sistema:
 * `/dev/null`--> es un sumidero, todo lo que dirijamos a él se pierde.
