@@ -21,7 +21,7 @@ Note: Red Hat may use applications during the exam that are not included in Red 
 * Boot, reboot, and shut down a system normally
 * Boot systems into different targets manually
 * Interrupt the boot process in order to gain access to a system
-* Identify CPU/memory intensive processes, adjust process priority with renice, and kill processes
+* Identify CPU/memory intensive processes, adjust process priessentialority with renice, and kill processes
 * Locate and interpret system log files and journals
 * Access a virtual machine's console
 * Start and stop virtual machines

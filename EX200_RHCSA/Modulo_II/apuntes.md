@@ -9,25 +9,25 @@
 9. [Añadir discos, particiones y sistemas de ficheros](#discos)
 10. [Adminsitrar Logical Volume Management (LVM)](#lvm)
 11. [Network Storage NFS](#nfs)
-12. [Networ Storage SMB](#smb)
-13. [Troubleshooting](#troubleshooting)
-14. [Limitar comunicaciones de red](#firewalld)
+12. [Network Storage SMB](#smb)
+13. [Troubleshooting del arranque](#troubleshooting)
+14. [Firewall: limitar comunicaciones de red](#firewalld)
 15. [Apéndice: Comandos útiles](#apendix)
 
 ***
 
 # Automatización de la instalación <a name="kickstart"></a>
 
-**Anaconda** es el instalador que necesita que el que está haciendo la instalación le responda a una serie de preguntas.
+**Anaconda** es el instalador que usa RHEL, necesita que el que está haciendo la instalación le responda a una serie de preguntas acerca de la configuracion del sistema.
 
-**Kickstart** es el sistema para hacer instalaciones desatendidas del sistema (coge un fichero de texto con las respuestas). Se basa en un fichero dividido en secciones, con el siguiente formato:
+**Kickstart** es el sistema para hacer instalaciones desatendidas (coge un fichero de texto con las respuestas que daríamos en una instalación manual). Se basa en un fichero dividido en secciones, con el siguiente formato:
 
 ~~~text
 comandos
 ...<software>
 %packages
 ..
-%endhttps://start.fedoraproject.org/
+%end
 %pre
 ...<scripts>
 %end
@@ -42,10 +42,10 @@ Los comentarios van en líneas precedidas por #
 
 ### Comandos de instalación
 
-* **url** Especifica donde está el medio de instalación
+* **url** Especifica dónde está el medio de instalación
 * **repo** Donde encontrar los paquetes para la instalación.
 * **text** Sólo instala en modo texto
-* **vnc** Habilita para ver lainstalación remotamente.
+* **vnc** Habilita para ver la instalación remotamente.
 * **askmethod** 
 
 ### Comandos de particionado
@@ -54,26 +54,32 @@ Los comentarios van en líneas precedidas por #
 * **part** Especifica los parámetros para crear la partición.
 * **ignoredisk** Se pueden especificar discos que se ignoran en la instalación.
 * **bootloader** Especifica donde instalar el _bootloader_
-* **volgroup,logvol** Crea grupos de volúmenes y volúmenes lógicos de LVM.
-* **zerombr** Se usa con sistemas a los que queremos formar el borrado del MBR.
+* **volgroup, logvol** Crea grupos de volúmenes y volúmenes lógicos de LVM.
+* **zerombr** Se usa con sistemas a los que queremos forzar el borrado del MBR.
 
 ### Comandos de networking
 
-* **network** Configuración de red
-* **firewall** Habilita firewall en el arranque
+* **network** Configuración de red  
+  ej: `network --device=eth0 --bootproto=dhcp`
+* **firewall** Habilita firewall en el arranque.  
+  ej: `firewall --enabled --service=ssh`
 
 ### Comandos de configuración del OS
 
 * **lang** Especifica el idioma
 * **keyboard** Especifica el tipo de teclado
-* **timezone** Definie tz, NTP y reloj HW.
-* **auth** Especificar las opciones de autenticación. **OBLIGATORIO**
-* **rootpw** Contraseña de root (podemos ponerla en texto plano o cifrada)
-* **selinux** habilitar o no SELinux
-* **services** Indica que servicios estarán habilitados en el arranque
+* **timezone** Define tz, NTP y reloj HW.
+* **auth** Especificar las opciones de autenticación. **OBLIGATORIO**  
+  ej: `auth --usesshadow --enablemd5 --passalgo=sha512`
+* **rootpw** Contraseña de root (podemos ponerla en texto plano o cifrada)  
+  ej: `rootpw --iscrypted $6$sfseiiosK$dks332ñlkds3i....2993kad` para cifrarla, ver el script en el material extra.
+* **selinux** habilitar o no SELinux  
+  ej: `selinux --enforcing`
+* **services** Indica qué servicios estarán habilitados en el arranque (`--disabled=... --enabled=...`)
 * **group,user** Crea usuarios y grupos locales.
 
 ### Otros comandos
+
 * **logging** Configura los logs de la instalación.
 * **firstboot** Le dice si hay que lanzar el procedimiento de primer arranque en la instalación o no.
   - Si está habilitado, realiza la configuración de una serie de parámetros de la máquina en el primer arranque.
@@ -99,23 +105,31 @@ Scripts que se ejecutan tras la instalación
 
 ## Despliegue de un nuevo sistema virtual con Kickstart
 
-Hay una utilidad que ayuda a configurar el fichero de Kickstart: **system-config-kickstart**, .
+Hay una utilidad que ayuda a configurar el fichero de Kickstart: **system-config-kickstart**.
 
-También podemos modificar un fichero ya existente, luego podremos validar la sintaxis con **ksvalidator** por si hemos metido la pata. (En nuestro sistema siempre habrá un fichero de configuración: `/root/anaconda-ks.cfg`
+También podemos modificar un fichero ya existente, luego podremos validar la sintaxis con **ksvalidator** por si hemos metido la pata.
+
+En nuestro sistema siempre habrá un fichero de configuración: `/root/anaconda-ks.cfg` que contiene lo que se hizo en la instalación, puede ser un buen punto de partida para generar un fichero de kickstart. Además, nos servirá si queremos hacer instalaciones clónicas.
 
 ### Pasos
 
 1. Crear un fichero de configuración kickstart (**system-config-kickstart**).
 2. Usar un editor de texto para añadir montajes al fichero de kickstart.
-3. Chequear la correción del fichero (**kasvalidator**).
+3. Chequear la correción del fichero (**ksvalidator**).
   * Si no disponemos de él habrá que instalarlo: `yum install pykickstart`
   * Tener en cuenta que lo que hace es una validación sintáctica, y no valida las direcivas _%pre_, _%post_ ni _%packages_.
 4. Publicar el fichero para el instalador: 
-  * `ks=<medio>` indica dónde está el fichero (nfs, http, https, cd-rom, hd).
+  * `ks=http://server/dir/file`
+  * `ks=ftp://server/dir/file`
+  * `ks=nfs:server:/dir/file`
+  * `ks=hd:device:/dir/file`
+  * `ks=cdrom:/dir/file`
 5. Arrancar Anaconda y apuntar al fichero de configuración.  
   Normalmente se lo diremos en la línea de arranque del kernel, pero hay virtualizadores donde podemos pasarle este parámetro. 
   - Sistemas con BIOS: `append initrd=initrd.img inst.ks=<ruta a ks.cfg>`
   - Sistemas con UEFI (grub2): `kernel vmlinuz inst.ks=<ruta a ks.cfg>`
+
+Cuando instalemos en máquinas virtuales, usaremos el **virt-manager**, donde podremos especificar la URL del kickstart; en máquinas físicas, tendremos que interrumpir el proceso de arranque y pasarle una de las opciones de ks para indicarle donde está el instalador.
 
 ***
 
@@ -135,6 +149,7 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 * Final de línea: `{exp_reg}$`
 
 ### Limitación de palabras
+
 * Comienzo de palabra: `'\<{exp_reg}'`
 * Fin de palabra: `'{exp_reg}\>'`
 
@@ -448,7 +463,8 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 
 * Plancha acl de un fichero a otro: `getfactl file1 |setfactl --set-file=- file2`
 * Lo mismo recursivo: `getfactl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
-* Modificar usuario propietario: `setfacl -m u::rX file`: aplica permisos x de forma recursiva a directoros pero no a ficheros. **OJO:** en cuanto sea ejecutable para alguien, le aplicará la X al fichero.
+* Modificar usuario propietario: `setfacl -m u::rX file`: aplica permisos x de forma recursiva a directoros pero no a ficheros.  
+  **OJO:** en cuanto sea ejecutable para alguien, le aplicará la X al fichero.
 * Modficar propietarios (idem para grupos, other y mascaras): `setfacl -m u::rws fich/dir`
 * Modificar nominales: (idem para grupos): `u:1005:rwx file/dir`
 * Modificar defaults: (simplemente poner delante d:): `d:u:1005:rx file/idr`
@@ -621,7 +637,7 @@ Se puede usar **authconfig** para configurar todo, pero hay una herramdminsitrar
 Cuando se lanza, busca a través del DNS provisto por el sistema un servidor IPA del que obtener la configuración, en caso de no encontrarlo, preguntará la configuración (nombre de dominio y un realm). También necesitará un nombre de usuario y la contraseña.
 
 ## Unirse a un Active Directory
-https://start.fedoraproject.org/
+
 Se pueden hacer de dos formas:
 * Instalar _samba-winbind_ y configurar **windbind** a través de **authcofig**
 * Instalar los paquetes **sssd** y **realm** y usarlos para unierse al AD.
@@ -976,14 +992,67 @@ Así cuando hagamos `cd /home/guests/ldapuserX`, nos montará directamente `serv
 
 # Network Storage SMB <a name="smb"></a>
 
+**SMB**: Server Message Block.
+**CIFS**: Common Internet File System, es un dialecto de SMB.
+
+En NFS todos los montajes se pueden hacer con un usuario, si este tenía los permisos adecuados. Ahora vamos a ver que aquí no es así. Sin embargo, para montar un **SMB share** o **recurso SMB** necesitamos acceder como un usuario que  tenga permisos para montar ese sistema (usuario, passwd, dominio).
+
+Paquetes: cifs-utils, samba-client (este no es obligatorio, pero sí recomendable).
+
+## Montajes
+
+1. Identificar: `smbclient -L //server`
+2. Crear el punto de montaje: `mkdir -p /pto/montaje`
+3. Montaje (fstab, automount, mount)
+
+### Montaje manual
+
+`mount -t cifs -o guest //server/recurso /pto/montaje`
+
+### fstab
+
+Meter la siguiente línea:  
+`//server/recurso /pto/montaje  cifs  guest 0 0`
+
+## Si no nos identificamos como guest
+
+El usuario/password son independiente de lo que tenga el sistema, de hecho, los usuarios asociados a SAMBA se les da el shell **/bin/nologin**
+
+`mount -t cifs -o username:<usuario> //server/recurso /pto/montaje`, nos pedirá el passwd.
+
+Podemos tenerlo en un fichero de credenciales de root, con permisos 600, normalmente en `/secure/sherlock` con el siguiene formato:
+~~~text
+username="nombre"
+password="pass"
+domain="dominio"
+~~~
+
+En este caso, invocaremos: `mount -t cifs -o credentials=/secure/sherlock //server/recurso /pto/montaje`
+
+## Automontaje
+
+Samba también se automonta. El procedimiento es prácticamente igual.
+
+Fichero maestro de asignación y luego su fichero de mapeo (auto.*).
+~~~text
+cat /etc/auto.master.d/*.autofs
+/bakerst  /etc/auto.baker
+
+cat /etc/auto.baker
+cases -fstype=cifs,credential=/server/sherlock  ://server/recurso
+~~~
+
+Esto requiere dos cosas:
+* autofs
+* cifs-utils
+
 ***
 
-# Troubleshooting <a name="troubleshooting"></a>
+# Troubleshooting del arranque <a name="troubleshooting"></a>
 
 ***
 
-# Limitar comunicaciones de red <a name="firewalld"></a>
-
+# Firewall: limitar comunicaciones de red <a name="firewalld"></a>
 
 ***
 
