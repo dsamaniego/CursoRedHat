@@ -10,8 +10,8 @@
 10. [Adminsitrar Logical Volume Management (LVM)](#lvm)
 11. [Network Storage NFS](#nfs)
 12. [Network Storage SMB](#smb)
-13. [Firewall: limitar comunicaciones de red](#firewalld)
-14. [Troubleshooting del arranque](#troubleshooting)
+13. [Troubleshooting del arranque](#troubleshooting)
+14. [Firewall: limitar comunicaciones de red](#firewalld)
 15. [Apéndice: Comandos útiles](#apendix)
 
 ***
@@ -446,7 +446,8 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 
 * Plancha acl de un fichero a otro: `getfactl file1 |setfactl --set-file=- file2`
 * Lo mismo recursivo: `getfactl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
-* Modificar usuario propietario: `setfacl -m u::rX file`: aplica permisos x de forma recursiva a directoros pero no a ficheros. **OJO:** en cuanto sea ejecutable para alguien, le aplicará la X al fichero.
+* Modificar usuario propietario: `setfacl -m u::rX file`: aplica permisos x de forma recursiva a directoros pero no a ficheros.  
+  **OJO:** en cuanto sea ejecutable para alguien, le aplicará la X al fichero.
 * Modficar propietarios (idem para grupos, other y mascaras): `setfacl -m u::rws fich/dir`
 * Modificar nominales: (idem para grupos): `u:1005:rwx file/dir`
 * Modificar defaults: (simplemente poner delante d:): `d:u:1005:rx file/idr`
@@ -619,7 +620,7 @@ Se puede usar **authconfig** para configurar todo, pero hay una herramdminsitrar
 Cuando se lanza, busca a través del DNS provisto por el sistema un servidor IPA del que obtener la configuración, en caso de no encontrarlo, preguntará la configuración (nombre de dominio y un realm). También necesitará un nombre de usuario y la contraseña.
 
 ## Unirse a un Active Directory
-https://start.fedoraproject.org/
+
 Se pueden hacer de dos formas:
 * Instalar _samba-winbind_ y configurar **windbind** a través de **authcofig**
 * Instalar los paquetes **sssd** y **realm** y usarlos para unierse al AD.
@@ -1028,14 +1029,13 @@ Esto requiere dos cosas:
 * autofs
 * cifs-utils
 
+***
+
+# Troubleshooting del arranque <a name="troubleshooting"></a>
 
 ***
 
 # Firewall: limitar comunicaciones de red <a name="firewalld"></a>
-
-***
-
-# Troubleshooting <a name="troubleshooting"></a>
 
 ***
 
