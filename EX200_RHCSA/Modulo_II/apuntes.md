@@ -974,14 +974,68 @@ Así cuando hagamos `cd /home/guests/ldapuserX`, nos montará directamente `serv
 
 # Network Storage SMB <a name="smb"></a>
 
+**SMB**: Server Message Block.
+**CIFS**: Common Internet File System, es un dialecto de SMB.
+
+En NFS todos los montajes se pueden hacer con un usuario, si este tenía los permisos adecuados. Ahora vamos a ver que aquí no es así. Sin embargo, para montar un **SMB share** o **recurso SMB** necesitamos acceder como un usuario que  tenga permisos para montar ese sistema (usuario, passwd, dominio).
+
+Paquetes: cifs-utils, samba-client (este no es obligatorio, pero sí recomendable).
+
+## Montajes
+
+1. Identificar: `smbclient -L //server`
+2. Crear el punto de montaje: `mkdir -p /pto/montaje`
+3. Montaje (fstab, automount, mount)
+
+### Montaje manual
+
+`mount -t cifs -o guest //server/recurso /pto/montaje`
+
+### fstab
+
+Meter la siguiente línea:  
+`//server/recurso /pto/montaje  cifs  guest 0 0`
+
+## Si no nos identificamos como guest
+
+El usuario/password son independiente de lo que tenga el sistema, de hecho, los usuarios asociados a SAMBA se les da el shell **/bin/nologin**
+
+`mount -t cifs -o username:<usuario> //server/recurso /pto/montaje`, nos pedirá el passwd.
+
+Podemos tenerlo en un fichero de credenciales de root, con permisos 600, normalmente en `/secure/sherlock` con el siguiene formato:
+~~~text
+username="nombre"
+password="pass"
+domain="dominio"
+~~~
+
+En este caso, invocaremos: `mount -t cifs -o credentials=/secure/sherlock //server/recurso /pto/montaje`
+
+## Automontaje
+
+Samba también se automonta. El procedimiento es prácticamente igual.
+
+Fichero maestro de asignación y luego su fichero de mapeo (auto.*).
+~~~text
+cat /etc/auto.master.d/*.autofs
+/bakerst  /etc/auto.baker
+
+cat /etc/auto.baker
+cases -fstype=cifs,credential=/server/sherlock  ://server/recurso
+~~~
+
+Esto requiere dos cosas:
+* autofs
+* cifs-utils
+
+
+***
+
+# Firewall: limitar comunicaciones de red <a name="firewalld"></a>
+
 ***
 
 # Troubleshooting <a name="troubleshooting"></a>
-
-***
-
-# Limitar comunicaciones de red <a name="firewalld"></a>
-
 
 ***
 
