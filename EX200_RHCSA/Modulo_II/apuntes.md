@@ -153,7 +153,7 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 * Comienzo de palabra: `'\<{exp_reg}'`
 * Fin de palabra: `'{exp_reg}\>'`
 
-**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'`
+**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'`https://www.thegeekdiary.com/centos-rhel-7-booting-process/
 
 ### Comodines y multiplicadores.
 
@@ -783,7 +783,7 @@ UUID=<uuid> swap swap defaults 0 0
 * **Logical Extension (LE)**: Cada LE se corresponde (no mirror, con una PE), (en mirror, con 2 PE). Las LE, serán múltiplos de PE.
 
 ## Manejo
-
+https://www.thegeekdiary.com/centos-rhel-7-booting-process/
 ### Creación
 
 Al crear la partición física (PD), RH recomienda usar particiones tipo MBR (0x8e)
@@ -854,7 +854,7 @@ Nos quedarán dos particiones mondas y lirondas.
 ### Snapshots
 
 Dentro del mismo VG, son LV que apuntan a otro LV, de forma que ambos están sincronizados.
-
+https://www.thegeekdiary.com/centos-rhel-7-booting-process/
 En el snapshot están los inodos que apuntan a los del LV original, cuando se modifica un fichero, en el snapshot se van copiando los chunks que cambian. 
 
 Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . Se usa para extraer datos de la BD y luego hacer backup sin necesidad de parar la BB.DD.
@@ -1009,7 +1009,7 @@ Paquetes: cifs-utils, samba-client (este no es obligatorio, pero sí recomendabl
 
 `mount -t cifs -o guest //server/recurso /pto/montaje`
 
-### fstab
+### fstabhttps://www.thegeekdiary.com/centos-rhel-7-booting-process/
 
 Meter la siguiente línea:  
 `//server/recurso /pto/montaje  cifs  guest 0 0`
@@ -1048,7 +1048,152 @@ Esto requiere dos cosas:
 
 ***
 
-# Troubleshooting del arranque <a name="troubleshooting"></a>
+# Troubleshooting del arranque <a name="troubleshooting)"></a>
+
+Una web donde explica bien el [proceso](https://www.thegeekdiary.com/centos-rhel-7-booting-process/).
+
+## El proceso de arranque en máquinas x86_64
+
+Este mismo proceso es aplicable para máquinas virtualizadas (en este caso, el HW es el hipervisor el que se encarga de ello).
+1. POST (_Power On Self Test_): Encendemos la máquina (BIOS o UEFI)- Test automático para ver si tiene energía suficiente para arrancar la máquina.
+2. MBR: Con el firmware del sistema recién cargado, se selecciona el dispisitivo arrancable (podría también ser GPT).
+  - Se busca la tabla de particiones
+3. Bootloader: Busca de donde tiene que cargar el kernel (en RHEL7, por defecto es GRUB2).
+  - Para configurarlo: `grub2-install`
+  - Cada bloque que nos muestra, viene definido por un menú entry
+  - Se hacen configuraciones
+  - Se carga el kernel con los parámetros que hemos configurado (ahí es donde metemos mano para definir un kickstart, puntos de control, etc...)
+  - Se carga el runlevel.
+4. Kernel: Carga en memoria el _initram_ y el kernel **initramfs/kernel** con un archivo tipo gzip de un cpio con todos los módulos necesarios para que funcione el sistema.
+  - El responsable de esto es el **dracut**, y su config en `etc/dracut.conf`
+  - Arranca el primer proceso del sistema (systemd con PID=1).
+  - Aquí el bootloader le pasa el control a kernel
+5. Systemd:
+  - tira de ficheros de configuración situados a `/etc/systemd`
+  - Intenta conectar los target /etc/initrd.target, para poner el sistema en el estado que necesitamos.
+    · monta el / en /sysroot
+  - Controla en qué target nos pone el sistema, definido en `/etc/systemd/system/default.target` (que es un link simbólico que apunta al target al que se tiene que arrancar).
+6. Pivote de /sysroot a disco /
+
+Para rebotar el sistema de forma ordenada:
+  * systemctl poweroff: detiene todos los ficheros, demonta los archivos y apaga el sistema
+  * systemctl reboot: 
+  * systemctl halt: Detiene todos los procesos, desmonta los FS y se queda a la espera del botonazo
+  
+## Targets
+
+Un target de systemd es un conjunto de units de systemd que deben ser arrancadas para alcanzar cierto estado.
+
+* **multiuser.target**: Varios usuarios pero sólo texto (init 3)
+* **graphical.target**: Levanta gnome que permite varios inicios de sesión gráficos y basados en texto (init 5)
+* **emergency.target**: Entra tras la carga del kernel, sólo tenemos montado el raíz en modo lectura (init 1)
+* **rescue.target**: Muestra una consola de sulogin con la mayor parte del sistema levantado (los FS).
+
+### Comandos de systemctl relacionados.
+
+* `systemctl list-dependencies <modo>.target |grep target` Nos muestra los targets de los que depende uno concreto (sin el grep, nos muestra todas las dependencias).
+* `systemctl lsit-units --type=target --all` Nos muestra todos los targets disponibles.
+* `systemctl list-unit-files --type=target --all`: todos los targets disponibles
+* `systemctl isolate <target>.target`: Para cambiarnos a un target, parará todos los servicios no necesarios para ese target.
+  - En `/etc/systemd/system` podemos añadir una unidad.target.
+* `systemctl get-default` Nos devuelve cual es el target por defecto
+* `systemctl set-default <target>.target` establece es default target, que lo que hace es cambiar el log simbólico.
+
+También podemos cambiar el target en la línea de kernel del grub (es la que empieza con _linux16_), metiendo el siguiente parámetro:  
+`systemd.unit=<target>.target` (recordar, cuando está el menú del grub, pulsamos "e" y podemos modificar la línea de arranque que hemos seleccionado y una vez modificado, **Ctrl+x** para iniciar con los cambios).  
+En el modo edición podremos cambiar el mapa del teclado ya que por defecto viene en inglés.
+
+## Troubleshooting
+
+### Recuperar password de root
+
+Supongamos que hemos perido la password de root.
+
+Una posible solución, es levantar con un live-cd, generar una password encriptada de root (ver el script de python) y meter esa cadena en el `/etc/shadow`. Luego reiniciar el sistema.
+
+#### Otra forma (mejor)
+
+Esto funcionará si no tenemos protegido el grub con la password de grub.
+
+1. Interrumpimos el sistema y metemos en la línea del kernel el siguiente parámetro: `rd.break`.  
+  Cuando arranque, nos dará una consola (la última consola definida en la línea de kernel es donde se mostrará el prompt).   
+  **OJO** lo mejor es que terminemos la línea con `console=tt0 rd.break`
+2. Montamos el raíz en modo lectura/escritura: `mount -o rw,remount /sysroot`
+3. Enjaulamos el sistema raíz: `chroot /sysroot`
+4. Restablecemos la passwd de root: `passwd root`, el problema es que como SELinux no está corriendo, habremos perdido el contexto el `/etc/shadow`.
+5. Decimos que en el próximo reinicio reetiquete con SELinux los ficheros sin etiquetar: `touch /.autorelabel`
+6. Nos vamos: `exit;exit;`
+
+Arrancará con la nueva password de root.
+
+### Usar journalctl
+
+Hacer persistente los logs para poder examinar caidas entre reinicios:
+~~~bash
+mkdir -p -m 2755 /var/log/journal
+chown :systemd-journal /var/log/journal
+killall -USR1 systemctl-journald
+~~~
+
+El killall es equivalente a `journalctl --flush`
+
+Para ver los logs de otros arranques: `journalctl -b-n -p err` vemos los errores del arranque -n antes del que estamos (lo normal, para ver lo que pasó antes del último arranque: **-b-1**).
+
+### Shell de depuración temprana
+
+Es una consola en la que se entra directamente como root, sin necesidad de meter contraseña. Para ir a ella, **Ctrl+Alt+F9**, en principio no está habilitada, hay que hablitarla con un servicio:  
+`systemctl enable debug-shell.service`
+
+Esto es un agujero de seguiridad en el sistema así que una vez que hayamos terminado de necesitar la consola de depuración, volver a deshabilitarla.
+
+En esta shell podremos ver en el arranque lo que está pasando.
+
+#### Stuck jobs (trabajos colgados)
+
+En el arranque **systemd** va arrancando servicios, si algunos de estos no arrancan, bloquean el arranque de otros. 
+
+Para inspeccionar la lista de jobs actual: `journalctl lsit-jobs`, los jobs en estado _waiting_ no arrancarán hasta que los que están en _running_ no terminen.
+
+## Reparar problemas de FS en el arranque
+
+Los errores en el `/etc/fstab` y FS corruptos pueden parar el arranque de una máquina. Normalmente **systemd** continua con el arranque tras un timeout y nos lleva a un shell de emergencia donde es necesario entrar como root.
+
+Errores comunes:
+* FS corrupto: hacer un fsck.
+* Algo incorrecto en el **/etc/fstab**
+  - Dispositivo inexistente.
+  - Punto de montaje inexistente.
+  - Opción de montaje incorrecta.
+
+En cualquier caso, terminaremos en una shell de emergencia (si no, podríamos meternos en _emergency.target_).
+
+Después de reparar, tendremos que lanzar `systemcl daemon-reload` para que **systemd** siga con las nuevas versiones de los ficheros que hayamos modificado.
+
+Ayuda: systemd-fsck, systemd-fstab-generator, systemd-fstab-mount
+
+## Problemas con el boot loader
+
+**grub2 (_GRand Unified Bootloader v2_)** es el boot loader por defecto de RedHat, se usa para arrancar tanto desde sistemas con BIOS como con UEFI y soporta casi cualquier sistema operativo.
+
+Fichero de configuración principal: `/boot/grub2/grub.cfg`. En principio nos se debería editar este fichero, sino que editaremos variables de configuración y luego reconfigurar el arranque con la herramienta **grub2-mkconfig**, que mira en `/etc/default/grub` (aquí si que podemos meter mano) para buscar opciones y luego usa los scripts de `/etc/grub.d/` para generar el fichero de configuración.
+
+Para hacer los cambios permamentes: `grub2-mkconfig > /boot/grub2/grub.cfg`
+
+### Algunas directivas
+
+* Entradas arrancables bajo bloques **menuentry**.
+  - linux16 --> hace referencia al kernel
+  - initrd16 --> hace referencia a initramfs
+  - set root --> apuntan al filesystem desde donde grub2 cargará el kernel y el initramfs
+    - Sintaxis: _harddrive,partition_, donde hd0 es el primer disco, hd1 el segundo, ...  
+      Las particiones se indican como **msdos1** para la primera partición MBR ó **gpt1** para la primera partición GPT
+    - Ejemplo: `set root="hd0,msdos1"` ó `set root="hd0,gpt1"`.
+
+### Reinstalar grub
+
+Para aquellos casos en que nada funciona, se puede reinstalar con **grub2-install**
+* en sistemas BIOS, grub2 se instalará en el disco donde esté la MBR y hay que pasarlo como argumento
+* en sistemas UEFI no son necesarios argumentos porque la partición EFI está montada en `/boot/efi`.
 
 ***
 
