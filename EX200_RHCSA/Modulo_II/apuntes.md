@@ -153,7 +153,7 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 * Comienzo de palabra: `'\<{exp_reg}'`
 * Fin de palabra: `'{exp_reg}\>'`
 
-**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'`
+**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'`https://www.thegeekdiary.com/centos-rhel-7-booting-process/
 
 ### Comodines y multiplicadores.
 
@@ -783,7 +783,7 @@ UUID=<uuid> swap swap defaults 0 0
 * **Logical Extension (LE)**: Cada LE se corresponde (no mirror, con una PE), (en mirror, con 2 PE). Las LE, serán múltiplos de PE.
 
 ## Manejo
-
+https://www.thegeekdiary.com/centos-rhel-7-booting-process/
 ### Creación
 
 Al crear la partición física (PD), RH recomienda usar particiones tipo MBR (0x8e)
@@ -854,7 +854,7 @@ Nos quedarán dos particiones mondas y lirondas.
 ### Snapshots
 
 Dentro del mismo VG, son LV que apuntan a otro LV, de forma que ambos están sincronizados.
-
+https://www.thegeekdiary.com/centos-rhel-7-booting-process/
 En el snapshot están los inodos que apuntan a los del LV original, cuando se modifica un fichero, en el snapshot se van copiando los chunks que cambian. 
 
 Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . Se usa para extraer datos de la BD y luego hacer backup sin necesidad de parar la BB.DD.
@@ -1009,7 +1009,7 @@ Paquetes: cifs-utils, samba-client (este no es obligatorio, pero sí recomendabl
 
 `mount -t cifs -o guest //server/recurso /pto/montaje`
 
-### fstab
+### fstabhttps://www.thegeekdiary.com/centos-rhel-7-booting-process/
 
 Meter la siguiente línea:  
 `//server/recurso /pto/montaje  cifs  guest 0 0`
@@ -1048,7 +1048,7 @@ Esto requiere dos cosas:
 
 ***
 
-# Troubleshooting del arranque <a name="troubleshooting"></a>
+# Troubleshooting del arranque <a name="troubleshooting)"></a>
 
 Una web donde explica bien el [proceso](https://www.thegeekdiary.com/centos-rhel-7-booting-process/).
 
