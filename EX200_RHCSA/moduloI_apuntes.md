@@ -1,22 +1,4 @@
-# Tabla de contenidos
-[Introducción al curso](#introduccion)
-1. [Acceso a la línea de comandos](#consola)
-2. [Manejo de archivos con la línea de comandos](#manage_files)
-3. [Obtener ayuda](#help)
-4. [Ficheros de texto](#txt_files)
-5. [Usuarios y grupos](#user_group_mngmt)
-6. [Permisos](#perms)
-7. [Monitorización y administración de procesos](#proc)
-8. [Control de servicios y demonios](#systemctl)
-9. [Configurando y asegurando el servicio SSH](#openssh)
-10. [Manejo de logs](#logs)
-11. [Networking](#network)
-12. [Archivado y copia entre sistemas](#empaquetado)
-13. [Manejo de paquetes de software](#packages)
-14. [Sistemas de archivos](#filesystem)
-15. [Virtualización](#virtualization)
-   
-# Introducción al curso <a name="introduccion"></a>
+# Introducción al curso 
 
 ## Máquinas
 
@@ -64,7 +46,7 @@ La manera más cómoda es cambiarlo en el entorno gráfico.
 
 ***
 
-# Acceso a la línea de comandos <a name="consola"></a>
+# Acceso a la línea de comandos 
 
 ## Entorno gráfico
 
@@ -78,7 +60,7 @@ Incluso en el entorno gráfico tenemos consolas, para acceder a ellas hay que pu
 
 Aquí hay que poner los atajos de teclado etc...
 
-# Manejo de archivos con la línea de comandos <a name="manage_files"></a>
+# Manejo de archivos con la línea de comandos 
 
 ## Jerarquía de directorios
 
@@ -114,9 +96,9 @@ Tenemos dos formas de invocar un comando en línea de comandos:
 
 Las dos son equivalentes, pero la primera opción permite anidamiento, por ejemplo:
 
-~~~bash
+```bash
 VARIABLE=$(echo $PATH)
-~~~
+```
 
 ### Protección de argumentos
 
@@ -124,7 +106,7 @@ Si en una cadena tenemos que pasar una expresión, hay que usar comillas dobles,
 
 ***
 
-# Obtener ayuda <a name="help"></a>
+# Obtener ayuda 
 
 El comando `man` está organizado en diferentes secciones de la 1 a la 8, las que mas nos interesan son:
 
@@ -144,7 +126,7 @@ El comando `man` está organizado en diferentes secciones de la 1 a la 8, las qu
 
 ***
 
-# Ficheros de texto <a name="txt_files"></a>
+# Ficheros de texto 
 
 Vamos a ver cómo trabajar con entradas y salidas, redirecciones, etc...
 
@@ -162,14 +144,14 @@ Operadores de redirección:
    los flags **-ne**, indican que ignore el carácter de escape e interprete el \n como salto de línea.
 * **>>** Append, si existe, añade al fichero y si no lo crea.
 * **<** y **<<** Entrada desde teclado, es típico en el caso de edición de ficheros:  
-   ~~~bash
+   ```bash
    $ cat > fichero.txt <<EOF
    > Vamos escribiendo líneas
    > y líneas
    > y líneas...
    ....
    > hasta que pulsemos Ctrd+D
-   ~~~
+   ```
 
 Dispositivos especiales del sistema:
 * `/dev/null`--> es un sumidero, todo lo que dirijamos a él se pierde.
@@ -182,12 +164,12 @@ Ojo, los operadores de fusión más modernos ( &>file &>>file) puede que no func
 ### Entrada desde un fichero
 
 Podemos redirigir la salida como entrada a otro programa (por ejemplo en un bucle for):
-~~~ bash
+``` bash
 while read line
 do
   echo "$line"
 done < "${1:-/dev/stdin}
-~~~
+```
 
 ## Tuberías
 
@@ -205,7 +187,7 @@ Ejemplos:
 
 ***
 
-# Usuarios y grupos <a name="user_group_mngmt"></a>
+# Usuarios y grupos 
 
 Cada proceso y fichero tiene un usuario propietario.
 **
@@ -257,9 +239,9 @@ Dado que tiene todos los privilegios, tiene una capacidad ilimitada de romper el
    * Con la opción **-i** nos permite abrir una shell con los privilegios del usuario con mayores privilegios que nos permitan nuestros permisos de su.
    * En RHEL7: Si tenemos un usuario que pertenece al grupo **wheel** también tendrá privilegios en el fichero `sudoers`  
       Si hacemos un `visudo`, vemos la entrada por el grupo:
-      ~~~bash
+      ```bash
       %wheel  ALL=(ALL) ALL
-      ~~~
+      ```
       Características:
       * Que indica que usuarios del grupo wheel puede hacer sudo desde todas las terminales a todos los usuarios del sistema y ejecutar cualquier comando.
       * en el último ALL, podemos sustituir por:
@@ -339,9 +321,9 @@ El hash de la contraseña almacena 3 datos separados por '$':_$N$semilla$passwdC
 Cuando te logas e introduces el passwd, coge esa contraseña introducida y aplica el método de hash usado con la semilla y la compara con la almacenada, si coincide p'alante, y si no, caput.
 
 Para cambiar el método de cifrado:
-~~~bash
+```bash
 authconfig --passalgo=<Algoritmo_cifrado> --update
-~~~
+```
 
 #### Vigencia de las contraseñas.
 
@@ -369,19 +351,19 @@ Podemos bloquear una cuenta con `usermod -L <usermod>` o con `usermod -L -e N <u
 Importante, podemos tener un usuario sin bloquear pero que no puede acceder porque su constraseña ha caducado.
 
 Podemos impedir que un usuario acceda a la shell cambiando su shell a `/sbin/nologin` o `/bin/false` (esta para que no pueda hacer nada de nada.
-~~~ bash
+``` bash
 usermod -s /sbin/nologin <username>
-~~~
+```
 
 ***
 
-# Permisos <a name="perms"></a>
+# Permisos 
 
 Si hacemos un ls -l, vemos las siguientes características:
-~~~bash
+```bash
 kiosk@foundation12 ~]$ ls -l /etc/yum.conf
 -rw-r--r--. 1 root root 813 Nov 26  2017 /etc/yum.conf
-~~~
+```
 
 Vienen en 3 grupos USER - GROUP - OTHER y se aplican de izda a dcha, e.d. se aplican los permisos del primer grupo que cumpla.
 
@@ -456,7 +438,7 @@ Por seguridad no se dan permisos de ejecución por defecto a ningún fichero, ha
 
 ***
 
-# Monitorización y administración de procesos <a name="proc"></a>
+# Monitorización y administración de procesos 
 
 Un proceso es una instancia corriendo o lanzada de un programa ejecutable, consiste en:
 * Espacio de direccines en memoria
@@ -487,7 +469,7 @@ Si un proceso no tiene asociado un terminal, (se muestra en el campo TTY del ps 
 * pasar un proceso a segundo plano: `comando + Ctrl-z`
 * pasar a primer plano: `fg %<job_id>`, para conocer el número de job: `jobs`
 
-~~~bash
+```bash
 [kiosk@foundation12 ~]$ sleep 100000 &
 [1] 4619
 [kiosk@foundation12 ~]$ jobs
@@ -503,7 +485,7 @@ sleep 100000
  4565  4565  4565 pts/2    00:00:00 bash
  4619  4619  4565 pts/2    00:00:00 sleep
  4648  4648  4565 pts/2    00:00:00 ps
-~~~
+```
 Si nos salimos de la shell, mataremos todos los jobs que estén en la shell, para prevenir esto está el comando `nohup <comando> &`
 
 **TRUCO:** A veces en vez de hacer un bucle `while true; do clear; <comando>; sleep 2; done` será mejor ejecutar `watch -n 2 <comando>`
@@ -567,7 +549,7 @@ Para entender la carga: (https://www.tecmint.com/understand-linux-load-averages-
 
 ***
 
-# Control de servicios y demonios <a name="systemctl"></a>
+# Control de servicios y demonios 
 
 * **systemd** es el análogo al **init** de versiones anteriores.
    * controla los arranques de servicios y demonios del sistema.
@@ -633,7 +615,7 @@ Esto lo podemos hacer para que no podamos levantar dos servicios que entran en c
 
 ***
 
-# Configurando y asegurando el servicio SSH <a name="openssh"></a>
+# Configurando y asegurando el servicio SSH 
 
 **OpenSSH - _Open Secure Shell_** - permite cifrar usando claves asimétricas entre dos máquinas.
 
@@ -663,12 +645,12 @@ Cuando se inicia la conexión, se hace un intercambio de claves públicas.
 
 Para poder acceder por ssh a un host remoto desde nuestro host, tenemos que intercambiar las claves.
 
-~~~ bash
+``` bash
 # generamos el par de claves
 $ ssh-keygen -t <alg_cifrado> -b <bytes_clave>
 # copiamos la clave pública al host remoto -nos pedirá la passwd del <user> en el <server>
 $ ssh-copy-id -i [ruta_clave_privada] <user>@<server>
-~~~
+```
 
 Importante, los permisos de los ficheros:
 * claves públicas: 644
@@ -688,7 +670,7 @@ Para que coja los cambios, `systemctl reload sshd`
 
 ***
 
-# Manejo de logs <a name="logs"></a>
+# Manejo de logs 
 
 ## Monitorización del sistema
 
@@ -772,7 +754,7 @@ Para ver si está corriendo: `sysemctl status systemd-journald`
 
 **Procedimiento**
 
-~~~ bash
+``` bash
 # creamos el directorio
 mkdir /var/log/journal
 chown root:systemd-journal /var/log/journal
@@ -781,7 +763,7 @@ chmod 2755 /var/log/journal
 killall -USR1 systemd-journald
 # Podemos forzar el rotado:
 killall -USR2 systemd-journald
-~~~
+```
 
 Ahora, como tenemos varios rebotes, podemos ver lo que hay desde el rebote _n_ con `journalctl -b -n` 
 
@@ -820,7 +802,7 @@ Todo se configura con `/etc/chrony.conf`
 
 ***
 
-# Networking <a name="network"></a>
+# Networking 
 
 ## Conceptos
 
@@ -993,13 +975,13 @@ Estructura de búsqueda (el orden de búsqueda se establece en el fichero `/etc/
 1. `/etc/hosts` (mantiene concordancia nombre-ip)
    * para lanzar consultas aquí: `getent hosts <hostname>`
 2. Consulta al DNS, que está configurado en `/etc/resolv.conf`
-   ~~~ bash
+   ``` bash
    search   example.com
    domain   example.con
    nameserver  <ip>
    nameserver  <ip>
    ...
-   ~~~
+   ```
    Si configuramos _search_ y _domain_ se queda con **_domain_**
    
 Para probar como funciona el DNS:
@@ -1008,7 +990,7 @@ Para probar como funciona el DNS:
 
 ***
 
-# Archivado y copia entre sistemas <a name="enpaquetado"></a>
+# Archivado y copia entre sistemas 
 
 ## Empaquetado
 
@@ -1054,7 +1036,7 @@ Admite recursividad con el flag **-r**
 
 Es un ftp que va sobre ssh, como en el ftp sin cifrar, se nos abre una subshell para interactuar con el servidor remoto.
 
-~~~bash
+```bash
 $ sftp servidor
 user@servidor password: xxxx
 Connected to servidor.
@@ -1064,7 +1046,7 @@ sftp> get fichero (se trae el fichero)
 #####
 sftp> put fichero (se lleva el fichero)
 ####
-~~~
+```
 
 Admite los siguientes comandos: ? (ayuda), (l)cd, ls, mkdir, rmdir, (l)pwd, (m)get, (m)put, exit
 
@@ -1096,7 +1078,7 @@ Generalmente se copiará con -av, también se puede hacer entre dos directorios 
 
 ***
 
-# Manejo de paquetes de software <a name="packages"></a>
+# Manejo de paquetes de software 
 
 Para instalar software en redhat, hay que usar la utilidad **yum**, para lo que la máquina tiene que estar licenciada, y con el _RedHat Subscription Manager_ veremos lo que podemos o no instalar.
 
@@ -1227,14 +1209,14 @@ Repositorios en: `/etc/yum.repos.d/*.repo`
 
 Para definir un repositorio necesitamos un fichero **.repo**, con el siguiente contenido:
 
-~~~text
+```text
 [IDENTIFICACION]
 name="nombre"
 baseurl={ftp,http,file}
 enabled={0|1}           # opcional (recomendable)
 gpgcheck={0|1}          # opcional (recomendable)
 gpgkey=url_public_key   # opcional (recomendable)
-~~~
+```
 
 En el repositorio tendríamos que  tener los paquetes rpm y un repodata con los metadatos del repositorio.
 * `yum repo list all`  --> devuelve lalista de todos los repositorios
@@ -1261,7 +1243,7 @@ Esto no nos resuelve dependencias así que ojito, mejor usar yum.
 
 ***
 
-# Sistemas de archivos <a name="filesystem"></a>
+# Sistemas de archivos 
 
 Un sistema de ficheros es una estructura organizada de ficheros y directorios que residen en un dispositivo de almacenamiento.
 
@@ -1298,7 +1280,7 @@ Si necesitamos ampliar, podemos usar un nuevo PV con un disco adicional, que pod
 
 ## Comandos
 
-~~~bash
+```bash
 [kiosk@foundation12 ~]$ df -mlhi
 Filesystem     Inodes IUsed IFree IUse% Mounted on
 /dev/sda3        111M  124K  111M    1% /
@@ -1309,7 +1291,7 @@ tmpfs            4.0M    16  4.0M    1% /sys/fs/cgroup
 /dev/sda1        512K   374  512K    1% /boot
 tmpfs            4.0M    24  4.0M    1% /run/user/1000
 tmpfs            4.0M     1  4.0M    1% /run/user/0
-~~~
+```
 
 **OJO**, no confundir KiB con KB, el primero es 2^10 (Flag -h) y el segundo 10^3 (Flag -H) y sus múltiplos
 
@@ -1429,7 +1411,7 @@ Todos los flags de búsqueda podemos combinarlos, si los combinamos tal cual fun
 
 ***
 
-# Virtualización <a name="virtualization"></a>
+# Virtualización 
 
 Las máquinas virtuales de RHEL se basan en KVM (Kernel Virtual Machine). Está basado en el Kernel, que lo único que necesita es que se instalen los módulos.
 

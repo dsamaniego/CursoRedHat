@@ -1,28 +1,10 @@
-1. [Automatización de la instalación](#kickstart)
-2. [Expresiones regulares y grep](#regular_expressions)
-3. [Vim avanzado](#advanced_vim)
-4. [Programación de tareas](#task_sched)
-5. [Prioridades](#priority)
-6. [Control de acceso a ficheros (ACLs)](#acls)
-7. [Manejo de SELinux](#selinux)
-8. [Conexión de usuarios con LDAP e IPA](#redes)
-9. [Añadir discos, particiones y sistemas de ficheros](#discos)
-10. [Adminsitrar Logical Volume Management (LVM)](#lvm)
-11. [Network Storage NFS](#nfs)
-12. [Network Storage SMB](#smb)
-13. [Troubleshooting del arranque](#troubleshooting)
-14. [Firewall: limitar comunicaciones de red](#firewalld)
-15. [Apéndice: Comandos útiles](#apendix)
-
-***
-
-# Automatización de la instalación <a name="kickstart"></a>
+# Automatización de la instalación 
 
 **Anaconda** es el instalador que usa RHEL, necesita que el que está haciendo la instalación le responda a una serie de preguntas acerca de la configuracion del sistema.
 
 **Kickstart** es el sistema para hacer instalaciones desatendidas (coge un fichero de texto con las respuestas que daríamos en una instalación manual). Se basa en un fichero dividido en secciones, con el siguiente formato:
 
-~~~text
+```text
 comandos
 ...<software>
 %packages
@@ -34,7 +16,7 @@ comandos
 %post
 ...<scripts>
 %end
-~~~
+```
 
 Los comentarios van en líneas precedidas por #
 
@@ -133,7 +115,7 @@ Cuando instalemos en máquinas virtuales, usaremos el **virt-manager**, donde po
 
 ***
 
-# Expresiones regulares y grep <a name="regular_expressions"></a>
+# Expresiones regulares y grep 
 
 ## Expresiones regulares
 
@@ -188,7 +170,7 @@ Ya sabemos... **man grep**
 
 ***
 
-# Vim avanzado <a name="advanced_vim"></a>
+# Vim avanzado 
 
 3 modos: 
 * comando: para meter comandos de manipulación del fichero.
@@ -236,7 +218,7 @@ Rango puede ser:
 
 ***
 
-# Programación de tareas <a name="task_sched"></a>
+# Programación de tareas 
 
 ## at
 
@@ -339,13 +321,13 @@ Lee los ficheros de configuración que tiene la unidad:
 * `/run/tmpfiles.d/*.conf`: Donde meterán algunos programas sus ficheros temporales. (daemons y procesos), volátil.
 * `/etc/tmpfiles.d/*.conf`: la ruta de adminsitrador (adminstrador)
   - Lee los ficheros que tiene definidos como temporales y los crea.
-  - Cada cierto tiempo según una unidad *systemd_tmpfiles-clean.timer* define cada cuanto tiene que purgar los ficheros termporales (más información en _/usr/lib/systemd/system/systemd-tmpfiles-clean.timer_).  
-    La definiciń es algo así:
-    ~~~bash
+  - Cada cierto tiempo según una unidad *systemd_tmpfiles-clean.timer* define cada cuando tiene que purgar los ficheros termporales (más información en _/usr/lib/systemd/system/systemd-tmpfiles-clean.timer_).  
+    La definición es algo así:
+    ```bash
     [Timer]
     OnBootSec=15min
     OnUnitActiveSec=1d
-    ~~~
+    ```
     Si arranca borra a los 15 minutos y si está arrancado, limpia cada día.
     (Internamente hace un `stat fichero`, consulta los mtime, ctime, atime, y si alguno de estos valores superan 1 día, el sistema los purga).
   - siempre podremos hacer un purgado manual con `systemd-tmpfiles --clean`
@@ -356,8 +338,8 @@ Orden de prioridad de abajo a arriba.
 
 **man 5 tmpfiles.d**
 
-Sintaxis del fichero:
-_tipo path permisos uid gid antigüedad argumento_  
+Sintaxis del fichero:  
+`tipo path permisos uid gid antigüedad argumento`  
 Donde:
   * tipo: d- directoro, L- link simbólico, D- crea el directorio y si ya existe lo vacía
   * path: la ruta
@@ -368,7 +350,7 @@ Donde:
 
 ***
 
-# Prioridades <a name="priority"></a>
+# Prioridades 
 
 Dado que hay más procesos que cores en los procesadores, para que un sistema multitarea de la sensación de tal, tiene que recurrir a alguna estrategia de reparto de los cores entre los procesos. Linux y otros sistemas operativos resuelven esto con el _time-slicing_. El _process scheduler_ del sistema rápidamente alterna entre procesos en un core dando al usuario la impresión de que hay varios procesos corriendo al mismo tiempo.
 
@@ -396,7 +378,7 @@ Dado que procesos que cogen mucha CPU pueden impactar negativamente al rendimien
 
 ***
 
-# Control de acceso a ficheros (ACLs) <a name="acls"></a>
+# Control de acceso a ficheros (ACLs) 
 
 Nos permiten granularizar permisos.
 
@@ -413,14 +395,14 @@ p.ej.: -rwxrwxrwx+ root root fichero, los permisos de grupo, ya no son los permi
 Para saber en este caso los permisos del grupo, necesito sacar más información con las ACLs.
 
 **getfacl _fichero_** Nos da la información del fichero.
-~~~bash
+```bash
 # file: fichero
 # owner: root
 # group: root
 user::rw-
 group::r--
 other::r--
-~~~
+```
 Fijarse que tenemos un "::", por lo demás son los permisos normales. Pues bien, lo que hay entre esos dos puntos, son las ACLs.
 
 Nomenclatura:
@@ -472,7 +454,7 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
   
 ***
 
-# Manejo de SELinux <a name="selinux"></a>
+# Manejo de SELinux 
 
 SELinux (_Security Enhanced Linux_) es una capa de seguridad para sistemas Linux creado por el NSA. Es una seguridad basada en objetos y con reglas más sofisticadas que las de permisos y ACLs. 
 
@@ -588,7 +570,7 @@ No siempre la solución que nos da el sealert es la válida para el exámen, nor
 dminsitrar Logical Volume Management
 ***
 
-# Conexión de usuarios con LDAP e IPA<a name="redes"></a>
+# Conexión de usuarios con LDAP e IPA
 
 ## Usar LDAP y Kerberos
 
@@ -644,7 +626,7 @@ Se pueden hacer de dos formas:
 
 ### Ejemplo.
 
-~~~bash
+```bash
 # Instalar paquete
 $ sudo yum -y install realmd
 # Descubrir la configuración
@@ -656,13 +638,13 @@ $ sudo realm join domain.example.com # habrá que meter la constraseña de Admin
 $ sudo realm permit --realm domain.example.com --all
 # A cieros usuarios:
 $ sudo realm permit --realm domain.example.com DOMAIN\\usuario1 DOMAIN\\usuario2 ...
-~~~
+```
 
 Por defecto los usuarios deberá unsar FQN (ipauser@ipa.example.com) para usuarios IPA, o DOMAIN\user para usuarios del AD., para deshabilitarlo, cambiar **use_fully_qualified_names** en `/etc/sssd/sssd.conf` a _False_ o borrar la línea, luego reiniciar el servicio.
 
 ***
 
-# Añadir discos, particiones y sistemas de ficheros <a name="discos"></a>
+# Añadir discos, particiones y sistemas de ficheros 
 
 El particionado permite dividir el disco duro en múltiples áreas lógicas de almacenamiento llamadas particiones. Separando los discos en particiones, los administradores pueden usar las diferentes particiones para diferentes funciones.
 
@@ -720,9 +702,9 @@ Una vez que tengamos hechas las particiones, todavía no las podemos usar en el 
 
 La aplicación **mkfs** es la encargada de dar formato a la partición. Si no se especifica otra cosa, el tipo de file system por defecto es _ext2_, RH admite muchos formatos, los mas usados son _xfs_ que es el tipo por defecto que aplica anaconda durante la instalación y _ext4_.
 
-~~~bash
+```bash
 root@system# mkfs -t {ext4|xfs|...} /dev/<particion>
-~~~
+```
 
 ## Montar el FileSystem
 
@@ -734,9 +716,9 @@ Para ver lo que hay montado en el sistema: `mount -a`
 
 Simplemente se dice que se monte y donde.
 
-~~~bash
+```bash
 root@system# mount /dev/<particion> <punto_montaje>
-~~~
+```
 
 Esta es la mejor forma de ver si el particionado que se ha hecho funciona, pero hay que tener en cuenta que una vez reiniciado el sistema, el montaje se pierde.
 
@@ -765,13 +747,13 @@ Los puntos 1 y 2 se hacen como cualquier partición, en punto 3: `mkswap  <parti
 Para disponibilizar la swap hay que activarlo. `swapon <particion>`, con `swapon -a` se activan todas las particiones de swap del `/etc/fstab`. Para quitarlo, `swapoff`, este comando sólo tendrá éxito si ningún dato swapeado está siendo escrito en ese momento.
 
 Para que los cambios sean permanentes hay que ponerlo en `/etc/fstab`, la línea sería algo similar a la siguiente:
-~~~text
+```text
 UUID=<uuid> swap swap defaults 0 0
-~~~
+```
 
 ***
 
-# Administrar Logical Volume Management (LVM) <a name="lvm"></a>
+# Administrar Logical Volume Management (LVM) 
 
 ## Conceptos
 
@@ -868,7 +850,7 @@ Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . S
 
 ***
 
-# Network Storage NFS <a name="nfs"></a>
+# Network Storage NFS 
 
 NFS (_Network File System_): Protocolo estandar usado por sistemas tipo -nix como el protocolo nativo de FS en red.
 
@@ -948,36 +930,36 @@ Podemos definir el tipo de filesystem (--fstype), si queremos que sea estricto (
 
 Definimos debajo de qué vamos a pivotar los montajes
 
-~~~text
+```text
 /shares  /etc/auto.indirecto  # montajes indirectos
 /-       /etc/auto.directo    # montajes directos
 /compart /etc/auto.comodines  # montajes con comodines
-~~~
+```
 
 Supongamos que tenemos un montaje `/shares/work` y un `/shares/prueba`
 
-~~~text
+```text
 cat /etc/auto.indirecto
 work    -rw,sync  serverX:/export/work
 prueba  -rw,sync  serverY:/nfsexport/test
-~~~
+```
  
 ##### Montajes directos
 
 Pongo un anclaje sobre el que pivoto.
 
-~~~text
+```text
 cat /etc/auto.directo
 /mnt/novedad  -rw   serverX:/directo/novedades
 /mnt/pruebas  -rw   serverY:/directo/novedades
-~~~
+```
 
 ##### Montajes con comodines
 
-~~~ text
+``` text
 cat /etc/auto.comodines
 * -rw,sync  serverX:/compartido/&
-~~~
+```
 
 Si hago un cd a un directorio que coincida con /compartido/PEPE, como tengo en el _autofs_ una entrada que comienza con "/compartido", si se exporta algo en serverX:/compartido/PEPE, me lo montará en /compartido/PEPE.
 
@@ -990,7 +972,7 @@ Así cuando hagamos `cd /home/guests/ldapuserX`, nos montará directamente `serv
 
 ***
 
-# Network Storage SMB <a name="smb"></a>
+# Network Storage SMB 
 
 **SMB**: Server Message Block.
 **CIFS**: Common Internet File System, es un dialecto de SMB.
@@ -1021,11 +1003,11 @@ El usuario/password son independiente de lo que tenga el sistema, de hecho, los 
 `mount -t cifs -o username:<usuario> //server/recurso /pto/montaje`, nos pedirá el passwd.
 
 Podemos tenerlo en un fichero de credenciales de root, con permisos 600, normalmente en `/secure/sherlock` con el siguiene formato:
-~~~text
+```text
 username="nombre"
 password="pass"
 domain="dominio"
-~~~
+```
 
 En este caso, invocaremos: `mount -t cifs -o credentials=/secure/sherlock //server/recurso /pto/montaje`
 
@@ -1034,13 +1016,13 @@ En este caso, invocaremos: `mount -t cifs -o credentials=/secure/sherlock //serv
 Samba también se automonta. El procedimiento es prácticamente igual.
 
 Fichero maestro de asignación y luego su fichero de mapeo (auto.*).
-~~~text
+```text
 cat /etc/auto.master.d/*.autofs
 /bakerst  /etc/auto.baker
 
 cat /etc/auto.baker
 cases -fstype=cifs,credential=/server/sherlock  ://server/recurso
-~~~
+```
 
 Esto requiere dos cosas:
 * autofs
@@ -1048,7 +1030,7 @@ Esto requiere dos cosas:
 
 ***
 
-# Troubleshooting del arranque <a name="troubleshooting)"></a>
+# Troubleshooting del arranque 
 
 Una web donde explica bien el [proceso](https://www.thegeekdiary.com/centos-rhel-7-booting-process/).
 
@@ -1129,11 +1111,11 @@ Arrancará con la nueva password de root.
 ### Usar journalctl
 
 Hacer persistente los logs para poder examinar caidas entre reinicios:
-~~~bash
+```bash
 mkdir -p -m 2755 /var/log/journal
 chown :systemd-journal /var/log/journal
 killall -USR1 systemctl-journald
-~~~
+```
 
 El killall es equivalente a `journalctl --flush`
 
@@ -1197,9 +1179,9 @@ Para aquellos casos en que nada funciona, se puede reinstalar con **grub2-instal
 
 ***
 
-# Firewall: limitar comunicaciones de red <a name="firewalld"></a>
+# Firewall: limitar comunicaciones de red 
 
-En versiones anteriores **iptables**, ahora **firewalld**. Ambos trabajan con el subsistema **netfilter**. No es habitual que veamos los dos corriendo. Lo ideal es que uno de los dos esté enmascarado.
+En versiones anteriores **iptables** (e **ip6tables**), ahora es **firewalld**. Ambos trabajan con el subsistema **netfilter**. No es habitual que veamos los dos corriendo. Lo ideal es que uno de los dos esté enmascarado.
 
 Firewalld permite administrar las reglas que permiten o no la conexion a través de un puerto, interfáz, etc...
 
@@ -1207,17 +1189,17 @@ Un firewall controla el tráfico entrante al sistema (parará todo lo que no ten
 
 Trabaja con zonas, dependiendo de en qué zona estemos, permitirá una cosa u otra.
 
-**firewall-cmd** y **firewall-config** dos herramientas para configurarlo.
+**firewall-cmd** y **firewall-config** dos herramientas para configurarlo la segunda es gráfica.
 
 Dos configuraciones posibles.
 * Runtime
 * Permanent
 
-Normalmente lo que se tiene en runtime, hay que meterlo en permamente, las cosas que metamos en permanente, tendremos que pasarlas a runtime (con reload).
+Normalmente lo que se tiene en runtime, hay que meterlo en permamente, las cosas que metamos en permanente, tendremos que pasarlas a runtime (con `systemctl reload firewalld`).
 
 A través del DBus (bus de comunicaciones), las aplicaciones pueden comunicarse con el firewall. Admite IPv4 e IPv6.
 
-El paquete que lo instala es **firewalld**, no forma parte de una instalacion _mínimal_.
+El paquete que lo instala es **firewalld**, no forma parte de una instalacion _minimal_ y pero si de la _base_.
 
 **firewalld** hará una clasificación del tráfico que le llega según unos criterios:
 * ip fuente
@@ -1226,49 +1208,71 @@ El paquete que lo instala es **firewalld**, no forma parte de una instalacion _m
 
 Cada zona tiene su propia configuración de firewall
 
-## Funcionamientohttps://github.com/JHicarArmendariz/CursoRedHat/edit/master/EX200_RHCSA/moduloII_apuntes.md
+## Funcionamiento
 
-Podemos asignar un rango de ip¡s a cada zona, con lo que el traico que entre por ahí irá por esa zona y si no, pasa al siguiente control.
-Podemos asignar un interfaz a una zona, si no hay ninguna irá por la zona por defecto (PUBLIC).                                                                                                                                                                                                                                                                                                                     
+* Podemos asignar un rango de ips a cada zona, con lo que el trafico que entre por ahí irá por esa zona y si no, pasa al siguiente control.
+* Podemos asignar un interfaz a una zona, si no hay ninguna irá por la zona por defecto (PUBLIC).
+* En portátiles se puede configurar el NetworkManager para que dependiendo de a la red a la que se conecte, coja una zona de firewall u otra, y customizar esas zonas.
+* Abriremos por sevicio o puerto. 
+* Si entra un tráfico que no tiene match con servicio o puerto, se le deniega el acceso (deny - drop).        
 
-Abreremos por sevicio o puerto. 
+### Zonas predefinidas
 
-Si entra un tráfico que no tiene match con servicio o puerto, se le deniega el acceso (deny - drop).        
+Estas zonas vienen así en la instalación, pero el administrador puede modificarlas. `man 5 firewalld.zones`
 
-## Zonas predefinidas
+* **trusted**: Permite todo el tráfico entrante
+	- El interfáz _lo_ se trata como si estuviera en esta zona.
+* **home**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh, mdns, ipp-client, samba-client o dhcpv6-client
+* **internal**: Como el _home_
+* **work**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh, ipp-client o dhcpv6-client
+* **public**: La usada por defecto
+	- Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh o dhcpv6-client
+	- Es la zona por defecto para las interfaces de red que se añaden.
+* **external**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh.
+	- El tráfico IPv4 que es redirigido a través de esta zona se enmascara como si saliera de interfáz de red saliente.
+* **dmz**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh.
+* **block**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente.
+* **drop**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente, no responde con errores ICMP.
 
-* **trusted** Permite todo el tráfico entrante
-* **home** Rechaza el tráfico entrante a no ser que esté relacionado con el traico saliente o que esté relacionado con los servicios ssh, mdns,ipp-client, samba-client o dhcpv6-client
-* **internal**
-* **work** 
-* **public**
-* **external**
-* **dmz**
-* **block**
-* **drop**
+### Servicios predefinidos
+
+Los sevicios predefinidos en la zona por defecto son:
+* ssh: Servidor SSH local, puerto 22/tcp
+* dhcpv6-client: Tráfico al puerto 546/udp en la red IPv6 fe80::/64
+* ipp-client: Impresión IPP, puerto 631/udp
+* samba-client: Ficheros locales Windows y cliente de impresión, tráfico en el puerto 137/udp o 138/udp
+* mdns: MulticastDNS. Tráfico al puerto 5353/udp de 224.0.0.251 (IPv4) ó ff02::fb (IPv6)
+
+Para ver todos los servicios, usar `firewall-cmd --get-services`
+
+Los ficheros de configuración están en el directorio `/usr/lib/firewalld/services`.
 
 ## Configurar el firewall
 
-Flags de **firewall-cmd** (recordar que nos admite tabulación para completar el comando):
-* Zona por defecto: `--get-default-zone`
-* Poner zona por defecto: `set-default-zone=<zone>`
-* Obtener todas las zonas definidas: `--get-zones`
-* Obtener zonas activas: `--get-active-zones`
+Se puede tocar a mano los ficheros de configuración de `/etc/firewalld/` o usar las herramientas de configuracion **firewall-cmd** ó **firewall-config**.
 
-Todo esto es runtime, para hacerlo permanente, añadir el flag `--permanent`, se quedará almacenado y se cargarán cuando haga un reinicio del sistema o haga `--reload`.
+**firewall-config** es una herramienta gráfica. Recordar que para que los cambios se hagan en la configuración _Permanent_ no se harán efectivos hasta un reinicio del servicio, y los cambios hechos en _Runtime_ no sobrevivirán a un reinicio del servicio.
+
+### Flags de _firewall-cmd_
+
+El tabulado autocompleta.
+
+* `--get-default-zone`: consulta la zona por defecto
+* `--set-default-zone=<ZONE>`: Poner zona por defecto
+* `--get-zones`: Obtener todas las zonas definidas
+* `--get-active-zones`: Obtener zonas activas
+* `--add-source=<CIDR> [--zone=<ZONE>]`: Enruta todo el tráfico que viene de la red CIDR especificada al la zona especificada (si no se especifa, a la zona _default_) 
+* `--remove-source=<CIDR> [--zone=<ZONE>]`: Lo contrario de la anterior
+* `--add-interface=<INTERFACE> [--zone=<ZONE>]`: Enruta todo el tráfico que viene por la interfáz indicada a la zona especificada (si no se especifa, a la zona _default_) 
+* `--change-interface=<INTERFACE> [--zone=<ZONE>]`: Cambia de zona la interfáz indicada (si no se especifa zona, a la zona _default_) 
+* `--list-all [--zone=<ZONE>]: lista todas las configuraciones de la zona especificada (si no se especifa, a la zona _default_) 
+* `--list-all-zones`: Lista todas las configuraciones de todas las zonas.
+* `--add-service=<SERVICE> [--zone=<ZONE>]`: Permite el tráfico hacia el servicio indicado en la zona especificada (si no se especifa, a la zona _default_) 
+* `--remove-service=<SERVICE> [--zone=<ZONE>]`: Borra el servicio de la zona especificada (si no se especifa, a la zona _default_) 
+* `--add-port=<PORT/PROTOCOL> [--zone=<ZONE>]`: Permite el tráfico al puerto y protocolo indicado y lo asigna a la zona especificada (si no se especifa, a la zona _default_) 
+* `--remove-port=<PORT/PROTOCOL> [--zone=<ZONE>]`: Borra el puerto y protocolo indicado de la zona especificada (si no se especifa, a la zona _default_) 
+* `--permanent`: junto con cualquiera de los anteriores que hacen cambios en la configuración, se quedará almacenado y se cargará cuando haga un reinicio del sistema o haga `--reload`.
+* `--reload`: Quita la configuración _runtime_ y deja la _persistent_
+* `--runtime-to-permanent`: pasa cualquier configuración que tengamos en _runtime_ a _permanent_
 
 Para pasar de runtime a permanent, usar el flag `--runtime-to-permanent`
-
-***
-
-# Apéndice: Comandos útiles
-  
-* __tr__: sustituye un carácter por otro 
-* __cut__: Extrae campos
-  - -d 'char' = delimitador
-  - f n = campo
-* __awk__: Que contarte
-* __sort__: Ordenar
-* __sed__: Operaciones con cadenas
-* __uniq__: Elimina registros duplicados (se suele aplicar después de un sort)
-* __wget__: trae recurso de internet:`wget -O <fich_salida> http://<ruta_fichero_a_descargar>`
