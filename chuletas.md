@@ -1,36 +1,39 @@
-# Chuletas
-
 Aquí meteré comandos útiles de cara a los exámenes.
 
-## Comandos básicos
+- [Comandos básicos](#comandos-básicos)
+  - [Crear ficheros sin nesidad de editor](#crear-ficheros-sin-nesidad-de-editor)
+- [Operativas con systemd](#operativas-con-systemd)
+  - [Hacer permanentes los logs de journalctl](#hacer-permanentes-los-logs-de-journalctl)
 
-### Crear ficheros sin nesidad de editor
+# Comandos básicos
 
-~~~bash
+## Crear ficheros sin nesidad de editor
+
+```bash
 $ cat > fichero << EOF
 > ...
 > ...
 > 
-~~~
+```
 
 Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D**.
 
-## Operativas con systemd
+# Operativas con systemd
 
-### Hacer permanentes los logs de journalctl
+## Hacer permanentes los logs de journalctl
 
-~~~bash
+```bash
 # mkdir /var/log/journal
 # systemd-tmpfiles --create --prefix /var/log/journal
 # echo "SystemMaxUse=50M" >> /etc/systemd/journald.conf 
 # systemctl restart systemd-journald
-~~~
+```
 
 **NOTA:** Con el _SystemMaxUse_ limitamos el tamaño que ocupará el log del journalctl
 
 Forma alternativa:
-~~~bash
+```bash
 # mkdir -p -m 2755 /var/log/journal
 # chown :systemd-journalctl /var/log/journal
 # sysemctl restart systemd-journald
-~~~
+```
