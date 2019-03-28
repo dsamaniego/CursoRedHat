@@ -1,1 +1,0 @@
-authconfig --enableldap --ldapbasedn='dc=example,dc=com' --ldapserver="classroom.example.com" --enableldaptls --ldaploadcacert="http://classroom.example.com/pub/example-ca.crt" --enablekrb5 --krb5realm='EXAMPLE.COM' --krb5kdc="classroom.example.com" --krb5adminserver="classroom.example.com" --disablekrb5realmdns --disablekrb5kdcdns --passalgo=sha512 --enablemkhomedir --update

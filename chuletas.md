@@ -7,14 +7,25 @@ Aquí meteré comandos útiles de cara a los exámenes.
 
 # Comandos básicos
 
-## Crear ficheros sin nesidad de editor
-
-```bash
-$ cat > fichero << EOF
-> ...
-> ...
-> 
-```
+* `tr`: sustituye un carácter por otro
+* `cut`: Extrae campos  
+  -d 'char' = delimitador  
+  f n = campo
+* `awk`: Que contarte
+* `sort`: Ordenar
+* `sed`: Operaciones con cadenas
+	- Sustituir en el mismo fichero: `set -i -o 's/<patron>/<sustitucion>/' fichero`
+* `uniq`: Elimina registros duplicados (se suele aplicar después de un sort)
+* `wget`: trae recurso de internet:`wget -O <fich_salida> http://<ruta_fichero_a_descargar>`
+* `find`: Buscar algo
+	- Ejecutar sobre los ficheros encontrados: `find <ruta> -name "patron" -exec <comando> {} \;`
+* Crear ficheros sin nesidad de editor
+	```bash
+	$ cat > fichero << EOF
+	> ...
+	> ...
+	> 
+	```
 
 Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D**.
 
