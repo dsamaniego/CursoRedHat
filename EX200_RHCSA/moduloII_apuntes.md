@@ -1199,9 +1199,69 @@ Para aquellos casos en que nada funciona, se puede reinstalar con **grub2-instal
 
 # Firewall: limitar comunicaciones de red <a name="firewalld"></a>
 
+En versiones anteriores **iptables**, ahora **firewalld**. Ambos trabajan con el subsistema **netfilter**. No es habitual que veamos los dos corriendo. Lo ideal es que uno de los dos esté enmascarado.
+
+Firewalld permite administrar las reglas que permiten o no la conexion a través de un puerto, interfáz, etc...
+
+Un firewall controla el tráfico entrante al sistema (parará todo lo que no tenga definido en sus reglas).
+
+Trabaja con zonas, dependiendo de en qué zona estemos, permitirá una cosa u otra.
+
+**firewall-cmd** y **firewall-config** dos herramientas para configurarlo.
+
+Dos configuraciones posibles.
+* Runtime
+* Permanent
+
+Normalmente lo que se tiene en runtime, hay que meterlo en permamente, las cosas que metamos en permanente, tendremos que pasarlas a runtime (con reload).
+
+A través del DBus (bus de comunicaciones), las aplicaciones pueden comunicarse con el firewall. Admite IPv4 e IPv6.
+
+El paquete que lo instala es **firewalld**, no forma parte de una instalacion _mínimal_.
+
+**firewalld** hará una clasificación del tráfico que le llega según unos criterios:
+* ip fuente
+* interfáz de entrada
+* zona default
+
+Cada zona tiene su propia configuración de firewall
+
+## Funcionamientohttps://github.com/JHicarArmendariz/CursoRedHat/edit/master/EX200_RHCSA/moduloII_apuntes.md
+
+Podemos asignar un rango de ip¡s a cada zona, con lo que el traico que entre por ahí irá por esa zona y si no, pasa al siguiente control.
+Podemos asignar un interfaz a una zona, si no hay ninguna irá por la zona por defecto (PUBLIC).                                                                                                                                                                                                                                                                                                                     
+
+Abreremos por sevicio o puerto. 
+
+Si entra un tráfico que no tiene match con servicio o puerto, se le deniega el acceso (deny - drop).        
+
+## Zonas predefinidas
+
+* **trusted** Permite todo el tráfico entrante
+* **home** Rechaza el tráfico entrante a no ser que esté relacionado con el traico saliente o que esté relacionado con los servicios ssh, mdns,ipp-client, samba-client o dhcpv6-client
+* **internal**
+* **work** 
+* **public**
+* **external**
+* **dmz**
+* **block**
+* **drop**
+
+## Configurar el firewall
+
+Flags de **firewall-cmd** (recordar que nos admite tabulación para completar el comando):
+* Zona por defecto: `--get-default-zone`
+* Poner zona por defecto: `set-default-zone=<zone>`
+* Obtener todas las zonas definidas: `--get-zones`
+* Obtener zonas activas: `--get-active-zones`
+
+Todo esto es runtime, para hacerlo permanente, añadir el flag `--permanent`, se quedará almacenado y se cargarán cuando haga un reinicio del sistema o haga `--reload`.
+
+Para pasar de runtime a permanent, usar el flag `--runtime-to-permanent`
+
 ***
 
-# Apéndice: Comandos útiles <a name="apendix"></<>
+# Apéndice: Comandos útiles
   
 * __tr__: sustituye un carácter por otro 
 * __cut__: Extrae campos
