@@ -9,8 +9,9 @@ Aquí meteré comandos útiles de cara a los exámenes.
 
 * `tr`: sustituye un carácter por otro
 * `cut`: Extrae campos  
-  -d 'char' = delimitador  
-  f n = campo
+  -d 'char' = delimitador entre campos
+  -f n = campo
+	- Ejemplo: `cut -d ":" -f 3 fichero.csv` extrae el tercer campo de un fichero csv que separa por ":" los campos
 * `awk`: Que contarte
 * `sort`: Ordenar
 * `sed`: Operaciones con cadenas
@@ -26,8 +27,37 @@ Aquí meteré comandos útiles de cara a los exámenes.
 	> ...
 	> 
 	```
+* Usar echo para crear ficheros de varias líneas:  
+  `echo -en "username=pepe\npassword=perez\ndomain=MYGROUP" > /root/samba.smb`
 
 Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D**.
+
+# SELinux
+
+## Poner contexto a un directorio y todos sus hijos:
+
+Hay que crear la regla de SELinux y luego ponérle el contexto a directorio:
+```bash
+[root@desktop12 ~]# mkdir /docroot
+[root@desktop12 ~]# semanage fcontext -a -t public_content_t '/docroot(/.*)?'
+[root@desktop12 docroot]# restorecon -RvF /docroot
+restorecon reset /docroot context unconfined_u:object_r:default_t:s0->system_u:object_r:public_content_t:s0
+```
+
+# FileSystems
+
+## Directorio NFS de root de usuarios LDAP.
+
+Suponemos que ya tenemos configurado el LDAP (importante, marcar que no se creen los home de usuario) en el primer login:
+```bash
+yum install -y autofs
+echo -ne "/home/guests\t/etc/auto.guests\n" > /etc/auto.master.d/guests.autofs
+echo -ne "* -rw,sync srvnfs:/home/guests/&\n" > /etc/auto.guests
+sudo systemctl enable autofs.service
+sudo systemctl start autofs.service
+```
+Para chequear que esto ha quedado bien: `ssh <usuarioldap>@hostname`, y nos tendrá que dejar dentro del directorio `/home/guests/<usuarioldap/`
+
 
 # Operativas con systemd
 
@@ -48,3 +78,28 @@ Forma alternativa:
 # chown :systemd-journalctl /var/log/journal
 # sysemctl restart systemd-journald
 ```
+
+# Firewall
+
+## Flags de _firewall-cmd_
+
+* `--get-default-zone`: consulta la zona por defecto
+* `--set-default-zone=<ZONE>`: Poner zona por defecto
+* `--get-zones`: Obtener todas las zonas definidas
+* `--get-active-zones`: Obtener zonas activas
+* `--add-source=<CIDR> [--zone=<ZONE>]`: Enruta todo el tráfico que viene de la red CIDR especificada al la zona especificada (si no se especifa, a la zona _default_)
+* `--remove-source=<CIDR> [--zone=<ZONE>]`: Lo contrario de la anterior
+* `--add-interface=<INTERFACE> [--zone=<ZONE>]`: Enruta todo el tráfico que viene por la interfaz indicada a la zona especificada (si no se especifa, a la zona _default_)
+* `--change-interface=<INTERFACE> [--zone=<ZONE>]`: Cambia de zona la interfaz indicada (si no se especifa zona, a la zona _default_)
+* `--list-all [--zone=<ZONE>]`: lista todas las configuraciones de la zona especificada (si no se especifa, a la zona _default_)
+* `--list-all-zones`: Lista todas las configuraciones de todas las zonas.
+* `--add-service=<SERVICE> [--zone=<ZONE>]`: Permite el tráfico hacia el servicio indicado en la zona especificada (si no se especifa, a la zona _default_)
+* `--remove-service=<SERVICE> [--zone=<ZONE>]`: Borra el servicio de la zona especificada (si no se especifa, a la zona _default_)
+* `--add-port=<PORT/PROTOCOL> [--zone=<ZONE>]`: Permite el tráfico al puerto y protocolo indicado y lo asigna a la zona especificada (si no se especifa, a la zona _default_)
+* `--remove-port=<PORT/PROTOCOL> [--zone=<ZONE>]`: Borra el puerto y protocolo indicado de la zona especificada (si no se especifa, a la zona _default_)
+* `--permanent`: junto con cualquiera de los anteriores que hacen cambios en la configuración, se quedará almacenado y se cargará cuando haga un reinicio del sistema o haga `--reload`.
+* `--reload`: Quita la configuración _runtime_ y deja la _persistent_
+* `--runtime-to-permanent`: pasa cualquier configuración que tengamos en _runtime_ a _permanent_
+
+Para pasar de runtime a permanent, usar el flag `--runtime-to-permanent`
+

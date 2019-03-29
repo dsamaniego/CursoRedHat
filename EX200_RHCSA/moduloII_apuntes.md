@@ -709,10 +709,10 @@ Para configurar RHEL7 para que use servicios de administración centralizada de 
 * `/etc/pam.d/*`: Configura cómo los servicios tienen que usar la autenticación.
 * `/etc/openlap/cacerts`: Almacen de las CAs (_Certificate Authorities_) contra las que se tienen que validar los certificados SSL que identifican los servidores LDAP.
 
-Dado que es facil equivocarse, hay una utilidad **authconfig** que engloba tres herramientas para hacer la configuración:
+Dado que es fácil equivocarse, hay una utilidad -**authconfig**- que engloba tres herramientas para hacer la configuración:
 * **authconfig**: Se instala con el paquete _authconfig_. Herramienta por línea de comandos con comandos largos y complicados.
 * **authconfig-tui**: Versión interactiva de la anterior, guiada por menús, se puede usar vía ssh.
-* **authconfig-gtk**: Versión con interfáz gráfica.
+* **authconfig-gtk**: Versión con interfaz gráfica.
 
 ### Parámetros mínimos de LDAP
 
@@ -721,9 +721,13 @@ Dado que es facil equivocarse, hay una utilidad **authconfig** que engloba tres 
    Esta información nos la tiene que proporcionar el administrador de LDAP.
 * Si se usa SSL/TLS para encriptar las comunicaciones, nos tienen que proporcionar el certificado raíz.
 
+En la herramienta **authconfig-gtk** tenemos que rellenar lo siguiente:
+
+![](./LDAP_config_KRB.png)
+
 ### Parámetros mínimos de Kerberos
 
-Si el sistema usa un systema centralizado Kerberos para autenticación:
+Si se usa un sistema centralizado Kerberos para autenticación:
 * Kerberos _realm_: Dominio de máquinas que usan el conjunto de servidores y usuarios de Kerberos para autenticación.
 * Uno o más KDCs (_Key Distribution Center_): El hostname del servidor Kerberos.
 * Host name de uno o mas _admin servers_: La máquina con la que los usuarios tienen que comunicarse cuando quieran hacer modificaciones. Suele ser el KDC, pero puede ser otra máquina distinta.
@@ -741,7 +745,7 @@ Una vez configurado todo, podemos chequear que todo ha ido bien con: `getent pas
 
 Un IPA Server provee LDAP y Kerberos combinados en una suite administrada con un conjunto de herramientas web.
 
-Se puede usar **authconfig** para configurar todo, pero hay una herramdminsitrar Logical Volume Managementienta especializada: **ipa-client-install**, provisto por el paquete **ipa-client**.
+Se puede usar **authconfig** para configurar todo, pero hay una herramienta especializada: **ipa-client-install**, provisto por el paquete **ipa-client**.
 
 Cuando se lanza, busca a través del DNS provisto por el sistema un servidor IPA del que obtener la configuración, en caso de no encontrarlo, preguntará la configuración (nombre de dominio y un realm). También necesitará un nombre de usuario y la contraseña.
 
@@ -767,7 +771,7 @@ $ sudo realm permit --realm domain.example.com --all
 $ sudo realm permit --realm domain.example.com DOMAIN\\usuario1 DOMAIN\\usuario2 ...
 ```
 
-Por defecto los usuarios deberá unsar FQN (ipauser@ipa.example.com) para usuarios IPA, o DOMAIN\user para usuarios del AD., para deshabilitarlo, cambiar **use_fully_qualified_names** en `/etc/sssd/sssd.conf` a _False_ o borrar la línea, luego reiniciar el servicio.
+Por defecto los usuarios deberán usar FQN (ipauser@ipa.example.com) para usuarios IPA, o DOMAIN\user para usuarios del AD., para deshabilitarlo, cambiar **use_fully_qualified_names** en `/etc/sssd/sssd.conf` a _False_ o borrar la línea, luego reiniciar el servicio.
 
 ***
 
@@ -781,7 +785,7 @@ Tener siempre presente los difrentes [múltiplos del byte](https://physics.nist.
 
 ### MBR
 
-_Master Boot Record_ indican cómo se particiona el disco en sistema que corren firmware BIOS.
+_Master Boot Record_ indican cómo se particiona el disco en sistemas que corren firmware BIOS.
 * Soporta un máximo de 4 particiones primarias
 * En sistemas Linux, con el uso de particiones extendidas y lógicas, un administrador puede crear hasta 15 particiones (3 primarias y 12 extendidas en la partición primaria restante).
 * El tamaño máximo de la partición es de 2 TiB (dado que usa 32 bits para almacenar info de la partición).
@@ -796,7 +800,7 @@ _GUID Partition Table_ se usa en sistemas que usan UEFI (_Unified Extensible Fir
 * Por defecto soportan 128 particiones.
 * Usa 64 bits para direcciones lógicas de bloque, por lo que admite particiones de hasta 8 ZiB (8 billones de TiB) si usuamos bloques de 512 bytes (si usamos bloques de 4.096 bytes, la capacidad aumenta en 8 veces hasta 64 ZiB).
 * Tiene redundancia en la tabla de particiones, la primaria reside al inicio del disco y la secundaria al final.
-* Usa CRC checksum (_Cyclic Redundacy Check_) para detectar errores y corruncione en la cabecera GPT y la tabla de particiones.
+* Usa CRC checksum (_Cyclic Redundacy Check_) para detectar errores y corrupciones en la cabecera GPT y la tabla de particiones.
 
 Para manejar las particiones GPT se usa `gdisk /dev/<disco>`, fdisk se puede usar pero la parte que soporta GPT es experimental, por lo que no se recomienda su uso.
 
@@ -825,7 +829,7 @@ Para manejar las particiones GPT se usa `gdisk /dev/<disco>`, fdisk se puede usa
 
 ## Crear sistemas de ficheros.
 
-Una vez que tengamos hechas las particiones, todavía no las podemos usar en el sistema, primero hay que darlas el formato adecuado y después montarlas.
+Una vez que tengamos hechas las particiones, todavía no las podemos usar en el sistema, primero hay que dar el formato adecuado y después montarlas.
 
 La aplicación **mkfs** es la encargada de dar formato a la partición. Si no se especifica otra cosa, el tipo de file system por defecto es _ext2_, RH admite muchos formatos, los mas usados son _xfs_ que es el tipo por defecto que aplica anaconda durante la instalación y _ext4_.
 
@@ -851,7 +855,7 @@ Esta es la mejor forma de ver si el particionado que se ha hecho funciona, pero 
 
 ### Montaje automático
 
-Para que no se pierdan los montajes, hay que hacerlos automáticos. Para ello, habrá que añadir una líena en el fichero `/etc/fstab` con un formato determinado, valores separados por espacios. Cada campo tiene un significado.
+Para que no se pierdan los montajes, hay que hacerlos automáticos. Para ello, habrá que añadir una línea en el fichero `/etc/fstab` con un formato determinado, valores separados por espacios. Cada campo tiene un significado.
 
 1. Dispositivo: se puede dar el UUID obtenido mediante `blkid` ó el dispositivo.
 2. Punto de montaje
@@ -886,18 +890,18 @@ UUID=<uuid> swap swap defaults 0 0
 
 * **Physical Device (PD)**: Tanto un disco como una partición.
 * **Physical Volume (PV)**: Agrupación de PD
-* **Physical Extension (PE)**: BLoque de almacenamiento más pequeño asociado a un PV. (partición física)
+* **Physical Extension (PE)**: Bloque de almacenamiento más pequeño asociado a un PV. (partición física)
 * **Volume Group (VG)**: Agrupación de PE. Al crear el VG, decidimos el tamaño de las PE.
 * **Logical Volume (LV)**: Particiones lógicas de un VG. (para estas es transparente el VG).
 * **Logical Extension (LE)**: Cada LE se corresponde (no mirror, con una PE), (en mirror, con 2 PE). Las LE, serán múltiplos de PE.
 
 ## Manejo
-https://www.thegeekdiary.com/centos-rhel-7-booting-process/
+
 ### Creación
 
 Al crear la partición física (PD), RH recomienda usar particiones tipo MBR (0x8e)
 1. Crear la partición física: `fdisk /dev/vdb` (ó `gdisk /dev/vdb`)
-2. Crear volumenes físico: `pvcreate /dev/vdb1 /dev/vdb2`
+2. Crear volumenes físicos: `pvcreate /dev/vdb1 /dev/vdb2`
   - listarlos: `pvs`
 3. Crear VG: (mirar en el man de qué tamaño crear las PEs): 
   - Sin especificar tamaño: `vgcreate vgdata /dev/vdb1 /dev/vdb2`
@@ -941,7 +945,7 @@ Nos quedarán dos particiones mondas y lirondas.
 1. Si necesitamos una partición habrá que usar fdisk ó gdisk
 2. Cramos un nuevo PV: `pvcreate /dev/vdx`
 3. Extendemos: `vgextend vgdatos /dev/vdx`
-4. Comprobamos que la operación haaya sido correcta
+4. Comprobamos que la operación haya sido correcta
 
 ### Reducir VG
 
@@ -962,15 +966,14 @@ Nos quedarán dos particiones mondas y lirondas.
 
 ### Snapshots
 
-Dentro del mismo VG, son LV que apuntan a otro LV, de forma que ambos están sincronizados.
-https://www.thegeekdiary.com/centos-rhel-7-booting-process/
+Dentro del mismo VG, son LV que apuntan a otro LV, de forma que ambos están sincronizados.  
 En el snapshot están los inodos que apuntan a los del LV original, cuando se modifica un fichero, en el snapshot se van copiando los chunks que cambian. 
 
 Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . Se usa para extraer datos de la BD y luego hacer backup sin necesidad de parar la BB.DD.
 
 #### Operativa.
 
-* Cramos un sanpshot de lvdata, del tamaño iniical de 1 G.  
+* Cramos un snapshot de lvdata, del tamaño iniical de 1 G.  
   `lvcreate -s -L 1G -n lvdata_snap /dev/vgdata/lvdata`
 * Restaurar snapshot:   
   `lvconvert --merge <snapshot>`
@@ -1012,11 +1015,12 @@ Necesitaremos:
 1. Identificar las exportaciones del servidor NFS:
   * En nfsv2 y nfsv3 está el comando `showmount -e <NFSserver>`
   * En nfsv4 (comor root)
-    - mkdir /pto/montaje
-    - mount server:/ /pto/montaje
-    - cd /pto/montaje
-    - ls --> muestra las exportaciones.
-2. Creamos un punto de montaje dfinitivo: mkdir /destino
+		```bash
+    # mkdir /pto/montaje
+    # mount server:/ /pto/montaje
+    # cd /pto/montaje
+		```
+2. Creamos un punto de montaje definitivo: `mkdir /destino`
 3. Montamos manualmente o añadimos a fstab
   * **Manual**: `mount -t nfs -o sync server:/<dir_compartido> /pto_montaje`
     - sync --> escribe inmediatamente los cambios
@@ -1073,7 +1077,7 @@ prueba  -rw,sync  serverY:/nfsexport/test
  
 ##### Montajes directos
 
-Pongo un anclaje sobre el que pivoto.
+Pongo un anclaje sobre el que pivoto (tendré que haber creado los directorios que voy a montar).
 
 ```text
 cat /etc/auto.directo
@@ -1101,12 +1105,12 @@ Así cuando hagamos `cd /home/guests/ldapuserX`, nos montará directamente `serv
 
 # Network Storage SMB 
 
-**SMB**: Server Message Block.
-**CIFS**: Common Internet File System, es un dialecto de SMB.
+* **SMB**: Server Message Block.
+* **CIFS**: Common Internet File System, es un dialecto de SMB.
 
 En NFS todos los montajes se pueden hacer con un usuario, si este tenía los permisos adecuados. Ahora vamos a ver que aquí no es así. Sin embargo, para montar un **SMB share** o **recurso SMB** necesitamos acceder como un usuario que  tenga permisos para montar ese sistema (usuario, passwd, dominio).
 
-Paquetes: cifs-utils, samba-client (este no es obligatorio, pero sí recomendable).
+Paquetes: `cifs-utils`, `samba-client` (este no es obligatorio, pero sí recomendable).
 
 ## Montajes
 
@@ -1118,7 +1122,7 @@ Paquetes: cifs-utils, samba-client (este no es obligatorio, pero sí recomendabl
 
 `mount -t cifs -o guest //server/recurso /pto/montaje`
 
-### fstabhttps://www.thegeekdiary.com/centos-rhel-7-booting-process/
+### fstab
 
 Meter la siguiente línea:  
 `//server/recurso /pto/montaje  cifs  guest 0 0`
@@ -1164,7 +1168,8 @@ Una web donde explica bien el [proceso](https://www.thegeekdiary.com/centos-rhel
 ## El proceso de arranque en máquinas x86_64
 
 Este mismo proceso es aplicable para máquinas virtualizadas (en este caso, el HW es el hipervisor el que se encarga de ello).
-1. POST (_Power On Self Test_): Encendemos la máquina (BIOS o UEFI)- Test automático para ver si tiene energía suficiente para arrancar la máquina.
+1. POST (_Power On Self Test_): Encendemos la máquina (BIOS o UEFI)
+	- Test automático para ver si tiene energía suficiente para arrancar la máquina.
 2. MBR: Con el firmware del sistema recién cargado, se selecciona el dispisitivo arrancable (podría también ser GPT).
   - Se busca la tabla de particiones
 3. Bootloader: Busca de donde tiene que cargar el kernel (en RHEL7, por defecto es GRUB2).
@@ -1179,15 +1184,15 @@ Este mismo proceso es aplicable para máquinas virtualizadas (en este caso, el H
   - Aquí el bootloader le pasa el control a kernel
 5. Systemd:
   - tira de ficheros de configuración situados a `/etc/systemd`
-  - Intenta conectar los target /etc/initrd.target, para poner el sistema en el estado que necesitamos.
-    · monta el / en /sysroot
+  - Intenta conectar los target `/etc/initrd.target`, para poner el sistema en el estado que necesitamos.
+    · monta el `/` en `/sysroot`
   - Controla en qué target nos pone el sistema, definido en `/etc/systemd/system/default.target` (que es un link simbólico que apunta al target al que se tiene que arrancar).
-6. Pivote de /sysroot a disco /
+6. Pivote de `/sysroot` a disco ``/`
 
 Para rebotar el sistema de forma ordenada:
-  * systemctl poweroff: detiene todos los ficheros, demonta los archivos y apaga el sistema
-  * systemctl reboot: 
-  * systemctl halt: Detiene todos los procesos, desmonta los FS y se queda a la espera del botonazo
+  * `systemctl poweroff`: detiene todos los ficheros, demonta los archivos y apaga el sistema
+  * `systemctl reboot`: restart
+  * `systemctl halt`: Detiene todos los procesos, desmonta los FS y se queda a la espera del botonazo
   
 ## Targets
 
@@ -1201,22 +1206,21 @@ Un target de systemd es un conjunto de units de systemd que deben ser arrancadas
 ### Comandos de systemctl relacionados.
 
 * `systemctl list-dependencies <modo>.target |grep target` Nos muestra los targets de los que depende uno concreto (sin el grep, nos muestra todas las dependencias).
-* `systemctl lsit-units --type=target --all` Nos muestra todos los targets disponibles.
+* `systemctl list-units --type=target --all` Nos muestra todos los targets disponibles.
 * `systemctl list-unit-files --type=target --all`: todos los targets disponibles
 * `systemctl isolate <target>.target`: Para cambiarnos a un target, parará todos los servicios no necesarios para ese target.
   - En `/etc/systemd/system` podemos añadir una unidad.target.
 * `systemctl get-default` Nos devuelve cual es el target por defecto
 * `systemctl set-default <target>.target` establece es default target, que lo que hace es cambiar el log simbólico.
 
-También podemos cambiar el target en la línea de kernel del grub (es la que empieza con _linux16_), metiendo el siguiente parámetro:  
-`systemd.unit=<target>.target` (recordar, cuando está el menú del grub, pulsamos "e" y podemos modificar la línea de arranque que hemos seleccionado y una vez modificado, **Ctrl+x** para iniciar con los cambios).  
+También podemos cambiar el target en la línea de kernel del grub (es la que empieza con _linux16_), metiendo el siguiente parámetro: `systemd.unit=<target>.target` (recordar, cuando está el menú del grub, pulsamos "e" y podemos modificar la línea de arranque que hemos seleccionado y una vez modificado, **Ctrl+x** para iniciar con los cambios).  
 En el modo edición podremos cambiar el mapa del teclado ya que por defecto viene en inglés.
 
 ## Troubleshooting
 
 ### Recuperar password de root
 
-Supongamos que hemos perido la password de root.
+Supongamos que hemos perdido la password de root.
 
 Una posible solución, es levantar con un live-cd, generar una password encriptada de root (ver el script de python) y meter esa cadena en el `/etc/shadow`. Luego reiniciar el sistema.
 
@@ -1226,10 +1230,10 @@ Esto funcionará si no tenemos protegido el grub con la password de grub.
 
 1. Interrumpimos el sistema y metemos en la línea del kernel el siguiente parámetro: `rd.break`.  
   Cuando arranque, nos dará una consola (la última consola definida en la línea de kernel es donde se mostrará el prompt).   
-  **OJO** lo mejor es que terminemos la línea con `console=tt0 rd.break`
+  **OJO** lo mejor es que terminemos la línea con `... console=tt0 rd.break`
 2. Montamos el raíz en modo lectura/escritura: `mount -o rw,remount /sysroot`
 3. Enjaulamos el sistema raíz: `chroot /sysroot`
-4. Restablecemos la passwd de root: `passwd root`, el problema es que como SELinux no está corriendo, habremos perdido el contexto el `/etc/shadow`.
+4. Restablecemos la passwd de root: `passwd root`, el problema es que como SELinux no está corriendo, habremos perdido el contexto del `/etc/shadow`.
 5. Decimos que en el próximo reinicio reetiquete con SELinux los ficheros sin etiquetar: `touch /.autorelabel`
 6. Nos vamos: `exit;exit;`
 
@@ -1237,7 +1241,7 @@ Arrancará con la nueva password de root.
 
 ### Usar journalctl
 
-Hacer persistente los logs para poder examinar caidas entre reinicios:
+Hacer persistente los logs para poder examinar caídas entre reinicios:
 ```bash
 mkdir -p -m 2755 /var/log/journal
 chown :systemd-journal /var/log/journal
@@ -1253,7 +1257,7 @@ Para ver los logs de otros arranques: `journalctl -b-n -p err` vemos los errores
 Es una consola en la que se entra directamente como root, sin necesidad de meter contraseña. Para ir a ella, **Ctrl+Alt+F9**, en principio no está habilitada, hay que hablitarla con un servicio:  
 `systemctl enable debug-shell.service`
 
-Esto es un agujero de seguiridad en el sistema así que una vez que hayamos terminado de necesitar la consola de depuración, volver a deshabilitarla.
+Esto es un agujero de seguridad en el sistema así que una vez que hayamos terminado de necesitar la consola de depuración, volver a deshabilitarla.
 
 En esta shell podremos ver en el arranque lo que está pasando.
 
@@ -1261,11 +1265,11 @@ En esta shell podremos ver en el arranque lo que está pasando.
 
 En el arranque **systemd** va arrancando servicios, si algunos de estos no arrancan, bloquean el arranque de otros. 
 
-Para inspeccionar la lista de jobs actual: `journalctl lsit-jobs`, los jobs en estado _waiting_ no arrancarán hasta que los que están en _running_ no terminen.
+Para inspeccionar la lista de jobs actual: `journalctl list-jobs`, los jobs en estado _waiting_ no arrancarán hasta que los que están en _running_ no terminen.
 
 ## Reparar problemas de FS en el arranque
 
-Los errores en el `/etc/fstab` y FS corruptos pueden parar el arranque de una máquina. Normalmente **systemd** continua con el arranque tras un timeout y nos lleva a un shell de emergencia donde es necesario entrar como root.
+Los errores en el `/etc/fstab` y FS corruptos pueden parar el arranque de una máquina. Normalmente **systemd** continúa con el arranque tras un timeout y nos lleva a un shell de emergencia donde es necesario entrar como root.
 
 Errores comunes:
 * FS corrupto: hacer un fsck.
@@ -1284,7 +1288,7 @@ Ayuda: systemd-fsck, systemd-fstab-generator, systemd-fstab-mount
 
 **grub2 (_GRand Unified Bootloader v2_)** es el boot loader por defecto de RedHat, se usa para arrancar tanto desde sistemas con BIOS como con UEFI y soporta casi cualquier sistema operativo.
 
-Fichero de configuración principal: `/boot/grub2/grub.cfg`. En principio nos se debería editar este fichero, sino que editaremos variables de configuración y luego reconfigurar el arranque con la herramienta **grub2-mkconfig**, que mira en `/etc/default/grub` (aquí si que podemos meter mano) para buscar opciones y luego usa los scripts de `/etc/grub.d/` para generar el fichero de configuración.
+Fichero de configuración principal: `/boot/grub2/grub.cfg`. En principio no se debería editar este fichero, sino que editaremos variables de configuración y luego reconfigurar el arranque con la herramienta **grub2-mkconfig**, que mira en `/etc/default/grub` (aquí si que podemos meter mano) para buscar opciones y luego usa los scripts de `/etc/grub.d/` para generar el fichero de configuración.
 
 Para hacer los cambios permamentes: `grub2-mkconfig > /boot/grub2/grub.cfg`
 
@@ -1310,7 +1314,7 @@ Para aquellos casos en que nada funciona, se puede reinstalar con **grub2-instal
 
 En versiones anteriores **iptables** (e **ip6tables**), ahora es **firewalld**. Ambos trabajan con el subsistema **netfilter**. No es habitual que veamos los dos corriendo. Lo ideal es que uno de los dos esté enmascarado.
 
-Firewalld permite administrar las reglas que permiten o no la conexion a través de un puerto, interfáz, etc...
+Firewalld permite administrar las reglas que permiten o no la conexion a través de un puerto, interfaz, etc...
 
 Un firewall controla el tráfico entrante al sistema (parará todo lo que no tenga definido en sus reglas).
 
@@ -1330,16 +1334,16 @@ El paquete que lo instala es **firewalld**, no forma parte de una instalacion _m
 
 **firewalld** hará una clasificación del tráfico que le llega según unos criterios:
 * ip fuente
-* interfáz de entrada
+* interfaz de entrada
 * zona default
 
 Cada zona tiene su propia configuración de firewall
 
 ## Funcionamiento
 
-* Podemos asignar un rango de ips a cada zona, con lo que el trafico que entre por ahí irá por esa zona y si no, pasa al siguiente control.
+* Podemos asignar un rango de ips a cada zona, con lo que el trafico que entre por ahí irá por esa zona y, si no; pasa al siguiente control.
 * Podemos asignar un interfaz a una zona, si no hay ninguna irá por la zona por defecto (PUBLIC).
-* En portátiles se puede configurar el NetworkManager para que dependiendo de a la red a la que se conecte, coja una zona de firewall u otra, y customizar esas zonas.
+* En portátiles se puede configurar el NetworkManager para que dependiendo de la red a la que se conecte, coja una zona de firewall u otra, y customizar esas zonas.
 * Abriremos por sevicio o puerto. 
 * Si entra un tráfico que no tiene match con servicio o puerto, se le deniega el acceso (deny - drop).        
 
@@ -1348,7 +1352,7 @@ Cada zona tiene su propia configuración de firewall
 Estas zonas vienen así en la instalación, pero el administrador puede modificarlas. `man 5 firewalld.zones`
 
 * **trusted**: Permite todo el tráfico entrante
-	- El interfáz _lo_ se trata como si estuviera en esta zona.
+	- El interfaz _/dev/lo_ se trata como si estuviera en esta zona.
 * **home**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh, mdns, ipp-client, samba-client o dhcpv6-client
 * **internal**: Como el _home_
 * **work**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh, ipp-client o dhcpv6-client
@@ -1356,7 +1360,7 @@ Estas zonas vienen así en la instalación, pero el administrador puede modifica
 	- Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh o dhcpv6-client
 	- Es la zona por defecto para las interfaces de red que se añaden.
 * **external**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh.
-	- El tráfico IPv4 que es redirigido a través de esta zona se enmascara como si saliera de interfáz de red saliente.
+	- El tráfico IPv4 que es redirigido a través de esta zona se enmascara como si saliera de interfaz de red saliente.
 * **dmz**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente o que esté relacionado con los servicios ssh.
 * **block**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente.
 * **drop**: Rechaza el tráfico entrante a no ser que esté relacionado con el tráfico saliente, no responde con errores ICMP.
@@ -1390,9 +1394,9 @@ El tabulado autocompleta.
 * `--get-active-zones`: Obtener zonas activas
 * `--add-source=<CIDR> [--zone=<ZONE>]`: Enruta todo el tráfico que viene de la red CIDR especificada al la zona especificada (si no se especifa, a la zona _default_) 
 * `--remove-source=<CIDR> [--zone=<ZONE>]`: Lo contrario de la anterior
-* `--add-interface=<INTERFACE> [--zone=<ZONE>]`: Enruta todo el tráfico que viene por la interfáz indicada a la zona especificada (si no se especifa, a la zona _default_) 
-* `--change-interface=<INTERFACE> [--zone=<ZONE>]`: Cambia de zona la interfáz indicada (si no se especifa zona, a la zona _default_) 
-* `--list-all [--zone=<ZONE>]: lista todas las configuraciones de la zona especificada (si no se especifa, a la zona _default_) 
+* `--add-interface=<INTERFACE> [--zone=<ZONE>]`: Enruta todo el tráfico que viene por la interfaz indicada a la zona especificada (si no se especifa, a la zona _default_) 
+* `--change-interface=<INTERFACE> [--zone=<ZONE>]`: Cambia de zona la interfaz indicada (si no se especifa zona, a la zona _default_) 
+* `--list-all [--zone=<ZONE>]`: lista todas las configuraciones de la zona especificada (si no se especifa, a la zona _default_) 
 * `--list-all-zones`: Lista todas las configuraciones de todas las zonas.
 * `--add-service=<SERVICE> [--zone=<ZONE>]`: Permite el tráfico hacia el servicio indicado en la zona especificada (si no se especifa, a la zona _default_) 
 * `--remove-service=<SERVICE> [--zone=<ZONE>]`: Borra el servicio de la zona especificada (si no se especifa, a la zona _default_) 
