@@ -1014,11 +1014,11 @@ Necesitaremos:
 
 1. Identificar las exportaciones del servidor NFS:
   * En nfsv2 y nfsv3 está el comando `showmount -e <NFSserver>`
-  * En nfsv4 (comor root)
+  * En nfsv4 (como root)
 		```bash
-    # mkdir /pto/montaje
-    # mount server:/ /pto/montaje
-    # cd /pto/montaje
+    [server]# mkdir /pto/montaje
+    [server]# mount server:/ /pto/montaje
+    [server]# cd /pto/montaje
 		```
 2. Creamos un punto de montaje definitivo: `mkdir /destino`
 3. Montamos manualmente o añadimos a fstab
