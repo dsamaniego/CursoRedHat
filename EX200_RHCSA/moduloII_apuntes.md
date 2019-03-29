@@ -1,3 +1,122 @@
+- [Automatización de la instalación](#automatización-de-la-instalación)
+  - [Comandos](#comandos)
+    - [Comandos de instalación](#comandos-de-instalación)
+    - [Comandos de particionado](#comandos-de-particionado)
+    - [Comandos de networking](#comandos-de-networking)
+    - [Comandos de configuración del OS](#comandos-de-configuración-del-os)
+    - [Otros comandos](#otros-comandos)
+  - [Secciones](#secciones)
+    - [Paquetería (_%packages_)](#paquetería-_packages_)
+    - [Pre (_%pre_)](#pre-_pre_)
+    - [Post (_%post_)](#post-_post_)
+  - [Despliegue de un nuevo sistema virtual con Kickstart](#despliegue-de-un-nuevo-sistema-virtual-con-kickstart)
+    - [Pasos](#pasos)
+- [Expresiones regulares y grep](#expresiones-regulares-y-grep)
+  - [Expresiones regulares](#expresiones-regulares)
+    - [Anclas de línea.](#anclas-de-línea)
+    - [Limitación de palabras](#limitación-de-palabras)
+    - [Comodines y multiplicadores.](#comodines-y-multiplicadores)
+  - [grep](#grep)
+- [Vim avanzado](#vim-avanzado)
+  - [Paquetes de vim](#paquetes-de-vim)
+    - [Modo ejecución](#modo-ejecución)
+    - [Registros.](#registros)
+    - [Sustituciones.](#sustituciones)
+- [Programación de tareas](#programación-de-tareas)
+  - [at](#at)
+    - [Comandos](#comandos-1)
+        - [TIMESPEC](#timespec)
+  - [cron](#cron)
+    - [Comandos](#comandos-2)
+    - [Formato del fichero.](#formato-del-fichero)
+  - [Cron del sistema](#cron-del-sistema)
+    - [Variables](#variables)
+  - [Ficheros temporales](#ficheros-temporales)
+    - [Configuración de los ficheros](#configuración-de-los-ficheros)
+- [Prioridades](#prioridades)
+  - [Prioridades relativas](#prioridades-relativas)
+  - [Manejo del nice](#manejo-del-nice)
+- [Control de acceso a ficheros (ACLs)](#control-de-acceso-a-ficheros-acls)
+    - [Defaults ACL](#defaults-acl)
+  - [Manejo de ACLs](#manejo-de-acls)
+    - [Ejemplos](#ejemplos)
+- [Manejo de SELinux](#manejo-de-selinux)
+    - [Comandos últiles.](#comandos-últiles)
+  - [Modos de SELinux](#modos-de-selinux)
+  - [Contextos SELinux](#contextos-selinux)
+    - [Añadir reglas.](#añadir-reglas)
+      - [Comando `semanage {fcontext|boolean}`](#comando-semanage-fcontextboolean)
+  - [Booleanos SELinux](#booleanos-selinux)
+  - [Puertos](#puertos)
+  - [Troubleshooting](#troubleshooting)
+- [Conexión de usuarios con LDAP e IPA](#conexión-de-usuarios-con-ldap-e-ipa)
+  - [Usar LDAP y Kerberos](#usar-ldap-y-kerberos)
+    - [Parámetros mínimos de LDAP](#parámetros-mínimos-de-ldap)
+    - [Parámetros mínimos de Kerberos](#parámetros-mínimos-de-kerberos)
+    - [Configuración.](#configuración)
+  - [Usar un IPA Server](#usar-un-ipa-server)
+  - [Unirse a un Active Directory](#unirse-a-un-active-directory)
+    - [Ejemplo.](#ejemplo)
+- [Añadir discos, particiones y sistemas de ficheros](#añadir-discos-particiones-y-sistemas-de-ficheros)
+  - [Particionado del disco](#particionado-del-disco)
+    - [MBR](#mbr)
+    - [GPT](#gpt)
+    - [Pasos para crear una partición.](#pasos-para-crear-una-partición)
+    - [Pasos para borrar una partición.](#pasos-para-borrar-una-partición)
+  - [Crear sistemas de ficheros.](#crear-sistemas-de-ficheros)
+  - [Montar el FileSystem](#montar-el-filesystem)
+    - [Montaje manual](#montaje-manual)
+    - [Montaje automático](#montaje-automático)
+  - [Swap](#swap)
+- [Administrar Logical Volume Management (LVM)](#administrar-logical-volume-management-lvm)
+  - [Conceptos](#conceptos)
+  - [Manejo](#manejo)
+    - [Creación](#creación)
+    - [Borrado](#borrado)
+    - [Consulta](#consulta)
+    - [Extender VG](#extender-vg)
+    - [Reducir VG](#reducir-vg)
+    - [Extender LV](#extender-lv)
+    - [Snapshots](#snapshots)
+      - [Operativa.](#operativa)
+- [Network Storage NFS](#network-storage-nfs)
+  - [Seguridad](#seguridad)
+  - [Montajes](#montajes)
+    - [Montaje estándar](#montaje-estándar)
+    - [Montaje automático](#montaje-automático-1)
+      - [Pasos para hacer un automontaje.](#pasos-para-hacer-un-automontaje)
+        - [Montajes indirectos](#montajes-indirectos)
+        - [Montajes directos](#montajes-directos)
+        - [Montajes con comodines](#montajes-con-comodines)
+- [Network Storage SMB](#network-storage-smb)
+  - [Montajes](#montajes-1)
+    - [Montaje manual](#montaje-manual-1)
+    - [fstabhttps://www.thegeekdiary.com/centos-rhel-7-booting-process/](#fstabhttpswwwthegeekdiarycomcentos-rhel-7-booting-process)
+  - [Si no nos identificamos como guest](#si-no-nos-identificamos-como-guest)
+  - [Automontaje](#automontaje)
+- [Troubleshooting del arranque](#troubleshooting-del-arranque)
+  - [El proceso de arranque en máquinas x86_64](#el-proceso-de-arranque-en-máquinas-x86_64)
+  - [Targets](#targets)
+    - [Comandos de systemctl relacionados.](#comandos-de-systemctl-relacionados)
+  - [Troubleshooting](#troubleshooting-1)
+    - [Recuperar password de root](#recuperar-password-de-root)
+      - [Otra forma (mejor)](#otra-forma-mejor)
+    - [Usar journalctl](#usar-journalctl)
+    - [Shell de depuración temprana](#shell-de-depuración-temprana)
+      - [Stuck jobs (trabajos colgados)](#stuck-jobs-trabajos-colgados)
+  - [Reparar problemas de FS en el arranque](#reparar-problemas-de-fs-en-el-arranque)
+  - [Problemas con el boot loader](#problemas-con-el-boot-loader)
+    - [Algunas directivas](#algunas-directivas)
+    - [Reinstalar grub](#reinstalar-grub)
+- [Firewall: limitar comunicaciones de red](#firewall-limitar-comunicaciones-de-red)
+  - [Funcionamiento](#funcionamiento)
+    - [Zonas predefinidas](#zonas-predefinidas)
+    - [Servicios predefinidos](#servicios-predefinidos)
+  - [Configurar el firewall](#configurar-el-firewall)
+    - [Flags de _firewall-cmd_](#flags-de-_firewall-cmd_)
+
+***
+
 # Automatización de la instalación 
 
 **Anaconda** es el instalador que usa RHEL, necesita que el que está haciendo la instalación le responda a una serie de preguntas acerca de la configuracion del sistema.
@@ -170,14 +289,14 @@ Ya sabemos... **man grep**
 
 ***
 
-# Vim avanzado 
+# Vim avanzado
 
-3 modos: 
+3 modos:
 * comando: para meter comandos de manipulación del fichero.
 * insert: Manipular texto
 * execution: hacer transformaciones
 
-## Paquetes de vim.
+## Paquetes de vim
 
 * vim-minimal: el incluido en la instalación mínima
 * vim-enhanced: Nos da algunos complementos como plugins
@@ -186,7 +305,7 @@ Ya sabemos... **man grep**
   - Revisón de sintaxis
 * vim-X11: gvim
 
-### Modo ejecución:
+### Modo ejecución
 
 * ! <comando> -- Ejecuta el comando
 * r <file> -- Inserta el fichero
@@ -224,21 +343,23 @@ Rango puede ser:
 
 Cuando queramos que algo se ejecute en un determinado momento, pero no siempre, usaremos este programa.
 
-**Demonio:** atd
-**Paquete:** at
+**Demonio:** atd -- **Paquete:** at
 
 Incluye una serie de colas [a-z] ordenadas por prioridad, con lo que podemos separar los trabajos y organizarlos según su importancia/prioridad.
 
-¿para que es útil? Normalmente, todo lo que hacemos con at, lo podemos hacer con cron, nos puede ayudar para desactivar algún servicio con el que estamos trabajando y que nos puede dejar fritos, así recuperamos el control.
+**¿Para que es útil?**  
+Normalmente, todo lo que hacemos con `at`, lo podemos hacer con `cron`, nos puede ayudar para desactivar algún servicio con el que estamos trabajando y que nos puede dejar fritos, así recuperamos el control.
 
-root puede ver todos los trabajos, el usuario sólo los que ha lanzado el.
+**root** puede ver todos los trabajos, el usuario sólo los que ha lanzado él.
 
-Al final de la ejecución, nos manda un mail.  
-**NOTA:** Si en vez de un mail, queremos ver la salida por pantalla, redirigir la salida. (para eso, podemos ver el terminal en el que estamos con `w -f` y luego hacer `echo $(comando) > /dev/pts/*`
+Al final de la ejecución, nos manda un mail.
+
+**NOTA:** Si en vez de un mail, queremos ver la salida por pantalla, redirigir la salida. (para eso, podemos ver el terminal en el que estamos con `w -f` y luego hacer `echo $(comando) > /dev/pts/*`).
 
 ### Comandos
 
-* `at <TIMESPEC>`: Nos abrirá un subshell para crear los comandos que queremos lanzar. Le podemos pasar por stdin el script que queremos que ejecute.
+* `at <TIMESPEC>`: Nos abrirá un subshell para crear los comandos que queremos lanzar.  
+Le podemos pasar por stdin el script que queremos que ejecute.
 * `atq` ~ `at -l`: Nos muestra información de las colas de at:
   - Número de trabajo
   - Fecha y hora programada
@@ -248,15 +369,15 @@ Al final de la ejecución, nos manda un mail.
 * `atrm <num_job>`: Borra la tarea
 * `at -q <cola> <time_spec>`: Manda el trabajo a la cola indicada.
 
-### TIMESPEC
+##### TIMESPEC
 
 Referencia: `/usr/share/doc/at-*/timespec`
 
-Tiempo absoluto: 5 pm August 3 2019
-Tiempos relativos:
-* teatime tomorrow (teatime son las 16:00)
-* noon + 4 days
-* midnight + 1 weekSYSTEM CONFIGURATION AND MANAGEMENT
+* Tiempo absoluto: 5 pm August 3 2019
+* Tiempos relativos:
+  - teatime tomorrow (teatime son las 16:00)
+  - noon + 4 days
+  - midnight + 1 week
 
 ## cron
 
@@ -265,10 +386,15 @@ Si queremos ejecutar algo varias veces de forma periodica, es mejor usar cron.
 * Paquete: cronie
 * demonio: crond
 
-crontab -e --> para editar el crontab
-crontab -r --> Borra el crontab del usuario
-crontab -l --> Muestra el crontab del usuario
-crontab <fichero> --> sustituye el crontab por el fichero proporcionado
+### Comandos
+
+* `crontab -e`: para editar el crontab.  
+  Si queremos cambiar el editor por defecto: `export EDITOR=vi`
+* `crontab -r`: Borra el crontab del usuario
+* `crontab -l`: Muestra el crontab del usuario
+* `crontab <fichero>`: sustituye el crontab por el fichero proporcionado
+* `crontab -u <user>`: (sólo root) usa el crontab de usuario especificado
+
   
 ### Formato del fichero.
 
@@ -279,13 +405,12 @@ crontab <fichero> --> sustituye el crontab por el fichero proporcionado
 * Formato de las líneas:
 minuto hora dia-mes mes dia-semana comando
 * Valores:
-  - * --> comodín
+  - `*`: comodín
   - números
   - Dias de la semana (0 -> SUNDAY, ... 7 -> SUNDAY)
   - Puedo marcar intervalos x-y, , listas x,y, combinaciones: x-y,z, periódicas \*/5 (cada 5 unidades)
-  - **OJO**, los días no los parsea, es decir no podemos decir el día de la semana que caiga en cierto núemro.
-  - **OJO**, Si el comando tiene un singo `%`sin escapar, se trata como un salto de línea y todo lo que va detrás se pasa al comando como _stdin_
-crontab -u <user> --> (sólo root) usa el crontab de usuario
+  - **OJO**: los días no los parsea, es decir no podemos decir el día de la semana que caiga en cierto número.
+  - **OJO**: Si el comando tiene un singo `%` sin escapar, se trata como un salto de línea y todo lo que va detrás se pasa al comando como _stdin_
 
 ## Cron del sistema
 
@@ -294,7 +419,7 @@ No están definidos como los cron de los usuarios del sistema, tiene un campo m�
 Ficheros relacionados:
 * `/etc/crontab`: Este es el fichero principal del sistema relacionado con el cron
 * `/etc/cron.d/*`: personalizaciones del sistema, y los paquetes que añaden cosas en el cron, se meten aquí
-  - Tenrá ejecuciones del sistema programadas.
+  - Tendrá ejecuciones del sistema programadas.
 * `/etc/anacrontab`: Aquí se configuran todos los scrips que se pueden correr cada día, semana o mes:
   - `/etc/cron.hourly`
   - `/etc/cron.daily`
@@ -303,7 +428,7 @@ Ficheros relacionados:
   - En todos esos sule faltar el primero, pero está en `/etc/cron.d/0hourly`, que es para los que se ejecutan cada hora.
   - Los scripts que dejemos en estas rutas tendrán que tener permisos de ejecución.
   
-El parámetro: job-idenfier, se usa para identificar el job, pero esta forma asegura que el sistema se lanza con la periodiciad indicada.
+El parámetro: _job-idenfier_, se usa para identificar el job, pero esta forma asegura que el sistema se lanza con la periodiciad indicada.
 
 ### Variables
 * **SHELL**: Especifica el shell por defecto
@@ -314,27 +439,28 @@ El parámetro: job-idenfier, se usa para identificar el job, pero esta forma ase
 
 **systemd-tmpfiles**
 
-Systemd nos arranca el sistema y de loprimero que arranca es _systemd-tmpfiles-setup_ que ejecuta `systemd-tmpfilse --create --remove`
+Systemd nos arranca el sistema y de lo primero que arranca es _systemd-tmpfiles-setup_ que ejecuta es:  
+`systemd-tmp files --create --remove`
 
 Lee los ficheros de configuración que tiene la unidad:
 * `/usr/lib/tmpfiles.d/*.conf`: (RPMS)
 * `/run/tmpfiles.d/*.conf`: Donde meterán algunos programas sus ficheros temporales. (daemons y procesos), volátil.
-* `/etc/tmpfiles.d/*.conf`: la ruta de adminsitrador (adminstrador)
+* `/etc/tmpfiles.d/*.conf`: la ruta de administrador.
   - Lee los ficheros que tiene definidos como temporales y los crea.
-  - Cada cierto tiempo según una unidad *systemd_tmpfiles-clean.timer* define cada cuando tiene que purgar los ficheros termporales (más información en _/usr/lib/systemd/system/systemd-tmpfiles-clean.timer_).  
+  - Cada cierto tiempo salta una unidad -*systemd_tmpfiles-clean.timer*- donde se define cada cuantoo tiene que purgar los ficheros termporales (más información en _/usr/lib/systemd/system/systemd-tmpfiles-clean.timer_).  
     La definición es algo así:
     ```bash
     [Timer]
     OnBootSec=15min
     OnUnitActiveSec=1d
     ```
-    Si arranca borra a los 15 minutos y si está arrancado, limpia cada día.
-    (Internamente hace un `stat fichero`, consulta los mtime, ctime, atime, y si alguno de estos valores superan 1 día, el sistema los purga).
-  - siempre podremos hacer un purgado manual con `systemd-tmpfiles --clean`
+    Si arranca borra a los 15 minutos y si está arrancado, limpia cada día.  
+    Internamente hace un `stat fichero`, consulta los mtime, ctime, atime, y si alguno de estos valores superan 1 día, el sistema los purga.
+  - Siempre podremos hacer un purgado manual con `systemd-tmpfiles --clean`
   
 Orden de prioridad de abajo a arriba.
 
-### Configuración de los fichreos.
+### Configuración de los ficheros
 
 **man 5 tmpfiles.d**
 
@@ -356,9 +482,9 @@ Dado que hay más procesos que cores en los procesadores, para que un sistema mu
 
 ## Prioridades relativas
 
-Como no todos los procesos son iguales, tiene que haber alguna manera de decirl al _process scheduler_ que un proceso es más importante que otro, esto se consigue con las prioridades.
+Como no todos los procesos son iguales, tiene que haber alguna manera de decirle al _process scheduler_ que un proceso es más importante que otro, esto se consigue con las prioridades.
 
-**SCHED_OTHER (SCHED_NORMAL)** La política que se aplica a la mayoría de los procesos, pero hay otra políticas. Los procesos con esta política tiene una prioridad relativa, que está asociada al nivel de nice de los procesos, cuanto mayor sea el número nice, menos prioritario es y mas tarda en coger tiempo de CPU.
+**SCHED_OTHER (SCHED_NORMAL)** La política que se aplica a la mayoría de los procesos, pero hay otras políticas. Los procesos con esta política tienen una prioridad relativa que está asociada al nivel de nice de los procesos, cuanto mayor sea el número nice, menos prioritario es y mas tarda en coger tiempo de CPU.
 
 Hay 40 niveles nice que van de -20 a 19, los negativos sólo los puede gestionar root, y los positivos todos los usuarios.
 
@@ -370,11 +496,11 @@ Dado que procesos que cogen mucha CPU pueden impactar negativamente al rendimien
 
 * Ver los niveles nice:
   - `top`: Nos muestra dos columnas de interes: **NI** con el nivel nice actual y **PR** que muestra en nivel nice en una escala más grande de prioridades en que nice=-20 == pr=0 y nice=19 == pr=39. Los niveles por debajo corresponden a prioridades del sistema.
-  - `ps axo pid,comm,nice,cls --sort=-nice` Muestra los procesos ordenados por nice.
+  - `ps axo pid,comm,nice,cls --sort=nice` Muestra los procesos ordenados por nice.
     + se pueden ver procesos con nice "-" que indica que no tienen nice, con el campo _cls_ vemos la política de schedule, donde **TS** corresponde con *SCHED_NORMAL*
-* `nice -n <nice> <comando> &`: Lanzar un proceso con otro nivel de nice. Recordar que usuarios sin privilegios pueden lanzar sólo procesos con nice entre 0 y 19 y sólo root (y sus amigos) con nice entreo -20 y -1
-* `renice -n <nice> <PID>`: Cambiar nivel de nice
-  - También podemos usar el **top** para cambiar el nivel de nice (pulstar **r**, el PID y nos pedirá el nuevo nivel de nice)
+* `nice -n <nice> <comando> &`: Lanzar un proceso con otro nivel de nice. Recordar que usuarios sin privilegios pueden lanzar sólo procesos con nice entre 0 y 19 y sólo root (y sus amigos) con nice entre -20 y -1
+* `renice -n <nice> <PID>`: Cambiar nivel de nice del proces con PID
+  - También podemos usar el **top** para cambiar el nivel de nice (pulstar **r**, el PID y nos pedirá el nuevo nivel de nice).
 
 ***
 
@@ -406,17 +532,17 @@ other::r--
 Fijarse que tenemos un "::", por lo demás son los permisos normales. Pues bien, lo que hay entre esos dos puntos, son las ACLs.
 
 Nomenclatura:
-* Nominal: tiene un nombre puesto entre los dos puntos, y los permisos se aplicarán a eso, puede haber usuarios y grupos.
-  - u:<usuario ó uid>:<permisos>
-  - m:<grupo ó uid>:<permisos>
-* Genérico: se aplican los permisos al usuario y grupo propietarios.
-* Máscara: Es un limitador, determina los máximos permisos efectivos que pueden tener usuarios nominales, grupos nominales y grupo propietario, a los que no afecta es al usuario propietario y a others.
-  - La máscara se recalcula cada vez que se cambia alguno de los permisos... así que hay que verificarla cada vez que cambiemos alguno de los permisos.
-  - **OJO** Buena costumbre, revisar la máscara cada vez que hay un cambio en la ACL por si hay que meterla a capón.
+* **Nominal**: tiene un nombre puesto entre los dos puntos, y los permisos se aplicarán a eso, puede haber usuarios y grupos.
+  - `u:<usuario ó uid>:<permisos>`
+  - `m:<grupo ó uid>:<permisos>`
+* **Genérico**: se aplican los permisos al usuario y grupo propietarios.
+* **Máscara**: Es un limitador, determina los máximos permisos efectivos que pueden tener usuarios nominales, grupos nominales y grupo propietario, a los que no afecta es al usuario propietario y a others.
+  - La máscara se recalcula cada vez que se cambia alguno de los permisos... así que hay que verificarla cada vez que cambiemos alguno de los permisos.  
+   **OJO** Es una buena costumbre, revisar la máscara cada vez que hay un cambio en la ACL por si hay que meterla a capón.
   - La máscara es el OR entre los permisos afectados.
 * Esto se puede aplicar a directorios, con lo que va a permitir a usuarios distintos del propieratio y del grupo propietario crear y borrar ficheros.
 * Ojo, cambiar los permisos del grupo con chmod, no cambia los permisos del grupo propietario, cambia la máscara.
-* Si hay permisos especiales, paraece una cuarta fila al principio de las ACLs, `#flags: sst`
+* Si hay permisos especiales, aparece una cuarta fila al principio de las ACLs, `#flags: sst`
 
 Resolución de permisos de acceso.  
 Usuario propietario --> usuarios nominales --> grupo propietario --> grupos nosminales ---> others
@@ -431,9 +557,9 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 
 ## Manejo de ACLs
 
-* **getfact** --> Obtiene acls
+* **getfacl** --> Obtiene acls
   - R recursiva, puedes obtener de forma recursiva las acls de una ruta para plancharlas en otro arbol igual.
-* **setfact _flags_ _fich_** --> setea acls
+* **setfacl _flags_ _fich_** --> setea acls
   - -m modificar
   - -R recursivo
   - -x borrar (hay que especificar lo que hay queborar).
@@ -443,8 +569,8 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
   
 ### Ejemplos
 
-* Plancha acl de un fichero a otro: `getfactl file1 |setfactl --set-file=- file2`
-* Lo mismo recursivo: `getfactl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
+* Plancha acl de un fichero a otro: `getfactl file1 |setfacl --set-file=- file2`
+* Lo mismo recursivo: `getfacl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
 * Modificar usuario propietario: `setfacl -m u::rX file`: aplica permisos x de forma recursiva a directoros pero no a ficheros.  
   **OJO:** en cuanto sea ejecutable para alguien, le aplicará la X al fichero.
 * Modficar propietarios (idem para grupos, other y mascaras): `setfacl -m u::rws fich/dir`
@@ -488,7 +614,7 @@ Cuando se pone a disabled, se necesita un reinicio y se borran todas las etiquet
 
 * Para ver las políticas de algo: `semanage fcontext -l | grep <lo_que_sea>`
 * Para ver los booleanos: `semanage boolean -l` ó `getsebool -a`
-* Para ver prolíticas en procesos `ps -axZ` (p.ej: `ps -ZC httpd` nos muestra las etiquetas de Apache).
+* Para ver políticas en procesos `ps -axZ` (p.ej: `ps -ZC httpd` nos muestra las etiquetas de Apache).
 * Para ver lo que hay aplicado de SELinux sobre un archivo/directorio: `ls -lZ <fichero>`
 
 ## Modos de SELinux
@@ -507,7 +633,7 @@ En un arranque, podemos cambiar el modo de selinux en el modo de kernel con el p
 
 ## Contextos SELinux
 
-SELinux es un conjunto de reglas de seguridad que determina qué proceso puede acceder a qué ficheros, directorios y puertos. Cada fichero, proces, directory y puerto tiene una etiqueta de seguridad especial llamada **contexto SELinux**.
+SELinux es un conjunto de reglas de seguridad que determina qué proceso puede acceder a qué ficheros, directorios y puertos. Cada fichero, proceso, directorio y puerto tiene una etiqueta de seguridad especial llamada **contexto SELinux**.
 
 Un **contexto** es un nombre que es usado por la politica de SELinux para determinar que proceso puede acceder a qué fichero, directorio o puerto. 
 
@@ -522,8 +648,8 @@ Si añadimos nuevas rutas y luego nos lo queremos llevar a otros sistemas, tendr
 
 ### Añadir reglas.
 
-`semanage fcontext` consulta o modifica las reglas que `restorecon` usa restaura. Suele ser habitual no tener instalado semanage, con lo que hay que instalarlo.
-* semanage: policycoreutils-Pythondminsitrar Logical Volume Management
+`semanage fcontext` consulta o modifica las reglas que `restorecon` restaura. Suele ser habitual no tener instalado semanage, con lo que hay que instalarlo.
+* semanage: policycoreutils-Python
 * restorecon: policycoreutils
 
 #### Comando `semanage {fcontext|boolean}`
@@ -557,7 +683,7 @@ Para ver los puertos controlados con SELinux: `semanage port -l` veremos los pue
 ## Troubleshooting
 
 1. SELinux trabaja correctamente.
-2. Contexto erróneo (revisar que fichero está dando el problema y restaurarlo si es necesario).
+2. Contexto erróneo (revisar qué fichero está dando el problema y restaurarlo si es necesario).
 3. Somos demasiado restrictivos con el acceso (solución manipulando los booleanos).
 4. Hay un bug en SELinux (poco probable) --> reportar a soporte.
 
@@ -567,7 +693,7 @@ Una vez hecho esto, con el comando `sealert -l <UUID>` podremos explorarlo ó `s
 
 ****OJO DE CARA AL EXAMEN**** 
 No siempre la solución que nos da el sealert es la válida para el exámen, normalmente lo que que buscan es que apliquemos contextos a rutas, así que mejor investigar un poco mas.
-dminsitrar Logical Volume Management
+
 ***
 
 # Conexión de usuarios con LDAP e IPA
@@ -577,8 +703,8 @@ dminsitrar Logical Volume Management
 Para configurar RHEL7 para que use servicios de administración centralizada de identidad se necesitan varios demonios y ficheros:
 * `/etc/openldap/ldap.conf`: Información acerca del servidor LDAP.
 * `/etc/krb5.conf`: Información sobre la infraestructura de Kerberos
-* `/etc/sssd/sssd.conf`: Configuración del _System Security Services Daemon_ que es responshttps://start.fedoraproject.org/able de recabar y cachear la información de usuario y de autenticación.  
-  El demonio sssd tiene que estar habilitado y corriendo antes de que el sistema pueda usar cualquier servicio de los otros.
+* `/etc/sssd/sssd.conf`: Configuración del _System Security Services Daemon_ que es responsable de recabar y cachear la información de usuario y de autenticación.  
+  El demonio **sssd** tiene que estar habilitado y corriendo antes de que el sistema pueda usar cualquier servicio de los otros.
 * `/etc/nsswitch.conf`: Indica al sistema qué servicios de información y autenticación usar.
 * `/etc/pam.d/*`: Configura cómo los servicios tienen que usar la autenticación.
 * `/etc/openlap/cacerts`: Almacen de las CAs (_Certificate Authorities_) contra las que se tienen que validar los certificados SSL que identifican los servidores LDAP.
@@ -591,7 +717,8 @@ Dado que es facil equivocarse, hay una utilidad **authconfig** que engloba tres 
 ### Parámetros mínimos de LDAP
 
 * Host name de los servidores LDAP.
-* Base DN (_distinguished name_) de la parte del arbos de LDAP en el que el sistema tiene que buscar a los usuarios. Esta información nos la tiene que proporcionar el administrador de LDAP.
+* Base DN (_distinguished name_) de la parte del arbol de LDAP en el que el sistema tiene que buscar a los usuarios.  
+   Esta información nos la tiene que proporcionar el administrador de LDAP.
 * Si se usa SSL/TLS para encriptar las comunicaciones, nos tienen que proporcionar el certificado raíz.
 
 ### Parámetros mínimos de Kerberos
