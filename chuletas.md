@@ -1,7 +1,6 @@
 Aquí meteré comandos útiles de cara a los exámenes.
 
 - [Comandos básicos](#comandos-básicos)
-  - [Crear ficheros sin nesidad de editor](#crear-ficheros-sin-nesidad-de-editor)
 - [Operativas con systemd](#operativas-con-systemd)
   - [Hacer permanentes los logs de journalctl](#hacer-permanentes-los-logs-de-journalctl)
 
@@ -12,10 +11,13 @@ Aquí meteré comandos útiles de cara a los exámenes.
   -d 'char' = delimitador entre campos
   -f n = campo
 	- Ejemplo: `cut -d ":" -f 3 fichero.csv` extrae el tercer campo de un fichero csv que separa por ":" los campos
-* `awk`: Que contarte
+* `awk`: Normalmente se usa con un pipe para tratar la salida.
+	- awk -F"<delim>" 'programa_awk'`
 * `sort`: Ordenar
+	- Ordenar salida de un du usando tamaños: `du -smh \*|sort -h`
 * `sed`: Operaciones con cadenas
-	- Sustituir en el mismo fichero: `set -i -o 's/<patron>/<sustitucion>/' fichero`
+	- Sustituir en el mismo fichero: `sed -i -o 's/busqueda/sustitucion/' fichero`
+	- Usando expresiones regulares: `sed -i -o -r 's/expr_r/sustitucion/' fichero`
 * `uniq`: Elimina registros duplicados (se suele aplicar después de un sort)
 * `wget`: trae recurso de internet:`wget -O <fich_salida> http://<ruta_fichero_a_descargar>`
 * `find`: Buscar algo
