@@ -12,9 +12,9 @@ Aquí meteré comandos útiles de cara a los exámenes.
   -f n = campo
 	- Ejemplo: `cut -d ":" -f 3 fichero.csv` extrae el tercer campo de un fichero csv que separa por ":" los campos
 * `awk`: Normalmente se usa con un pipe para tratar la salida.
-	- awk -F"<delim>" 'programa_awk'`
+	- `awk -F"<delim>" 'programa_awk'`
 * `sort`: Ordenar
-	- Ordenar salida de un du usando tamaños: `du -smh \*|sort -h`
+	- Ordenar salida de un du usando tamaños: `du -smh *|sort -h`
 * `sed`: Operaciones con cadenas
 	- Sustituir en el mismo fichero: `sed -i -o 's/busqueda/sustitucion/' fichero`
 	- Usando expresiones regulares: `sed -i -o -r 's/expr_r/sustitucion/' fichero`
