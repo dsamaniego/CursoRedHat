@@ -40,9 +40,9 @@ Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D*
 
 Hay que crear la regla de SELinux y luego ponérle el contexto a directorio:
 ```bash
-[root@desktop12 ~]# mkdir /docroot
-[root@desktop12 ~]# semanage fcontext -a -t public_content_t '/docroot(/.*)?'
-[root@desktop12 docroot]# restorecon -RvF /docroot
+mkdir /docroot
+semanage fcontext -a -t public_content_t '/docroot(/.*)?'
+restorecon -RvF /docroot
 restorecon reset /docroot context unconfined_u:object_r:default_t:s0->system_u:object_r:public_content_t:s0
 ```
 
