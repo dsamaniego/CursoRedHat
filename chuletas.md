@@ -52,7 +52,33 @@ Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D*
 * `crontab -l`: muestra el crontab del usuario actual
 * `crontab fichero`: sustituye el crontab del usuario por el fichero proporcionado
 
+# ACLs
+
+* Dar permisos de lectura a un usuario: `setfacl -m u:lisa:r file`
+* Quitar permisos a todo el mundo (usando mask): `setfacl -m m::rx file`
+* Quitar permisos a un grupo: `setfacl -x g:staff file`
+* Copiar las ACLs de un fichero en otro: `getfacl file1 | setfacl --set-file=- file2`
+  - Lo mismo recursivo: `getfacl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
+* Copiar las ACLs de acceso a la ACL por defecto: `getfacl --access dir | setfacl -d -M- dir`
+
 # SELinux
+
+* Para ver las políticas de algo: `semanage fcontext -l | grep <lo_que_sea>`
+* Para ver los booleanos: `semanage boolean -l` ó `getsebool -a`
+* Para ver políticas en procesos `ps -axZ` (p.ej: `ps -ZC httpd` nos muestra las etiquetas de Apache).
+* Para ver lo que hay aplicado de SELinux sobre un archivo/directorio: `ls -lZ <fichero>`
+* Obtener el modo de funcionamiento de SELinux: `getenforce`
+* Cambiar el modo de funcionamiento: `setenforce n` donde:
+  - 0 --> _Permissive_: Escribe en el log, pero no deniega accesos.
+  - 1 --> _Enforcing_: Escribe en el log y niega accesos
+    - Los cambios de funcionamiento con setenforce son temporales (en runtime). Para hacerlos permanentes, hay que editar el fichero `/etc/selinux/config` y reiniciar.
+    - En un arranque, podemos cambiar el modo de selinux en el modo de kernel con el parámetro extra en las líneas de kernel.
+      - enforcing=1 (enforce)
+      - enforcing=0 (permisibe)
+      - selinux=0 (disabled)
+* `chcon -t <tipo_conexto> fichero`: cambia el contexto de un fichero de forma permanente.
+* `restorecon -FvvR <fich/dir>`: Restaura el contexto del fichero según las reglas de SELinux, es decir, va consultando el `semanage fcontext -l` para ir restaurando los permisos.
+* Cuando movemos o compiamos con el flag -a, nos estamos llevando el contexto de SELinux del origen al destino, esto puede causar problemas
 
 ## Poner contexto a un directorio y todos sus hijos:
 

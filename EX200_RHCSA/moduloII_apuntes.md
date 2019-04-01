@@ -461,8 +461,10 @@ Lee los ficheros de configuración que tiene la unidad:
 * `/etc/tmpfiles.d/*.conf`: la ruta de administrador.
   - Lee los ficheros que tiene definidos como temporales y los crea.
   - Cada cierto tiempo salta una unidad -*systemd_tmpfiles-clean.timer*- donde se define cada cuanto tiene que purgar los ficheros termporales (más información en _/usr/lib/systemd/system/systemd-tmpfiles-clean.timer_).  
-    La definición es algo así: `cat /usr/lib/systemd/system/systemd-tmpfiles-clean.timer`
+    La definición es algo así: 
     ```bash
+    cat /usr/lib/systemd/system/systemd-tmpfiles-clean.timer
+    ...
     [Timer]
     OnBootSec=15min
     OnUnitActiveSec=1d
@@ -515,8 +517,8 @@ Dado que procesos que cogen mucha CPU pueden impactar negativamente al rendimien
   - `ps axo pid,comm,nice,cls --sort=nice` Muestra los procesos ordenados por nice.
     + se pueden ver procesos con nice "-" que indica que no tienen nice, con el campo _cls_ vemos la política de schedule, donde **TS** corresponde con *SCHED_NORMAL*
 * `nice -n <nice> <comando> &`: Lanzar un proceso con otro nivel de nice. Recordar que usuarios sin privilegios pueden lanzar sólo procesos con nice entre 0 y 19 y sólo root (y sus amigos) con nice entre -20 y -1
-* `renice -n <nice> <PID>`: Cambiar nivel de nice del proces con PID
-  - También podemos usar el **top** para cambiar el nivel de nice (pulstar **r**, el PID y nos pedirá el nuevo nivel de nice).
+* `renice -n <nice> <PID>`: Cambiar nivel de nice del proceso con PID
+  - También podemos usar el **top** para cambiar el nivel de nice (pulsar **r**, el PID y nos pedirá el nuevo nivel de nice).
 
 ***
 
@@ -528,11 +530,11 @@ En RHEL7, tanto ext4 como xfs admiten ACLs y las tienen configuradas por defecto
 
 ¿Qué permiten? Granularizar permisos
 
-¿Cómo se ve qeu algo tiene ACLs?
+¿Cómo se ve que algo tiene ACLs?
 
 `ls -l`, la salida tiene algo así como -rwxr-x-r--+ ..., el + nos indica que tiene ACLs aplicadas.
 
-p.ej.: -rwxrwxrwx+ root root fichero, los permisos de grupo, ya no son los permisos del grupo propietario, sino la máscara de las ACLs.
+p.ej.: `-rwxrwxrwx+ root root fichero`, los permisos de grupo, ya no son los permisos del grupo propietario, sino la máscara de las ACLs.
 
 Para saber en este caso los permisos del grupo, necesito sacar más información con las ACLs.
 
@@ -561,12 +563,12 @@ Nomenclatura:
 * Si hay permisos especiales, aparece una cuarta fila al principio de las ACLs, `#flags: sst`
 
 Resolución de permisos de acceso.  
-Usuario propietario --> usuarios nominales --> grupo propietario --> grupos nosminales ---> others
+Usuario propietario --> usuarios nominales --> grupo propietario --> grupos nominales ---> others
 ### Defaults ACL
 
 Sólo se aplican a los directorios, funcionan con herencia, las ACLs de un directorio pasan a sus hijos.
-* Los ficheros hijos heredan las standar definidas de las defaults del padre.
-* los directorios hijos heredan las defaults del padre como sus standar y sus defaults.
+* Los ficheros hijos heredan las estándar definidas de las defaults del padre.
+* los directorios hijos heredan tanto las defaults del padre como sus estándar y sus defaults.
 * Las propagaciones no se llevan el permiso de ejecución **para ficheros**.
 
 La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _default:_)
@@ -578,14 +580,14 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 * **setfacl _flags_ _fich_** --> setea acls
   - -m modificar
   - -R recursivo
-  - -x borrar (hay que especificar lo que hay queborar).
+  - -x borrar (hay que especificar lo que hay que borrar).
   - -k Borrar defaults
   - -b borrar todas
   - -d establece acls defautl (mejor hacerlo con los parámetros)
   
 ### Ejemplos
 
-* Plancha acl de un fichero a otro: `getfactl file1 |setfacl --set-file=- file2`
+* Plancha acl de un fichero a otro: `getfactl file1 |setfacl --set-file=-file2`
 * Lo mismo recursivo: `getfacl -R file1 > fichero_acls && setfacl --set-file=fichero_acl`
 * Modificar usuario propietario: `setfacl -m u::rX file`: aplica permisos x de forma recursiva a directoros pero no a ficheros.  
   **OJO:** en cuanto sea ejecutable para alguien, le aplicará la X al fichero.
@@ -611,13 +613,13 @@ Controla que los procesos puedan escribir sólo en su ruta "default". Con lo que
 **Etiquetas** de SELinux para diferentes contextos:
 * USER (\_u)
 * ROLE (\_r)
-* TYPE (\_t) En este contexto se basa la política basada en etiquetas (que es la políica por defecto)
+* TYPE (\_t) En este contexto se basa la política basada en etiquetas (que es la política por defecto)
 * SENSITIVITY (\_s)
 
-**Políticas**: Acciones que va a tomar SELinux respecto a las etiquetas. Por defecto la política no permite ninguna interacción a no ser que una regla explicita permita el acceso. Si no hay regla, no hay acceso.
+**Políticas**: Acciones que va a tomar SELinux respecto a las etiquetas. Por defecto la política no permite ninguna interacción a no ser que una regla explícita permita el acceso. Si no hay regla, no hay acceso.
 * targeted: Es la política por defecto. Se pueden ver en `/etc/selinux/config`
 * minimun
-* mls
+* mls (_Multi-Level Securtiy_)
 
 **Modos** de SELinux:
 * enforcing: Obliga que se cumplan las reglas.
@@ -637,7 +639,7 @@ Cuando se pone a disabled, se necesita un reinicio y se borran todas las etiquet
 
 Con fines de troubleshooting, se puede desactivar temporalmente SELinux usando los modos de SELinux
 * Obtener el modo de funcionamiento de SELinux: `getenforce`
-* Cambiar el modo de funionamiento: `setenforce n` donde:
+* Cambiar el modo de funcionamiento: `setenforce n` donde:
   - 0 --> _Permissive_: Escribe en el log, pero no deniega accesos.
   - 1 --> _Enforcing_: Escribe en el log y niega accesos
   - Los cambios de funcionamiento con setenforce son temporales (en runtime). Para hacerlos permanentes, hay que editar el fichero `/etc/selinux/config` y reiniciar.
@@ -966,8 +968,8 @@ Nos quedarán dos particiones mondas y lirondas.
 ### Reducir VG
 
 1. Si tiene datos hay que liberar la PV: `pvmove /dev/dvx`
-2. Reducirmos el VG: `vgreduce vgdatos /dev/vdx`
-3. Comporobamos que la operación ha sido correcta.
+2. Reducimos el VG: `vgreduce vgdatos /dev/vdx`
+3. Comprobamos que la operación ha sido correcta.
 
 ### Extender LV
 
@@ -989,7 +991,7 @@ Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . S
 
 #### Operativa.
 
-* Cramos un snapshot de lvdata, del tamaño iniical de 1 G.  
+* Creamos un snapshot de lvdata, del tamaño inicial de 1 G.  
   `lvcreate -s -L 1G -n lvdata_snap /dev/vgdata/lvdata`
 * Restaurar snapshot:   
   `lvconvert --merge <snapshot>`
@@ -998,7 +1000,7 @@ Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . S
 
 # Network Storage NFS 
 
-NFS (_Network File System_): Protocolo estandar usado por sistemas tipo -nix como el protocolo nativo de FS en red.
+NFS (_Network File System_): Protocolo estándar usado por sistemas tipo -nix como el protocolo nativo de FS en red.
 
 En RHEL7 - nfsv4 (si no está disponible, pues las anteriores).
 * v4 sólo usa TCP
@@ -1014,14 +1016,16 @@ Cómo lo montamos:
 ## Seguridad
 
 Podemos usar uno o varios métodos de seguridad, añadiendo a la opción de montaje: **sec=metodo**. El servidor puede usar varios sistemas de seguridad, en cliente sólo uno:
-* **none**: Acceso anónimo en a los archivos de NFS (usando el usuario _nfsnobody_)
+* **none**: Acceso anónimo a los archivos de NFS (usando el usuario _nfsnobody_)
 * **sys**: Acceso con los estándares de Linux usuario:grupo
 * **krb5**: Los clientes tienen que autenticarse con Kerberos y luego los permisos estándar de Linux.
 * **krb5i**: Agrega criptografía a los datos de ida y vuelta para asegurar que los datos no han sido alterados.
 * **krb5p**: Añade cifrado en todas las peticiones entre cliente y servidor (esto tiene un impacto en el rendimiento).
+  - Para esto habrá que bajarse el keytab.
 
 Necesitaremos:
-* Un fichero `/etc/krb5.keytab` que nos proveerá nuestro administrador de seguridad. La mayoría de los problemas viene de descargar este fichero (tiene que ser binario y tener los contextos de SELinux).
+* Un fichero `/etc/krb5.keytab` que nos proveerá nuestro administrador de seguridad. La mayoría de los problemas vienen de descargar este fichero (tiene que ser binario y tener los contextos de SELinux).
+  - `sudo wget -O /etc/krb5.keytab http://<ruta a keytab>`
 * Un servicio **nfs-secure** proporcionado por el paqeute _nfs-utils_ y lo tenemos que tener started y enabled. Esto también puede ser una posible fuente de errores.
 
 ## Montajes
@@ -1031,11 +1035,11 @@ Necesitaremos:
 1. Identificar las exportaciones del servidor NFS:
   * En nfsv2 y nfsv3 está el comando `showmount -e <NFSserver>`
   * En nfsv4 (como root)
-		```bash
-    [server]# mkdir /pto/montaje
-    [server]# mount server:/ /pto/montaje
-    [server]# cd /pto/montaje
-		```
+  ```bash
+  mkdir /pto/montaje
+  mount server:/ /pto/montaje
+  cd /pto/montaje
+  ```
 2. Creamos un punto de montaje definitivo: `mkdir /destino`
 3. Montamos manualmente o añadimos a fstab
   * **Manual**: `mount -t nfs -o sync server:/<dir_compartido> /pto_montaje`
@@ -1145,26 +1149,26 @@ Meter la siguiente línea:
 
 ## Si no nos identificamos como guest
 
-El usuario/password son independiente de lo que tenga el sistema, de hecho, los usuarios asociados a SAMBA se les da el shell **/bin/nologin**
+_usuario/password_ son independientes de lo que tenga el sistema, de hecho, los usuarios asociados a SAMBA se les suele dar el shell **/bin/nologin**
 
 `mount -t cifs -o username:<usuario> //server/recurso /pto/montaje`, nos pedirá el passwd.
 
-Podemos tenerlo en un fichero de credenciales de root, con permisos 600, normalmente en `/secure/sherlock` con el siguiene formato:
+Podemos tenerlo en un fichero de credenciales de root, con permisos 600, normalmente lo dejaremos colgando de `/root/secure/` con el siguiene formato:
 ```text
 username="nombre"
 password="pass"
 domain="dominio"
 ```
 
-En este caso, invocaremos: `mount -t cifs -o credentials=/secure/sherlock //server/recurso /pto/montaje`
+En este caso, invocaremos: `mount -t cifs -o credentials=/root/secure/creds //server/recurso /pto/montaje`
 
 ## Automontaje
 
 Samba también se automonta. El procedimiento es prácticamente igual.
 
-Fichero maestro de asignación y luego su fichero de mapeo (auto.*).
+Fichero maestro de asignación (`/etc/auto.master.d/*.autofs`) y luego su fichero de mapeo (`/etc/auto.*`).
 ```text
-cat /etc/auto.master.d/*.autofs
+cat /etc/auto.master.d/baker.autofs
 /bakerst  /etc/auto.baker
 
 cat /etc/auto.baker
