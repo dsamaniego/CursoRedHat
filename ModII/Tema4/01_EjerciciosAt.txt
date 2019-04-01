@@ -1,0 +1,14 @@
+0. Como verifico si está instalado el paquete que me provee de at? Como veo si el servicio esta corriendo y activo al arranque?
+
+1. Programar tareas para que se ejecuten dentro de 2 minutos, de forma que obtenga un listado del contenido de la carpeta /tmp y lo guarde en la home del usuario student como un file de nombre tmp­list.txt
+
+
+2. Programar una tarea a las 8 de la tarde de forma que obtenga un listado de los usuarios conectados al sistema en ese momento, y lo guarde en un archivo en la home de root llamado logs.txt 
+
+
+3. Programar una tarea a las 8 de la tarde dentro de 2 dìas, de forma que obtenga un listado de las conexiones de red activas (netstat ­-t).
+
+4. Programar una tarea a las 8 de la mañana del 17 de diciembre del 2018, de forma que obtenga un listado del espacio ocupado en los discos (df -­h)
+
+5. Eliminar esta última tarea programada de la cola de tareas.
+

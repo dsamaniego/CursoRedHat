@@ -1,0 +1,66 @@
+It should be done on your VM serverX .
+Users: you (student), janis, grace
+
+
+Exercise #2
+
+1. Crear un directorio llamado tempdir_janis dentro de /tmp. Dale permisos 711.
+
+	mkdir /tmp/tempdir_janis
+	chmod 711 /tmp/tempdir_janis
+
+2. Añade las siguientes acls al directorio tempdir_janis
+- una acl para student con permisos rwx
+	setfacl -m -R u:student:rwx /tmp/tempdir_janis
+
+- una acl para janis con permisos rwx
+	setfacl -m -R u:janis:rwx /tmp/tempdir_janis
+	
+- una default acl para student con permisos rwx	
+	setfacl -m d:u:student:rwx /tmp/tempdir_janis
+	
+- una default acl para janis con permisos rwx
+	setfacl -m d:u:janis:rwx /tmp/tempdir_janis	
+
+Así, student y janis tienen acceso total al directorio tempdir_janis.
+
+3. Crea un file llamado texxto en tempdir_janis. Examínalo con getfacl. ¿Puede janis acceder al file? ¿qué permisos tiene ella? es lo que predecías?
+Nota que la default acl para janis en tempdir_janis tiene el permiso x. Puede janis ejecutar el file? ...noooo
+
+	touch /tmp/tempdir_janis/texxto
+	getfacl /tmp/tempdir_janis/texxto
+	
+
+4. Como janis crea un fichero llamado texto en tempdir_janis. Verifica que tú, student, tienes acceso de lectura y escritura en el fichero nuevo.
+
+	su - janis
+	touch /tmp/tempdir_janis/texto
+	su - student
+	less /tmp/tempdir_janis/texto
+	vim /tmp/tempdir_janis/texto
+
+5. Crea un subdirectorio llamado subdir_student en tempdir_janis. Examina las acls. ¿Quien podrá crear objetos en subdir_student?
+
+	mkdir /tmp/tempdir_janis/subdir_student
+	getfacl /tmp/tempdir_janis
+	student y janis
+
+6. Usa setfacl para borrar la acl (no la de default, solo la "normal") para janis en tempdir_janis. Ahora crea otro directorio en tempdir_janis, lo llamamos subdir_student2. Compara las acl de subdir_student y subdir_student2. ¿Hay diferencias?
+
+	setfacl -x u:janis:rwx /tmp/tempdir_janis
+	mkdir /tmp/tempdir_janis/subdir_student2
+	getfacl /tmp/tempdir_janis/subdir_student
+	getfacl /tmp/tempdir_janis/subdir_student2
+
+7. Como janis crea un fichero nuevo en tempdir_janis. ¿Qué sucede? ¿Puede crear un fichero en subdir_student y subdir_student2?
+
+	su - janis
+	touch /tmp/tempdir_janis/fichero_nuevo
+	touch /tmp/tempdir_janis/subdir_student/fichero1
+	touch /tmp/tempdir_janis/subdir_student2/fichero2
+
+8. Elimina tempdir_janis.
+	
+	rmdir -Rf /tmp/tempdir_janis
+
+

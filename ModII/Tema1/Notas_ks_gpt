@@ -1,0 +1,78 @@
+UNO
+
+text            
+zerombr yes
+clearpart --drives=sda
+bootloader --location=mbr --driveorder=/dev/sda --append=\"crashkernel=auto rhgb quiet\"
+ignoredisk --only-use=sda
+
+### Specify the partition size and its type,
+### please change/add partitions in below section as per your requirement.
+
+part / --fstype=ext3 --size=10240              
+part swap --asprimary --size=4096
+
+%packages
+.... snip ...
+
+%pre --log=/root/pre_log
+
+/usr/bin/dd bs=512 count=10 if=/dev/zero of=/dev/sda
+/usr/sbin/parted --script /dev/sda mklabel gpt
+/usr/sbin/parted -l /dev/sda
+/usr/bin/sleep  30
+
+%end
+
+
+DOS
+
+part biosboot --fstype=biosboot --size=1. 
+
+
+TRES
+
+ignoredisk --only-use=sda
+reboot
+
+clearpart --none
+
+bootloader --location=mbr
+zerombr
+
+part swap --asprimary --fstype="swap" --size=4096
+part /boot --fstype ext4 --size=500
+part biosboot --fstype=biosboot --size=1
+
+part pv.01 --size 50000
+
+volgroup rootvg pv.01
+
+logvol /var  --fstype ext4 --name=var  --vgname=rootvg --size=10000
+logvol /     --fstype ext4 --name=root --vgname=rootvg --size=1 --grow
+
+%pre
+dd if=/dev/zero of=/dev/sdb bs=1M count=1
+/usr/sbin/parted -s $disk mklabel gpt
+  partprobe $disk
+%end
+
+
+CUATRO
+
+ ignoredisk --only-use=sda
+ 
+ clearpart --linux --drives=sda
+ 
+ part /boot --fstype=ext4 --size=500
+ part pv.pv1 --grow --size=1
+ 
+ volgroup vg1 --pesize=4096 pv.pv1
+ logvol /data --fstype=ext4 --name=data --vgname=vg1 --size=6498824
+ logvol /home --fstype=ext4 --name=home --vgname=vg1 --size=40960
+ logvol / --fstype=ext4 --name=root --vgname=vg1 --size=51200
+ logvol swap --name=swap --vgname=vg1 --size=20480
+ logvol /usr --fstype=ext4 --name=usr --vgname=vg1 --size=20480
+ logvol /var --fstype=ext4 --name=var --vgname=vg1 --size=40960
+ 
+ bootloader --location=mbr --driveorder=sda --append="crashkernel=auto rhgb quiet"

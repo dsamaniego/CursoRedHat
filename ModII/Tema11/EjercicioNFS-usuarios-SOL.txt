@@ -1,0 +1,44 @@
+EJERCICIO NFS CON REPASO DE USUARIOS Y GRUPOS
+=============================================
+
+- Crear el usuario "bart" con el UID 1010 y el usuario "lisa" con UID 1011 en serverX y desktopX.
+  Deben pertenecer al grupo "simpson" con GID 1100. 
+
+- Crear directorio colaborativo /docs/familiaS en serverX donde sólo cada usuario pueda borrar sus
+  ficheros.
+
+- Exportar por NFS el directorio /docs/familiaS de serverX y montarlo en desktopX en /home/lisa/docsfam 
+  y /home/bart/docsfam
+ 
+SOLUCIÓN
+=========
+
+- Creación de grupo y usuarios en serverX y desktopX:
+
+  groupadd -g 1100 simpson
+
+  useradd -u 1010 -G simpson bart
+  useradd -u 1011 -G simpson lisa
+
+- Creo directorio colaborativo en serverX:
+
+  mkdir -p /docs/familiaS
+  chown :simpson /docs/familiaS
+  chmod g+ws,o+t /docs/familiaS
+
+- Configuro servidor NFS en serverX:
+
+  echo "/docs/familiaS *(rw,sync)" >> /etc/exports
+  systemctl start nfs-server && systemctl enable nfs-server  o si ya está arrancado exportfs -a
+
+  verifico con exportfs o exportfs -s
+
+ Abro firewall para el servicio NFS:
+
+  firewall-cmd --permanent --add-service=nfs && firewall-cmd --reload
+
+- Configuro cliente NFS en desktopX:
+
+  mkdir /home/{bart,lisa}/docsfam
+  echo -e "serverX:/docs/familiaS /home/bart/docsfam\nserverX:/docs/familiaS /home/lisa/docsfam" >> /etc/fstab  
+  mount -a

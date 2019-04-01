@@ -1,0 +1,51 @@
+Metacaracteres: \ . ^ $ [ ] ( ) | ? + * { }
+
+. un caràcter cualquiera
+? 0 o 1 veces el caràcter anterior
+* 0 o más veces el caràcter anterior
++ 1 o más veces el caràcter anterior
+
+
+
+[ ] caràcter contenido en los corchetes (se pueden combinar rangos y caracteres ùnicos) ej [+*]  busca un + o un *
+                                                                                           [\\x] busca \ o una x (\ si hay que escaparlo)
+[^ ] caràcter no contenido en los corchetes
+[x-y] caràcter contenido en el rango x-y
+
+^  principio de linea
+$  final de linea
+
+.* cualquier cadena
+
+\ escapar un caràcter
+
+\< principio de palabra
+\> final de palabra (seguido por un signo de puntuación, un espacio o un salto) p.e. busqueda de lo que termine en on: /on\> 
+
+
+x|y el caràcter x o el y
+
+x{m}  m x's consecutivas 
+x{m,} m x's consecutivas o más p.e. grep -E 'o{1,}' file
+x{m,n}  entre m y n x's
+
+
+
+
+Caracteres:
+[[:alnum:]] alfanuméricos (depende del idioma configurado)
+[[:alpha:]] alfabéticos (depende del idioma configurado)
+[[:lower:]] minúsculas (depende del idioma configurado)
+[[:upper:]] mayúsculas (depende del idioma configurado)
+[[:digit:]] dígitos
+[[:xdigit:]] dígitos hexadecimales
+[[:blank:]] espacio o tabulador
+[[:space:]] blancos (espacio, tabuladores, cambio de línea, retorno de carro...)
+[[:graph:]] no blancos
+[[:print:]] como graph, pero incluye el espacio en blanco
+[[:punct:]] de puntuación
+
+
+
+
+

@@ -1,0 +1,37 @@
+Documentación sobre FirewallD
+
+FirewallD - Fedora Project.
+  https://fedoraproject.org/wiki/FirewallD
+
+Red Hat Enterprise Linux 7 - Security Guide - 4.5. Using Firewalls.
+	https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Using_Firewalls.html	
+
+$ man firewalld
+$ man firewalld.conf
+$ man firewalld.service
+$ man firewalld.zone
+$ man firewalld.zones
+$ man firewall-cmd
+$ man firewalld-config
+
+
+https://blog-alexis.rhcloud.com/tag/firewalld/
+
+http://hypsoluciones.com/2015/08/centos-7-configuracion-del-firewall/
+
+
+
+https://blog-alexis.rhcloud.com/tag/fedora-19/
+
+
+
+https://fedoraproject.org/wiki/Features/FirewalldRichLanguage
+
+https://www.rootusers.com/how-to-use-firewalld-rich-rules-and-zones-for-filtering-and-nat/
+
+
+https://blog-alexis.rhcloud.com/2013/10/12/firewalld-i-las-zonas/
+https://blog-alexis.rhcloud.com/2013/11/10/firewalld-ii-los-servicios/
+https://blog-alexis.rhcloud.com/2013/11/12/firewalld-iii-como-definir-un-servicio/
+https://blog-alexis.rhcloud.com/2015/01/05/firewalld-iv-redireccion-de-puertos/
+

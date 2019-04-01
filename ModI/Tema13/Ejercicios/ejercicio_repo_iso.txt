@@ -1,0 +1,14 @@
+INSTALAR UN REPOSITORIO DE LA ISO WORKSTATION
+---------------------------------------------
+En ServerX
+
+0. Obtener la iso de rhel72_workstation de /content/rhel72_workstation/
+ 
+1.- Montar la iso de workstation en /rhel72_workstation
+   
+2.- Crear un repositorio que se llame workstation
+
+4.- Desactivar el repositorio workstation
+
+5. Desmontar la iso
+   

@@ -1,0 +1,59 @@
+Ejercicios de RPM
+
+
+##### Que ficheros de configuración instala Samba?
+$ rpm -qc samba
+/etc/logrotate.d/samba
+/etc/pam.d/samba
+/etc/samba/smbusers
+
+
+##### Borrar /bin/ls, arreglarlo
+whereis ls
+rm -f /bin/ls
+rpm -qf /bin/ls
+rpm -V coreutils
+rpm -ivh coreutils --force
+
+
+##### Ver problemas de rpms con rpm -V, volcarlo a un fichero 
+rpm -Va > problemas.out
+
+
+##### listado de paquetes rpms que NO sean de 64 bits instalados actualmente
+rpm -qa --queryformat "%{NAME}--%{ARCH}\n" | grep -v x86_64
+
+
+##### listado de paquetes que no sean de Red Hat
+rpm -qa --queryformat "%{NAME}--%{PACKAGER}\n" | grep -v "Red Hat"
+
+
+##### Que firmas digitales hay instaladas?
+rpm -qi gpg-pubkey
+
+
+##### Que paquete me instala el /bin/bash?
+$ rpm -qf /bin/bash
+bash-4.2.45-3.el7.x86_64
+
+
+##### que paquete me instala el /etc/fstab?
+En RHEL5 ninguno, se crea en tiempo de instalación.
+En RHEL7 el paquete "setup"
+
+
+#### Cuales son los 5 últimos paquetes instalados en el sistema?
+rpm -qa --last | head -n 5
+
+
+#### Que binarios me instala el paquete rpm-*.rpm? que hace cada uno de ellos?
+$rpm -ql rpm | grep bin/
+/bin/rpm
+/usr/bin/rpm2cpio
+/usr/bin/rpmdb
+/usr/bin/rpmquery
+/usr/bin/rpmsign
+/usr/bin/rpmverify
+
+
+

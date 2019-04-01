@@ -1,0 +1,20 @@
+EJERCICIO FS GRUPOS
+====================
+
+- Resetear "serverX"
+
+- Crear en "serverX" los grupos "cientificos", "tecnicos", "asistentes" y "directores", 
+
+- Crear los usuarios: pperez, flopez, mgarcia, dmartin, nvalverde, msoria, bfernandez, sabiendo que "pperez" y "mgarcia" son científicos, "flopez" y "dmartin" son técnicos, "bfernandez" es asistente, "nvalverde" y "msoria" son directores.
+
+ 
+- Crear en / filesystems XFS creados sobre particiones del disco vdb:
+    -  4 directorios colaborativos, uno por grupo de los creados en el apartado anterior, con el nombre del grupo.
+    -  3 los directorios comunes para todos ellos de "documentos", "fotos", "videos".
+  
+   El tamaño de las particiones será de 1GiB para cada grupo y 1.5GiB para los otros directorios.
+
+- El montaje de los filesystems debe ser persistente y sólo los usuarios que crean ficheros en ellos los podrán borrar.
+
+- Crear swap adicional en vdb de 512MiB con la etiqueta "swapextra" y que sea persistente.
+

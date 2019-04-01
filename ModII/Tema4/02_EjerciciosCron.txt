@@ -1,0 +1,22 @@
+1. Está instalado el paquete que me provee de cron?
+
+2. Comprobar que se está ejecutando el demonio cron. Si no lo estuviera , cómo podría iniciarlo?
+
+3. Como un usuario sin privilegios. Programa una tarea que imprima en el terminal pts/0 "son las nueve" todos los dias de lunes a viernes a las 21:00. (Podeís también usar el comando wall...man wall)
+
+4. Como el anterior pero solo de los meses enero y febrero.
+
+5. Como un usuario diferente de root y student crear una tarea periòdica tal que cada dos minutos los miércoles escriba la fecha y hora en la consola virtual 4.
+
+6. Programa una tarea dentro de cinco minutos de la hora y fecha actuales, con crontab que cree un fichero sin contenido llamado file_temp_actualizado en el directorio home de student. Dicha tarea se debe realizar siempre a esta hora de Lunes a Viernes los meses de verano (Junio, Julio, Agosto, Septiembre).
+
+7. Programa una tarea que haga una compresión de la home de root  en un archivo llamado backup_root.tar en /tmp todos los viernes a las 17:30h.
+
+8.  Copia las líneas que debes poner en tu crontab (como student) para que se ejecute el script
+/usr/bin/miscript ...
+  – Todos los días a las 13:30 y a las 23:30
+  – De lunes a viernes a las 12:05
+  – Cada dos horas los días 15 de enero y junio
+
+9. Realizar una tarea programada para que se reinicie el equipo todos los  miércoles a las 20:00.
+ 

@@ -1,0 +1,10 @@
+[Unit]
+Description=Change login background
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/change_background.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

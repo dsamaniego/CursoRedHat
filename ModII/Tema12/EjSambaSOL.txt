@@ -1,0 +1,20 @@
+Montar de forma persistente un recurso exportado por serverX llamado practica en /samba de desktopX y comprobar que funciona accediendo al contenido de un file. El usuario samba es pepe y su password samba es perez.
+
+1. Instalo paquetes necesarios: cifs-utils y samba-client
+
+  yum install -y cifs-utils samba-client
+
+2. Veo el recurso exportado:
+
+  smbclient -U pepe -L //server0 
+
+3. Creo el fichero de credenciales
+   echo -en "username=pepe\npassword=perez\ndomain=MYGROUP" > /root/samba.smb
+   chmod 600 /root/samba.smb
+
+4. Monto de forma persistente
+  mkdir /samba
+  echo "//server0/practica /samba cifs credentials=/root/samba.smb 0 0" >> /etc/fstab
+  mount -a
+  ls /samba
+  less /samba/file_getafe.txt

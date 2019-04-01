@@ -1,0 +1,71 @@
+0. Como verifico si está instalado el paquete que me provee de at? Como veo si el servicio está  corriendo y activo al arranque?
+
+1. Programar tareas para que se ejecuten dentro de 2 minutos, de forma que obtenga un listado del contenido de la carpeta /tmp y lo guarde en la home del usuario student como un file de nombre tmplist.txt
+
+
+2. Programar una tarea a las 8 de la tarde de forma que obtenga un listado de los usuarios conectados al sistema en ese momento, y lo guarde en un archivo en la home de root llamado logs.txt 
+
+
+3. Programar una tarea a las 8 de la tarde dentro de 2 días, de forma que obtenga un listado de las conexiones de red activas (ss -l).
+
+4. Programar una tarea a las 8 de la mañana del 17 de enero del 2019, de forma que obtenga un listado del espacio ocupado en los discos (df -h)
+/root/.ssh/known_hosts
+5. Eliminar esta Última tarea programada de la cola de tareas.
+
+------------------
+SOLUCION:
+
+0.
+yum info at
+-- Si el paquete donde se encuentra el comando at no se llama at, no vale este comando
+yum provides at
+yum provides $(which at) => Ver si esta instalado el paquete
+-- mejor así
+
+rpm -ql at | grep service => Ver los ficheros del paquete (l los lista)
+
+systemctl status atd.service => active (running) y enabled (Ver estado de servicio y si arranca al iniciarse)
+
+
+1. at now +2min
+at> ls /tmp >> /home/student/tmp_­list.txt
+-- también con ~/tmplist.txt
+
+Otra Forma:
+echo "ls /tmp >> /home/student/tmp_list.txt" | at now +2min
+
+
+
+2. echo "w -h > /root/logs.txt" | at 8pm today
+-- además de escribir los usuarios conectados, dice desde donde, a que hora, ... información que no nos han pedido
+
+echo "w -h | tr -s ' ' ' ' | cut -d ' ' -f1 |sort |uniq > /root/logs.txt" | at 8pm today => SOLUCION MAS FINA 
+
+-- con tr -s ' ' ' ' le digo al comando tr con la opción -s que me sustituya varios espacios en blanco por uno solo, para utilizar el espacio como separador de campo en el comando cut -d, para poder quedarme sólo con el primer campo que es donde aparece el usuario conectado descartando el resto de información. Con sort | uniq, ordeno los usuarios por orden alfabético y quito los repetidos.
+
+3. echo "ss -l" | at 8pm today +2days
+echo "ss -l" | at 8pm +2days
+
+
+4. echo "df -­h" | at 8am january 17 2019
+
+
+5. Con el atq se ve los numeros de las tareas
+
+atrm "numero" => Se borra la ultima tarea
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

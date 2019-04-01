@@ -1,0 +1,36 @@
+Ejercicios de RPM
+
+los RPMs están en http://classroom.example.com/content/rhel7.0/x86_64/dvd/Packages/
+
+
+##### Que ficheros de configuración instala Samba?
+
+
+##### Borrar /bin/ls, arreglarlo
+
+
+##### Ver problemas de rpms con rpm -V, volcarlo a un fichero 
+
+
+##### listado de paquetes rpms que NO sean de 64 bits instalados actualmente
+
+
+##### listado de paquetes que no sean de Red Hat
+
+
+##### Que firmas digitales hay instaladas?
+
+
+##### Que paquete me instala el /bin/bash?
+
+
+##### que paquete me instala el /etc/fstab?
+
+
+#### Cuales son los 5 últimos paquetes instalados en el sistema?
+
+
+#### Que binarios me instala el paquete rpm-*.rpm? que hace cada uno de ellos?
+
+
+

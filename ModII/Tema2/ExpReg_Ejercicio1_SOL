@@ -1,0 +1,21 @@
+EJERCICIO 1 EXP REGULARES - SOLUCIÓN
+------------------------------------
+Expresión regular utilizada para validar si una cadena es una dirección de email válida
+
+
+maia@unito.com
+
+leon-garcia@YYasta.es
+
+alonso@mail.uniba.edu
+
+
+SOL:   '^([a-zA-Z0-9_-]+)(\.[a-zA-Z0-9_-]+)*@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}$'
+
+otra SOL: '^[a-zA-Z0-9_][a-zA-Z0-9_-\.]*@[a-zA-Z0-9][a-zA-Z0-9_-\.]*\.[a-zA-Z]{2,6}$'
+
+o mas simple y con algún fallo SOL: .*@[^.].*\..*
+
+
+
+

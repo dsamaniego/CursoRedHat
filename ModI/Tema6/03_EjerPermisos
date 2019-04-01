@@ -1,0 +1,79 @@
+1) Suppose you have a file with the following permissions:
+
+ls -l readme
+
+-rwxrw---- 1 student clase 17 Jul 5 10:00 readme
+
+Write the command line by using letters with chmod to set the following permissions:
+
+rwxrwxr-x :
+
+rwxr--r-- :
+
+r--r----- :
+
+rwxr-xr-x :
+
+r-x--x--x :
+
+-w-r----x :
+
+-----xrwx :
+
+2) Write the command line by using octal numbers with chmod to set the following permissions:
+
+rwxrwxrwx :
+
+--x--x--x :
+
+r---w---x :
+
+-w------- :
+
+rw-r----- :
+
+rwx--x--x :
+
+3) With the following umask values what would be the files and directories creation permissions?
+
+umask = 0027
+
+File permissions:
+
+Directory permissions:
+
+umask = 0011
+
+File permissions:
+
+Directory permissions:
+
+umask = 0541
+
+File permissions:
+
+Directory permissions:
+
+umask = 0777
+
+File permissions:
+
+Directory permissions:
+
+4) Create two user accounts
+
+Logging in id: ada, group clase, with bash shell, home directory /home/ada
+
+Logging in id: joe, group public, with bash shell, home directory /home/joe
+
+For the two accounts set a password.
+
+Logging in as ada and copy /bin/ls into ada home directory as myls. Change the owner of myls to ada and the permissions to 0710. What does this permission value mean?
+
+Logging in as joe and try to use /home/ada/myls to list your current directory. Does it work ?
+
+Create in /etc/group and /etc/gshadow a new group labo with ada and joe. Change the owner group of myls to labo.
+
+Try again from joe account to execute /home/ada/myls to list your current directory. Does it work? Why?
+
+
