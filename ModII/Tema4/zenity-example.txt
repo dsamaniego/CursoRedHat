@@ -1,1 +1,0 @@
-export DISPLAY=:0;zenity --info --text "Esta tarde tienes medico"
