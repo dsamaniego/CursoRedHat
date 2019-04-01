@@ -31,8 +31,26 @@ Aquí meteré comandos útiles de cara a los exámenes.
 	```
 * Usar echo para crear ficheros de varias líneas:  
   `echo -en "username=pepe\npassword=perez\ndomain=MYGROUP" > /root/samba.smb`
+* Ver los ficheros de configuración de un paquete: 
+  ```bash
+  yum provides programa_en_cuestion
+  rpm -qc paquete
+  ```
 
 Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D**.
+
+# Cron y at.
+
+* `at TIMESPEC`: Nos abre un subsell donde definiremos lo que se ejecutará en _TIMESPEC_
+  - `at -q x TIMESPEC`: Nos programa un job en la cola x
+* `atq`: Muestra la cola de AT
+  - `at -c <job_id>`: Nos muestra lo que se ejecutará en el Job consultado.
+* `atrm <job_id>`: Borra el job especificado
+
+* `crontab -e`: edita el crontab del usuario actual
+* `crontab -r`: borra el crontab del usuario actual
+* `crontab -l`: muestra el crontab del usuario actual
+* `crontab fichero`: sustituye el crontab del usuario por el fichero proporcionado
 
 # SELinux
 
