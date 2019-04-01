@@ -91,7 +91,6 @@
 - [Network Storage SMB](#network-storage-smb)
   - [Montajes](#montajes-1)
     - [Montaje manual](#montaje-manual-1)
-    - [fstabhttps://www.thegeekdiary.com/centos-rhel-7-booting-process/](#fstabhttpswwwthegeekdiarycomcentos-rhel-7-booting-process)
   - [Si no nos identificamos como guest](#si-no-nos-identificamos-como-guest)
   - [Automontaje](#automontaje)
 - [Troubleshooting del arranque](#troubleshooting-del-arranque)
@@ -254,7 +253,7 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 * Comienzo de palabra: `'\<{exp_reg}'`
 * Fin de palabra: `'{exp_reg}\>'`
 
-**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'`https://www.thegeekdiary.com/centos-rhel-7-booting-process/
+**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'
 
 ### Comodines y multiplicadores.
 
