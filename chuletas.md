@@ -102,10 +102,17 @@ echo -ne "* -rw,sync srvnfs:/home/guests/&\n" > /etc/auto.guests
 sudo systemctl enable autofs.service
 sudo systemctl start autofs.service
 ```
-Para chequear que esto ha quedado bien: `ssh <usuarioldap>@hostname`, y nos tendrá que dejar dentro del directorio `/home/guests/<usuarioldap/`
-
+Para chequear que esto ha quedado bien: `ssh <usuarioldap>@hostname`, y nos tendrá que dejar dentro del directorio `/home/guests/<usuarioldap>/`
 
 # Operativas con systemd
+
+* `systemctl list-dependencies modo.target |grep target`: Nos muestra los targets de los que depende uno concreto (sin el grep, nos muestra todas las dependencias).
+* `systemctl list-units --type=target --all` Nos muestra todos los targets disponibles.
+* `systemctl list-unit-files --type=target --all`: todos los targets disponibles
+* `systemctl isolate <target>.target`: Para cambiarnos a un target, parará todos los servicios no necesarios para ese target.
+	- En _/etc/systemd/system_ podemos añadir una unidad.target.
+* `systemctl get-default` Nos devuelve cual es el target por defecto
+* `systemctl set-default <target>.target` establece es default target, que lo que hace es cambiar el log simbólico.
 
 ## Hacer permanentes los logs de journalctl
 

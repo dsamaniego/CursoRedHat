@@ -1199,15 +1199,15 @@ Este mismo proceso es aplicable para máquinas virtualizadas (en este caso, el H
   - Se carga el kernel con los parámetros que hemos configurado (ahí es donde metemos mano para definir un kickstart, puntos de control, etc...)
   - Se carga el runlevel.
 4. Kernel: Carga en memoria el _initram_ y el kernel **initramfs/kernel** con un archivo tipo gzip de un cpio con todos los módulos necesarios para que funcione el sistema.
-  - El responsable de esto es el **dracut**, y su config en `etc/dracut.conf`
+  - El responsable de esto es el **dracut**, y su config en `/etc/dracut.conf`
   - Arranca el primer proceso del sistema (systemd con PID=1).
   - Aquí el bootloader le pasa el control a kernel
 5. Systemd:
   - tira de ficheros de configuración situados a `/etc/systemd`
   - Intenta conectar los target `/etc/initrd.target`, para poner el sistema en el estado que necesitamos.
-    · monta el `/` en `/sysroot`
+    - monta el `/` en `/sysroot`
   - Controla en qué target nos pone el sistema, definido en `/etc/systemd/system/default.target` (que es un link simbólico que apunta al target al que se tiene que arrancar).
-6. Pivote de `/sysroot` a disco ``/`
+6. Pivote de `/sysroot` a disco `/`
 
 Para rebotar el sistema de forma ordenada:
   * `systemctl poweroff`: detiene todos los ficheros, demonta los archivos y apaga el sistema
@@ -1230,8 +1230,8 @@ Un target de systemd es un conjunto de units de systemd que deben ser arrancadas
 * `systemctl list-unit-files --type=target --all`: todos los targets disponibles
 * `systemctl isolate <target>.target`: Para cambiarnos a un target, parará todos los servicios no necesarios para ese target.
   - En `/etc/systemd/system` podemos añadir una unidad.target.
-* `systemctl get-default` Nos devuelve cual es el target por defecto
-* `systemctl set-default <target>.target` establece es default target, que lo que hace es cambiar el log simbólico.
+* `systemctl get-default` Nos devuelve el target por defecto
+* `systemctl set-default <target>.target` establece el _default target_, que lo que hace es cambiar el log simbólico.
 
 También podemos cambiar el target en la línea de kernel del grub (es la que empieza con _linux16_), metiendo el siguiente parámetro: `systemd.unit=<target>.target` (recordar, cuando está el menú del grub, pulsamos "e" y podemos modificar la línea de arranque que hemos seleccionado y una vez modificado, **Ctrl+x** para iniciar con los cambios).  
 En el modo edición podremos cambiar el mapa del teclado ya que por defecto viene en inglés.
@@ -1250,7 +1250,7 @@ Esto funcionará si no tenemos protegido el grub con la password de grub.
 
 1. Interrumpimos el sistema y metemos en la línea del kernel el siguiente parámetro: `rd.break`.  
   Cuando arranque, nos dará una consola (la última consola definida en la línea de kernel es donde se mostrará el prompt).   
-  **OJO** lo mejor es que terminemos la línea con `... console=tt0 rd.break`
+  **OJO** lo mejor es que terminemos la línea con `... console=tty0 rd.break`
 2. Montamos el raíz en modo lectura/escritura: `mount -o rw,remount /sysroot`
 3. Enjaulamos el sistema raíz: `chroot /sysroot`
 4. Restablecemos la passwd de root: `passwd root`, el problema es que como SELinux no está corriendo, habremos perdido el contexto del `/etc/shadow`.
@@ -1261,7 +1261,7 @@ Arrancará con la nueva password de root.
 
 ### Usar journalctl
 
-Hacer persistente los logs para poder examinar caídas entre reinicios:
+Hacer persistentes los logs para poder examinar caídas entre reinicios:
 ```bash
 mkdir -p -m 2755 /var/log/journal
 chown :systemd-journal /var/log/journal
@@ -1300,11 +1300,11 @@ Errores comunes:
 
 En cualquier caso, terminaremos en una shell de emergencia (si no, podríamos meternos en _emergency.target_).
 
-Después de reparar, tendremos que lanzar `systemcl daemon-reload` para que **systemd** siga con las nuevas versiones de los ficheros que hayamos modificado.
+Después de reparar, tendremos que lanzar `systemctl daemon-reload` para que **systemd** siga con las nuevas versiones de los ficheros que hayamos modificado.
 
 Ayuda: systemd-fsck, systemd-fstab-generator, systemd-fstab-mount
 
-## Problemas con el boot loader
+## Problemas con el bootloader
 
 **grub2 (_GRand Unified Bootloader v2_)** es el boot loader por defecto de RedHat, se usa para arrancar tanto desde sistemas con BIOS como con UEFI y soporta casi cualquier sistema operativo.
 
@@ -1340,7 +1340,7 @@ Un firewall controla el tráfico entrante al sistema (parará todo lo que no ten
 
 Trabaja con zonas, dependiendo de en qué zona estemos, permitirá una cosa u otra.
 
-**firewall-cmd** y **firewall-config** dos herramientas para configurarlo la segunda es gráfica.
+**firewall-cmd** y **firewall-config** dos herramientas para configurarlo, la segunda es gráfica.
 
 Dos configuraciones posibles.
 * Runtime
