@@ -114,7 +114,7 @@
   - [Configurar el firewall](#configurar-el-firewall)
     - [Flags de _firewall-cmd_](#flags-de-_firewall-cmd_)
 
-***
+**
 
 # Automatización de la instalación 
 
@@ -136,7 +136,7 @@ comandos
 %end
 ```
 
-Los comentarios van en líneas precedidas por #
+Los comentarios van en líneas precedidas por `#`
 
 ## Comandos
 
@@ -231,7 +231,7 @@ En nuestro sistema siempre habrá un fichero de configuración: `/root/anaconda-
 
 Cuando instalemos en máquinas virtuales, usaremos el **virt-manager**, donde podremos especificar la URL del kickstart; en máquinas físicas, tendremos que interrumpir el proceso de arranque y pasarle una de las opciones de ks para indicarle donde está el instalador.
 
-***
+**
 
 # Expresiones regulares y grep 
 
@@ -243,25 +243,41 @@ Podemos usarlas para buscar en vim, less, grep.
 
 Una palabra es una expresión regular que engloba a todas las palabras que contienen la palabra.
 
-### Anclas de línea.
 
-* Comienzo de línea: `^{exp_reg}`
-* Final de línea: `{exp_reg}$`
+Metacaracteres: `\ . ^ $ [ ] ( ) | ? + * { }`
 
-### Limitación de palabras
-
-* Comienzo de palabra: `'\<{exp_reg}'`
-* Fin de palabra: `'{exp_reg}\>'`
-
-**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'`
-
-### Comodines y multiplicadores.
-
-* `.` --> Cualquier caracter
-* `[abc]` --> Cualquiera de a, b o c (sólo 1).
-* `*` --> El carácter anterior 0 o más veces repetido (ej: `.*` ==> cualquier carácter, 0 o más veces repetidos)
-* `+` --> El caracter anterior 1 o más veces repetido.
-* `\{n\}` --> repetir _n_ veces la expresión anterior (ej: `c.\{2\}t` ==> c seguida de dos caracteres cualesquiera y seguido de t).
+* `.` un caràcter cualquiera
+* `?` 0 o 1 veces el caràcter anterior
+* `*` 0 o más veces el caràcter anterior
+* `+` 1 o más veces el caràcter anterior
+* `[ ]` caràcter contenido en los corchetes (se pueden combinar rangos y caracteres ùnicos)
+	- Ej: `[+*]`  busca un + o un *
+	- Ej: `[\\x]` busca \ o una x (\ si hay que escaparlo)
+* `[^ ]` caràcter no contenido en los corchetes
+* `[x-y]` carácter contenido en el rango x-y
+* `^`  principio de linea
+* `$`  final de linea
+* `.*` cualquier cadena
+* `\` escapar un caràcter
+* `\<` principio de palabra
+* `\>` final de palabra (seguido por un signo de puntuación, un espacio o un salto) p.e. busqueda de lo que termine en on: /on\> 
+	**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'`
+* `x|y` el carácter x o el y
+* `x{m}`  m x's consecutivas 
+* `x{m,}` m x's consecutivas o más p.e. grep -E 'o{1,}' file
+* `x{m,n}`  entre m y n x's
+* Caracteres:
+	- `[[:alnum:]]` alfanuméricos (depende del idioma configurado)
+	- `[[:alpha:]]` alfabéticos (depende del idioma configurado)
+	- `[[:lower:]]` minúsculas (depende del idioma configurado)
+	- `[[:upper:]]` mayúsculas (depende del idioma configurado)
+	- `[[:digit:]]` dígitos
+	- `[[:xdigit:]]` dígitos hexadecimales
+	- `[[:blank:]]` espacio o tabulador
+	- `[[:space:]]` blancos (espacio, tabuladores, cambio de línea, retorno de carro...)
+	- `[[:graph:]]` no blancos
+	- `[[:print:]]` como graph, pero incluye el espacio en blanco
+	- `[[:punct:]]` de puntuación
 
 **NOTA:** si no queremos que nos hagan sustituciones el shell, envolver la expresión regular con comillas simples.
 
@@ -273,20 +289,20 @@ Busca cadenas de caracteres usando expresiones regulares.
 * Podemos usarlo en línea de comandos actuando sobre un fichero: `grep <flags> <expr_reg> <fichero>`
 * Podemos usarlo tras un pipe para hacer la búsqueda en la salida del comando: `<comando> | grep <flags> <expr_reg>`
 * Flags:
-  - -i -- ignore case
-  - -v -- saca las líneas que no coincidan
-  - -r -- Recursivo
-  - -A <n> -- Número de líneas después de la coincidencia que tenemos (after)
-  - -B <n> -- núnero de lineas antes de la coincidenccia (before)
-  - -w -- líneas que conitnen la palabra exacta
-  - -e -- múltiples OR
-  - -E -- Expresiones regulares complejas
+  - `-i` ignore case
+  - `-v` saca las líneas que no coincidan
+  - `-r` Recursivo
+  - `-A n` Número de líneas después de la coincidencia que tenemos (after)
+  - `-B n` núnero de lineas antes de la coincidencia (before)
+  - `-w` líneas que conitnen la palabra exacta
+  - `-e` múltiples OR
+  - `-E` Expresiones regulares complejas
   
 Excluir comentarios : `grep -v '^[#;]'`
 
 Ya sabemos... **man grep**
 
-***
+**
 
 # Vim avanzado
 
@@ -334,7 +350,7 @@ Rango puede ser:
   - i: ignore case.
   - g: aplica en todas las apariciones
 
-***
+**
 
 # Programación de tareas 
 
@@ -491,7 +507,7 @@ Donde:
   * antigüedad: al alcanzar dicha antigüedad, se purga, si no tiene valor no se purga.
   * argumento (si es necesario)
 
-***
+**
 
 # Prioridades 
 
@@ -519,7 +535,7 @@ Dado que procesos que cogen mucha CPU pueden impactar negativamente al rendimien
 * `renice -n <nice> <PID>`: Cambiar nivel de nice del proceso con PID
   - También podemos usar el **top** para cambiar el nivel de nice (pulsar **r**, el PID y nos pedirá el nuevo nivel de nice).
 
-***
+**
 
 # Control de acceso a ficheros (ACLs) 
 
@@ -595,7 +611,7 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 * Modificar defaults: (simplemente poner delante d:): `d:u:1005:rx file/idr`
   - Al meter una de las defaults, me mete las de todo el mundo.
   
-***
+**
 
 # Manejo de SELinux 
 
@@ -708,10 +724,10 @@ Paquete necesario: **setroubleshoot-server** (rpm). Lee mensajes de `/var/log/au
 
 Una vez hecho esto, con el comando `sealert -l <UUID>` podremos explorarlo ó `sealert -a /var/log/audit/audit.log` lo cual es mucho más extenso.
 
-****OJO DE CARA AL EXAMEN**** 
+***OJO DE CARA AL EXAMEN*** 
 No siempre la solución que nos da el sealert es la válida para el exámen, normalmente lo que que buscan es que apliquemos contextos a rutas, así que mejor investigar un poco mas.
 
-***
+**
 
 # Conexión de usuarios con LDAP e IPA
 
@@ -790,7 +806,7 @@ $ sudo realm permit --realm domain.example.com DOMAIN\\usuario1 DOMAIN\\usuario2
 
 Por defecto los usuarios deberán usar FQN (ipauser@ipa.example.com) para usuarios IPA, o DOMAIN\user para usuarios del AD., para deshabilitarlo, cambiar **use_fully_qualified_names** en `/etc/sssd/sssd.conf` a _False_ o borrar la línea, luego reiniciar el servicio.
 
-***
+**
 
 # Añadir discos, particiones y sistemas de ficheros 
 
@@ -899,7 +915,7 @@ Para que los cambios sean permanentes hay que ponerlo en `/etc/fstab`, la línea
 UUID=<uuid> swap swap defaults 0 0
 ```
 
-***
+**
 
 # Administrar Logical Volume Management (LVM) 
 
@@ -995,7 +1011,7 @@ Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . S
 * Restaurar snapshot:   
   `lvconvert --merge <snapshot>`
 
-***
+**
 
 # Network Storage NFS 
 
@@ -1120,7 +1136,7 @@ y en /etc/auto.comodines:
 
 Así cuando hagamos `cd /home/guests/ldapuserX`, nos montará directamente `serverX:/home/ldapuserX`
 
-***
+**
 
 # Network Storage SMB 
 
@@ -1178,7 +1194,7 @@ Esto requiere dos cosas:
 * autofs
 * cifs-utils
 
-***
+**
 
 # Troubleshooting del arranque 
 
@@ -1327,7 +1343,7 @@ Para aquellos casos en que nada funciona, se puede reinstalar con **grub2-instal
 * en sistemas BIOS, grub2 se instalará en el disco donde esté la MBR y hay que pasarlo como argumento
 * en sistemas UEFI no son necesarios argumentos porque la partición EFI está montada en `/boot/efi`.
 
-***
+**
 
 # Firewall: limitar comunicaciones de red 
 
