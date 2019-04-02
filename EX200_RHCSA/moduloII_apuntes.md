@@ -114,7 +114,7 @@
   - [Configurar el firewall](#configurar-el-firewall)
     - [Flags de _firewall-cmd_](#flags-de-_firewall-cmd_)
 
-**
+
 
 # Automatización de la instalación 
 
@@ -231,7 +231,7 @@ En nuestro sistema siempre habrá un fichero de configuración: `/root/anaconda-
 
 Cuando instalemos en máquinas virtuales, usaremos el **virt-manager**, donde podremos especificar la URL del kickstart; en máquinas físicas, tendremos que interrumpir el proceso de arranque y pasarle una de las opciones de ks para indicarle donde está el instalador.
 
-**
+
 
 # Expresiones regulares y grep 
 
@@ -302,7 +302,7 @@ Excluir comentarios : `grep -v '^[#;]'`
 
 Ya sabemos... **man grep**
 
-**
+
 
 # Vim avanzado
 
@@ -350,7 +350,7 @@ Rango puede ser:
   - i: ignore case.
   - g: aplica en todas las apariciones
 
-**
+
 
 # Programación de tareas 
 
@@ -507,7 +507,7 @@ Donde:
   * antigüedad: al alcanzar dicha antigüedad, se purga, si no tiene valor no se purga.
   * argumento (si es necesario)
 
-**
+
 
 # Prioridades 
 
@@ -535,7 +535,7 @@ Dado que procesos que cogen mucha CPU pueden impactar negativamente al rendimien
 * `renice -n <nice> <PID>`: Cambiar nivel de nice del proceso con PID
   - También podemos usar el **top** para cambiar el nivel de nice (pulsar **r**, el PID y nos pedirá el nuevo nivel de nice).
 
-**
+
 
 # Control de acceso a ficheros (ACLs) 
 
@@ -611,7 +611,7 @@ La diferencia en nomenclatura es que las defaults llevan delante un _d:_ (o un _
 * Modificar defaults: (simplemente poner delante d:): `d:u:1005:rx file/idr`
   - Al meter una de las defaults, me mete las de todo el mundo.
   
-**
+
 
 # Manejo de SELinux 
 
@@ -727,7 +727,7 @@ Una vez hecho esto, con el comando `sealert -l <UUID>` podremos explorarlo ó `s
 ***OJO DE CARA AL EXAMEN*** 
 No siempre la solución que nos da el sealert es la válida para el exámen, normalmente lo que que buscan es que apliquemos contextos a rutas, así que mejor investigar un poco mas.
 
-**
+
 
 # Conexión de usuarios con LDAP e IPA
 
@@ -806,7 +806,7 @@ $ sudo realm permit --realm domain.example.com DOMAIN\\usuario1 DOMAIN\\usuario2
 
 Por defecto los usuarios deberán usar FQN (ipauser@ipa.example.com) para usuarios IPA, o DOMAIN\user para usuarios del AD., para deshabilitarlo, cambiar **use_fully_qualified_names** en `/etc/sssd/sssd.conf` a _False_ o borrar la línea, luego reiniciar el servicio.
 
-**
+
 
 # Añadir discos, particiones y sistemas de ficheros 
 
@@ -915,7 +915,7 @@ Para que los cambios sean permanentes hay que ponerlo en `/etc/fstab`, la línea
 UUID=<uuid> swap swap defaults 0 0
 ```
 
-**
+
 
 # Administrar Logical Volume Management (LVM) 
 
@@ -1011,7 +1011,7 @@ Si en un momento dado quiero recuperar, me llevo lo del snapshot al original . S
 * Restaurar snapshot:   
   `lvconvert --merge <snapshot>`
 
-**
+
 
 # Network Storage NFS 
 
@@ -1136,7 +1136,7 @@ y en /etc/auto.comodines:
 
 Así cuando hagamos `cd /home/guests/ldapuserX`, nos montará directamente `serverX:/home/ldapuserX`
 
-**
+
 
 # Network Storage SMB 
 
@@ -1194,7 +1194,7 @@ Esto requiere dos cosas:
 * autofs
 * cifs-utils
 
-**
+
 
 # Troubleshooting del arranque 
 
@@ -1343,7 +1343,7 @@ Para aquellos casos en que nada funciona, se puede reinstalar con **grub2-instal
 * en sistemas BIOS, grub2 se instalará en el disco donde esté la MBR y hay que pasarlo como argumento
 * en sistemas UEFI no son necesarios argumentos porque la partición EFI está montada en `/boot/efi`.
 
-**
+
 
 # Firewall: limitar comunicaciones de red 
 
