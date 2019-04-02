@@ -253,7 +253,7 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 * Comienzo de palabra: `'\<{exp_reg}'`
 * Fin de palabra: `'{exp_reg}\>'`
 
-**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'
+**NOTA:** la coma simple la usaríamos para buscar palabras: `'\<perr'` ó `'os\>'`, para busar la palabra exacta: `'\<perros\>'`
 
 ### Comodines y multiplicadores.
 
@@ -261,7 +261,7 @@ Una palabra es una expresión regular que engloba a todas las palabras que conti
 * `[abc]` --> Cualquiera de a, b o c (sólo 1).
 * `*` --> El carácter anterior 0 o más veces repetido (ej: `.*` ==> cualquier carácter, 0 o más veces repetidos)
 * `+` --> El caracter anterior 1 o más veces repetido.
-* `\{n\}` --> repetir _n_ veces la expresión anterior (ej: `c.\{2\}t` ==> c seguida de dos cacracteres cualesquiera y seguido de t).
+* `\{n\}` --> repetir _n_ veces la expresión anterior (ej: `c.\{2\}t` ==> c seguida de dos caracteres cualesquiera y seguido de t).
 
 **NOTA:** si no queremos que nos hagan sustituciones el shell, envolver la expresión regular con comillas simples.
 
