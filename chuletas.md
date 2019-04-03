@@ -4,6 +4,45 @@ Aquí meteré comandos útiles de cara a los exámenes.
 - [Operativas con systemd](#operativas-con-systemd)
   - [Hacer permanentes los logs de journalctl](#hacer-permanentes-los-logs-de-journalctl)
 
+# Configuración del teclado
+
+Para ver las opciones disponibles:
+
+```
+$ localectl list-keymaps
+```
+Las convenciones de los nombres de los mapas de teclado de la consola no son muy estrictas, pero, por lo general, el nombre consta de 2-letras del código del país y una variante, separados por un guión (-) o un guión bajo (\_).
+
+## Configuración permanente
+
+La configuración de alto nivel puede realizarse en `/etc/vconsole.conf`, que es leído por systemd en el arranque. La variable **KEYMAP** se utiliza para especificar la distribución de teclado. Si la variable está vacía o no se establece, la distribución del teclado usada por defecto es us. Véase vconsole.conf(5) para obtener más ejemplos. Por ejemplo:
+
+```
+/etc/vconsole.conf
+
+KEYMAP=es
+...
+```
+
+Para mayor comodidad, la orden **localectl** puede ser usada para establecer la distribución del teclado de la consola. Con esta orden se cambia la variable KEYMAP en `/etc/vconsole.conf` y fija la distribución del teclado en la sesión en curso. Por ejemplo:
+
+```
+$ localectl set-keymap --no-convert mapa_de_teclas
+```
+
+Véase localectl(1) para obtener más detalles.
+
+## Configuración temporal
+
+Es posible establecer un distribución de teclado solo para la sesión actual. Esto es útil para probar diferentes mapas de teclado, resolución de problemas, etc.
+
+La utilidad loadkeys se utiliza para este propósito, utilizado internamente por systemd al cargar la distribución del teclado configurado en /etc/vconsole.conf. Su utilización a este fin es muy sencilla:
+
+```
+# loadkeys mapa_de_teclas
+```
+
+
 # Comandos básicos
 
 * `tr`: sustituye un carácter por otro
