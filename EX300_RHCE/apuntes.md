@@ -8,16 +8,16 @@
   - Administración automática de las dependencias de los servicios.
   - Podemos saber las dependencias del servicio -por arriba y por abajo.
   - Podemos hacer seguimiento de los servicios a través de los _linux control groups_, que se usan para agrupar servicios destinados al mismo fin.
-* **daemon** proceso que ejecutan tareas que esperan y se ejecutan en segundo plano (convención, terminan su nombre por "d").
+* **daemon** proceso que está a la espera y se ejecuta en segundo plano (convención, terminan su nombre por "d").
 * Para comunicarse con los procesos usan **sockets**.
 
 La _units_ son difentes tipos de "servicios", hay de diferentes tipos.
 
 * Lista de tipos de unidades disponibles: `systemctl -t help`
   - _service_: servicios
-  - _socket_: comunicaciones interprocesos, podemos usarlos para levantar servicios
+  - _socket_: comunicaciones interprocesos, podemos usarlos para levantar servicios.
   - _busname_
-  - _target_
+  - _target_: configuraciones diferentes de grupos de servicios para arranques de la máquina.
   - _snapshot_
   - _device_
   - _mount_
@@ -49,17 +49,19 @@ La _units_ son difentes tipos de "servicios", hay de diferentes tipos.
 * Listado de _unit files_
   - Verificar en el arranque: `systemctl`
   - Verificar el estado de los servicios: `systemctl --type=service`
-  - Ver las units: `systemctl lsit-units [--all] --type=service` (muestra los activos, con "--all", todos).
-  - Estado de las unidades en el arranque: `systemctl lsit-unit-files` (admite "--type")
+  - Ver las units: `systemctl list-units [--all] --type=service` (muestra los activos, con "--all", todos).
+  - Estado de las unidades en el arranque: `systemctl list-unit-files` (admite "--type")
   - Estado de las unidades que han fallado: `systemctl --failed --type=service`
 
 ### Máscaras
 
-RH dice que no son compatibles ***NetworkManager** y **network** y de hecho indican que el que manda el _NetworkManager_ y se apoya para ciertas cosas en _network_ y en caso de caída del primero, el segundo tomaría el control.
-
-`systemctl {mask|umask} servicio`, lo que hace es un link a `/dev/null` de las unidades. (/etc/systemd/system/nombre.service` ó `/usr/lib/systemd/target`)
-
 El enmascaramiento nos permite que nadie arranque de forma manual o automática el servicio.
+
+RH dice que son compatibles **NetworkManager** y **network** y de hecho indican que el que manda el _NetworkManager_ y se apoya para ciertas cosas en _network_ y, en caso de caída del primero, el segundo tomaría el control.
+
+`systemctl {mask|umask} servicio`, lo que hace es un link a `/dev/null` de las unidades. 
+
+La unidades suelen estar definidas en `/etc/systemd/system/nombre.service` ó `/usr/lib/systemd/target`.
 
 ## El proceso de arranque
 
@@ -110,14 +112,16 @@ Estos son los targets del sistema:
   27 loaded units listed.
   To show all installed unit files use 'systemctl list-unit-files'.
   ```
-* Cambiar a un target: `systemctl isolate nombre.target`
+* Cambiar a un target determinado: `systemctl isolate nombre.target`
+	- esto directamente nos pone al sistema en el modo definido por el target
   - sólo los que tengan _AllowIsolate=yes_ pueden ser objeto de este cambio
-* Obtener el target por defecto: `systemctl get-default`
-* Cambiar el target por defecto: `systemctl set-default nombre`
+* Obtener el target por defecto: `systemctl get-default`.
+* El default.target es un link al target concreto:
   ```bash
-  > ls -l /usr/lib/systemd/system/default.target
+  $ ls -l /usr/lib/systemd/system/default.target
   lrwxrwxrwx. 1 root root 16 Mar  8 16:24 /usr/lib/systemd/system/default.target -> graphical.target
   ```
+* Cambiar el target por defecto: `systemctl set-default nombre`
 * Podemos cambiar el target en el arranque cambiando la línea de kernel, poniendo: `systemd.unit=new_target.target` (normalmente ponemos _emergency.target_), después **Ctrl+X**
   - Recordar que una vez arreglado lo que se arregle, `systemctl daemon-reload` para que coja los nuevos fichreros de configuración que hayamos arreglado.
 
@@ -137,11 +141,16 @@ Ya visto en el curso de SA:
 
 ### Consola de depuración
 
-`systemctl enable debug-shell.service`, nos hablitará la consola de depuración que no necesita meter la contraseña de root (nos metemos en ella con **Ctrl+Alt+F9**).
-`systemctl start debug-shell.service`
+Nos hablitará la consola de depuración que no necesita meter la contraseña de root (nos metemos en ella con **Ctrl+Alt+F9**), para ello:
+1. `systemctl enable debug-shell.service`
+2. `systemctl start debug-shell.service`
+
+No olvidar, una vez arreglado lo que sea, deshabilitar de nuevo la consola de depuración.
 
 ### Stuck jobs
 
-`systemctl list-jobs`, los servicios que estén en espera no arrancarán hasta que no arranquen los servicios de los que dependen. Así que si en el arranque tenemos algún problema tendremos que ver de que dependen los que están en waiting y ver por qué los otros no ceden el control.
+`systemctl list-jobs`: Nos los servicios que estén en espera no arrancarán hasta que no arranquen los servicios de los que dependen. Así que si en el arranque tenemos algún problema tendremos que ver de que dependen los que están en waiting y ver por qué los otros no ceden el control.
+
+# Redes (ipv4 - ipv6)
 
 
