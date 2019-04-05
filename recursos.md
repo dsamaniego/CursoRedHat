@@ -1,1 +1,1 @@
-[Exámenes](https://www.gratisexam.com/redhat/)
+[Exámenes](https://www.gratisexam.com/redhat-certification/)
