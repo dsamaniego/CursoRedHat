@@ -8,16 +8,16 @@
   - Administración automática de las dependencias de los servicios.
   - Podemos saber las dependencias del servicio -por arriba y por abajo.
   - Podemos hacer seguimiento de los servicios a través de los _linux control groups_, que se usan para agrupar servicios destinados al mismo fin.
-* **daemon** proceso que está a la espera y se ejecuta en segundo plano (convención, terminan su nombre por "d").
+* **daemon** proceso que ejecutan tareas que esperan y se ejecutan en segundo plano (convención, terminan su nombre por "d").
 * Para comunicarse con los procesos usan **sockets**.
 
 La _units_ son difentes tipos de "servicios", hay de diferentes tipos.
 
 * Lista de tipos de unidades disponibles: `systemctl -t help`
   - _service_: servicios
-  - _socket_: comunicaciones interprocesos, podemos usarlos para levantar servicios.
+  - _socket_: comunicaciones interprocesos, podemos usarlos para levantar servicios
   - _busname_
-  - _target_: configuraciones diferentes de grupos de servicios para arranques de la máquina.
+  - _target_
   - _snapshot_
   - _device_
   - _mount_
@@ -49,19 +49,17 @@ La _units_ son difentes tipos de "servicios", hay de diferentes tipos.
 * Listado de _unit files_
   - Verificar en el arranque: `systemctl`
   - Verificar el estado de los servicios: `systemctl --type=service`
-  - Ver las units: `systemctl list-units [--all] --type=service` (muestra los activos, con "--all", todos).
-  - Estado de las unidades en el arranque: `systemctl list-unit-files` (admite "--type")
+  - Ver las units: `systemctl lsit-units [--all] --type=service` (muestra los activos, con "--all", todos).
+  - Estado de las unidades en el arranque: `systemctl lsit-unit-files` (admite "--type")
   - Estado de las unidades que han fallado: `systemctl --failed --type=service`
 
 ### Máscaras
 
+RH dice que no son compatibles ***NetworkManager** y **network** y de hecho indican que el que manda el _NetworkManager_ y se apoya para ciertas cosas en _network_ y en caso de caída del primero, el segundo tomaría el control.
+
+`systemctl {mask|umask} servicio`, lo que hace es un link a `/dev/null` de las unidades. (/etc/systemd/system/nombre.service` ó `/usr/lib/systemd/target`)
+
 El enmascaramiento nos permite que nadie arranque de forma manual o automática el servicio.
-
-RH dice que son compatibles **NetworkManager** y **network** y de hecho indican que el que manda el _NetworkManager_ y se apoya para ciertas cosas en _network_ y, en caso de caída del primero, el segundo tomaría el control.
-
-`systemctl {mask|umask} servicio`, lo que hace es un link a `/dev/null` de las unidades. 
-
-La unidades suelen estar definidas en `/etc/systemd/system/nombre.service` ó `/usr/lib/systemd/target`.
 
 ## El proceso de arranque
 
@@ -112,16 +110,14 @@ Estos son los targets del sistema:
   27 loaded units listed.
   To show all installed unit files use 'systemctl list-unit-files'.
   ```
-* Cambiar a un target determinado: `systemctl isolate nombre.target`
-	- esto directamente nos pone al sistema en el modo definido por el target
+* Cambiar a un target: `systemctl isolate nombre.target`
   - sólo los que tengan _AllowIsolate=yes_ pueden ser objeto de este cambio
-* Obtener el target por defecto: `systemctl get-default`.
-* El default.target es un link al target concreto:
+* Obtener el target por defecto: `systemctl get-default`
+* Cambiar el target por defecto: `systemctl set-default nombre`
   ```bash
-  $ ls -l /usr/lib/systemd/system/default.target
+  > ls -l /usr/lib/systemd/system/default.target
   lrwxrwxrwx. 1 root root 16 Mar  8 16:24 /usr/lib/systemd/system/default.target -> graphical.target
   ```
-* Cambiar el target por defecto: `systemctl set-default nombre`
 * Podemos cambiar el target en el arranque cambiando la línea de kernel, poniendo: `systemd.unit=new_target.target` (normalmente ponemos _emergency.target_), después **Ctrl+X**
   - Recordar que una vez arreglado lo que se arregle, `systemctl daemon-reload` para que coja los nuevos fichreros de configuración que hayamos arreglado.
 
@@ -141,16 +137,169 @@ Ya visto en el curso de SA:
 
 ### Consola de depuración
 
-Nos hablitará la consola de depuración que no necesita meter la contraseña de root (nos metemos en ella con **Ctrl+Alt+F9**), para ello:
-1. `systemctl enable debug-shell.service`
-2. `systemctl start debug-shell.service`
-
-No olvidar, una vez arreglado lo que sea, deshabilitar de nuevo la consola de depuración.
+`systemctl enable debug-shell.service`, nos hablitará la consola de depuración que no necesita meter la contraseña de root (nos metemos en ella con **Ctrl+Alt+F9**).
+`systemctl start debug-shell.service`
 
 ### Stuck jobs
 
-`systemctl list-jobs`: Nos los servicios que estén en espera no arrancarán hasta que no arranquen los servicios de los que dependen. Así que si en el arranque tenemos algún problema tendremos que ver de que dependen los que están en waiting y ver por qué los otros no ceden el control.
+`systemctl list-jobs`, los servicios que estén en espera no arrancarán hasta que no arranquen los servicios de los que dependen. Así que si en el arranque tenemos algún problema tendremos que ver de que dependen los que están en waiting y ver por qué los otros no ceden el control.
 
-# Redes (ipv4 - ipv6)
+# IPv6
+
+Protocolo que sustituye a IPv4, lleva muchas más cosas por defecto.
+* Direcciones más largas.
+* IPSec activado por defecto.
+* Muy autoconfigurable, básta con tener un router en la red que soporte IPv6.
+  - Estática
+  - DHCPv6
+  - SLAAC (_Stateless Address Autoconfiguration_)
+
+## Redes IPv6 predefinidas.
+
+# Agregación de enlaces (teaming) y bridging
+
+man 5 nmcli-examples
+- 7 y 8 nos dan ejemplos de lo que tenemos que hacer bridge y teaming.
+
+Más documentación:
+* /user/share/doc/teamd-*
+* /user/share/doc/bridge-utils/HOW-TO
+
+## Teaming
+
+Nos permite dos o mas tarjetas de red (NICs) como si fueran una sola de forma que nos dará ciertas ventajas.
+* alta disponibilidad
+* mejora del rendimiento
+
+Conceptos:
+* **teamd** Nos permite manipular la lógica
+* **kernel** Manipula los paquetes
+* **runners** Los modos en que puede estar trabajando el teaming
+  - _broadcast_: A todos los nodos del teaming.
+  - _round robin_: Distribución entre los puertos de teaming el trabajo.
+  - _active backup_: Un puerto trabaja y el otro está de refuerzo.
+  - _load balance_: distribuye la carga entre los interfaces que forman los puertos del teaming.
+  - _LACP_: Preparado para ejecutar el protocolo de agregación 802.3ad - Pone los dos puertos trabajando a la vez, con lo que doblamos el ancho de banda
+* **port**: cada una de las NIC que forman el team
+
+### Reglas: ¿Cómo maneja esto NetworkManager?
+
+* Inicio del teaming no produce el reinicio automático de los puerts asignados.
+* Inicio de un port produce un inicio automático del teaming
+* Parada del teaming  detiene las interfaces port
+* Teaming sin ports (NIC) puede tener definida una ip estática.
+* Teaming sin ports (NIC) configurado por DHCP espera a los puertos que lo componen (si no tenemos ningún puerto no tenemos red y no podrá recibir nada de DHCP).
+* Teaming configurado por DHCP espera a los puertos hasta que uno de ellos tiene portadora.
+* Teaming configurado por DHCP espera portadora (_waiting_).
+
+### Trabajo con _team interface_
+
+Lo vamos a hacer con _NetworkManager_ y con _network_.
+1. Crear el teaming (interfaz).
+2. IPv4/IPv6 teaming (configuración estática del interfaz).
+3. Asignamos los ports.
+4. Cierre y arranque del teaming (arranque de uno de los puertos al menos).
+
+#### Crear el interfaz
+
+```
+nmcli con add type team con-name CNAME ifname INAME [config JSON]
+```
+Donde:
+* CNAME: nombre del Teaming
+* INAME: nombre de la interfaz del Teaming
+* JSON: configuración en formato json que define el _runner_ de la forma: `'{"runner": {"name": "METHOD"}}'`
+  - Donde _METHOD_ puede ser: _broadcast_, _roundrobin_, _activebackup_, _loadbalance_ o _lacp_
+  - aunque este parámetro es optitivo, se pone siempre
+
+#### Atributos IPv4/IPv6
+
+Venimos de DHCP y asignamos ip estática:
+
+```
+nmcli con mod CNAME ipv4.addresses IP/PREFIX GW
+nmcli con mod CNAME ipv4.method manual
+```
+
+#### Asginar puertos
+
+Mirar las lienas qeu viene en `man nmcli-examples` (ojo, dependiendo de las verisones, puede cambiar el ejemplo).
+```
+$ nmcli con add type team-slave con-name Team1-slave1 ifname em1 master Team1
+$ nmcli con add type team-slave con-name Team1-slave2 ifname em2 master Team1
+```
+
+Si no se le pone nombre de la conexión, por defecto nos da _bond-slave-IFACE_
+
+#### Cierre y arranque del Teaming
+
+Desconectamos un dispositivo y 
+```
+nmcli dev dis <interfaz_slave>
+nmcli dev con up <conex_slave>
+```
+
+### Administración del Teaming
 
 
+Todos los ficheros de comunicación están en `/etc/sysconfig/network-scripts/` como en cualquier tipo de interfáz de red.
+
+Variables importantes de los ficheros de configuración:
+* **DEVICETYPE**
+* **TEAM_CONFIG**: aquí viene el json de configuración
+
+### Troubleshooting
+
+* `teamdctl <team_name> ports`: Muestra los puertos del team
+* `teamdctl <team_name> getoption activeport`: Muestra el puerto activo
+* `teamdctl <team_name> setoption activeprot`: Cambia el puerto activo
+* `teamdctl <nombre> status`: Muestra el estado del Team
+* `teamdctl <team_name> config dump`: saca un json con la configuración, si lo pasamos a fichero, podemos luego manipularlo para cargar configuraciones de timming.
+* `nmcli con mod <team_name> team.config <fichero>`
+
+## Software bridge
+
+EL bridge está basado en direcciones MAC. Está para dar servicio a NICs virtuales.
+
+En virtualizadores, tendremos unas cuantas tarjetas vituales, si cambiamos la configuración de la máquina virtual, nos cambia la mac, se interpreta que es otra tarjeta y se pierden las configuraciones.
+
+NICs virtaules, tienen una tabla de MACs
+
+### Procedimiemto para configurar un bridge por software
+
+`man nmcli-examples`, ejemplo 8.
+
+```
+$ nmcli con add type bridge con-name TowerBridge ifname TowerBridge
+$ nmcli con add type bridge-slave con-name br-slave-1 ifname ens3 master TowerBridge
+$ nmcli con add type bridge-slave con-name br-slave-2 ifname ens4 master TowerBridge
+$ nmcli con modify TowerBridge bridge.stp no
+```
+
+El bridge no admite interfaces agregadas con NetworkManager, lo que implica que si queremos agregar interfaces habrá que tocarlo a mano en los ficheros de configuración.
+
+Esto será util si queremos añadir un Teaming a un Bridge. (Tenemos unas cuantas máquinas virtuales con sus mac virtuales y queremos que salgan de la máquina física).
+
+En el fichero de configuración hay un campo interesante: `STP=yes`, que indica que se active el protocolo `ºSpanning Tree` para evitar que no haya bucles.
+### Control de bridge
+
+`brctl show`: Nos muestra los bridges software.
+
+## Teaming + Bridging
+
+1. NetworkManager (lo tenemos activo).
+  - Generación standar del teaming (no vamos a tocar las IPs) (Team + Ports)
+2. Desactivamos Team0 y NetworkManager (ya no funciona nmcli).
+  - `nmcli dev dis team0`
+  - `systemctl stop NetworkManager && systemctl disable NetworkManager` (o mask)
+3. Creamos el bridge: **br0team**
+  - creamos el fichero: `ifcfg-br0team`  
+    Contenido:
+      - DEVICE
+      - BOOTPROTO: 
+      - ONBOOT: none
+      - IPPADDR
+      - PREFIX
+4. Editar `ifcfg-team0` y poner `BRIDGE=br0team`
+5. Configuraciones de ip dentro de los puertos que aparezcan en ip config se eliminan
+6. Reinicio de `systemctl restart network.service`

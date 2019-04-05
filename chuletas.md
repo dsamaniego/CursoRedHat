@@ -4,45 +4,6 @@ Aquí meteré comandos útiles de cara a los exámenes.
 - [Operativas con systemd](#operativas-con-systemd)
   - [Hacer permanentes los logs de journalctl](#hacer-permanentes-los-logs-de-journalctl)
 
-# Configuración del teclado
-
-Para ver las opciones disponibles:
-
-```
-$ localectl list-keymaps
-```
-Las convenciones de los nombres de los mapas de teclado de la consola no son muy estrictas, pero, por lo general, el nombre consta de 2-letras del código del país y una variante, separados por un guión (-) o un guión bajo (\_).
-
-## Configuración permanente
-
-La configuración de alto nivel puede realizarse en `/etc/vconsole.conf`, que es leído por systemd en el arranque. La variable **KEYMAP** se utiliza para especificar la distribución de teclado. Si la variable está vacía o no se establece, la distribución del teclado usada por defecto es us. Véase vconsole.conf(5) para obtener más ejemplos. Por ejemplo:
-
-```
-/etc/vconsole.conf
-
-KEYMAP=es
-...
-```
-
-Para mayor comodidad, la orden **localectl** puede ser usada para establecer la distribución del teclado de la consola. Con esta orden se cambia la variable KEYMAP en `/etc/vconsole.conf` y fija la distribución del teclado en la sesión en curso. Por ejemplo:
-
-```
-$ localectl set-keymap --no-convert mapa_de_teclas
-```
-
-Véase localectl(1) para obtener más detalles.
-
-## Configuración temporal
-
-Es posible establecer un distribución de teclado solo para la sesión actual. Esto es útil para probar diferentes mapas de teclado, resolución de problemas, etc.
-
-La utilidad loadkeys se utiliza para este propósito, utilizado internamente por systemd al cargar la distribución del teclado configurado en /etc/vconsole.conf. Su utilización a este fin es muy sencilla:
-
-```
-# loadkeys mapa_de_teclas
-```
-
-
 # Comandos básicos
 
 * `tr`: sustituye un carácter por otro
@@ -77,6 +38,49 @@ La utilidad loadkeys se utiliza para este propósito, utilizado internamente por
   ```
 
 Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D**.
+
+# Redes
+
+* **hostname**: ver y modificar en runtime el nombre de host del sistema.  
+  Durante el proceso de arranque del sistema operativo, se establece el nombre del sistema con la ejecución del comando hostname sin parámetros. Si existe el archivo /etc/hostname, se lee de aquí, y esto significa que se configuró de forma estática. Si no existe el archivo, se consulta el /etc/hosts y si ahí no lo encuentra, se hará una consulta al DNS por el hostname del sistema dando la IP (resolución inversa).  
+  Si al comando hostname le pasamos un nombre, se modifica el hostname del sistema pero no es persistente, en el siguiente arranque de la máquina se ha perdido. Para hacerlo persistente, podemos modificar a mano el archivo `/etc/hostname` o usar el comando `hostanamectl`.
+* **hostnamectl**: ver y establecer de forma persistente el nombre de host y otros datos del sistema. Subcomandos relevantes:
+  - _status_: hostname del sistema y su información relevante.
+  - _set-hostname nombre_: cambiamos el hostname del sistema y se escribe en `/etc/hostname`. Si le pasamos “” en el nombre, reseteamos el hostname.
+  - _set-location texto_: añadimos un texto con indicaciones de donde está ubicado el sistema que será luego visible con hostnamectl status.
+* **ip**: ver y modificar rutas, dispositivos, etc. del sistema. Sus subcomandos más relevantes:
+  - _addr list_, _addr show_, _a_: muestra todos los interfaces de red del sistema y su configuración. Para ver sólo la información de uno en concreto, le pasaremos el nombre de la interfaz.
+  - _addr add <dir_ip> dev <interfaz>_, _addr del <dir_ip> dev <interfaz>_: añadir o eliminar una IP de una interfaz de forma no persistente (para que lo sea, usar nmcli).
+  - _link set <interfaz> down_, _link set <interfaz> up_: desactiva o activa una interfaz dado.
+    - Mejor hacerlo con nmcli.
+  - _route show_: ver la tabla de enrutamiento del sistema.
+  - _route add <ip_destino>_, _route del <ip_destino>_, _append <ip_destino>_, _change <ip_destino>_: pone, borra, añade y modifica una ruta estática a la tabla de enrutamiento del sistema. La ip de destino puede ser una dirección de red, donde si no se indica prefix, se presupone. Se puede añadir dev <interfaz> para que sólo añada la ruta a esa interfaz.
+* **ping: envía paquetes ICMP a otros hosts dando su dirección IP o su hostname. Por defecto, sigue enviando de forma indefinida hasta que lo detengamos con CTL+C. Que un host no conteste a un comando ping, no significa que esté inaccesible, se puede configurar un sistema de forma que no conteste a los paquetes ICMP. Opciones relevantes:
+◦ -c <numero_paquetes>: envía el número de paquetes dado y se detiene.
+◦ -4, -6: hago un ping con IPv4 o IPv6. Por defecto si no se indica esta opción, es IPv4.
+◦ -i <segundos>: segundos que deben transcurrir entre paquetes. Por defecto si no se
+indica nada es 0.2 segundos.
+◦ -I <interfaz>: usa la interfaz dada para enviar los paquetes.
+* **traceroute o tracepath: muestran la ruta que siguen los paquetes desde el origen hasta el
+destino. Cada línea en la salida representa un salto entre subredes. Su sintaxis es traceroute
+<opciones> <host_destino>. Opciones importantes:
+◦ -i <interfaz>: interfaz por donde se enviarán los paquetes.
+◦ -m <numero>: número máximo de saltos que se darán para intentar llegar al destino.
+◦ -n: mostrar las direcciones IP en lugar de los hostnames.
+◦ -T, -I: envía paquetes TCP o ICMP. Por defecto si no se indica ninguna de estas dos
+opciones, los paquetes son UDP.
+* **ss: ver estadísticas de red. Reemplaza al comando netstat. Sintaxis: ss <opciones>.
+Opciones más relevantes:
+◦ -n: muestra números en lugar de nombres para los interfaces y puertos.
+◦ -t, -u: muestra sockets TCP y UDP respectivamente.
+◦ -l: sólo muestra sockets a la escucha (listening).
+◦ -a: muestra todos los sockets, los que están a la escucha y los establecidos.
+◦ -p: muestra el proceso que está usando el socket.
+50Caso práctico de configuración de sistemas CentOS7
+NOTA: Reglas mnemotécnicas para ss, usar con las opciones “del tulipan”: ss -tulpn o “del
+atún”: ss -atun.
+* **host: pasando como argumento un hostname o ip, hace una consulta al servidor DNS del
+sistema.
 
 # Cron y at.
 
@@ -153,7 +157,12 @@ Para chequear que esto ha quedado bien: `ssh <usuarioldap>@hostname`, y nos tend
 * `systemctl get-default` Nos devuelve cual es el target por defecto
 * `systemctl set-default <target>.target` establece es default target, que lo que hace es cambiar el log simbólico.
 
-## Hacer permanentes los logs de journalctl
+## Journalctl
+
+* `journalctl -o verbose`: El mallor nivel de información que nos puede dar journalctl
+  - Aquí nos saldrán un montón de parámetros (_XXXXXX) que podremos invocar en el journalctl
+  - en este modo con _SYSTEMD_UNIT=<nombre>.servicio podré ver logs detallados del servicio.
+### Hacer permanentes los logs de journalctl
 
 ```bash
 # mkdir /var/log/journal
