@@ -1,8 +1,18 @@
 Aquí meteré comandos útiles de cara a los exámenes.
 
 - [Comandos básicos](#comandos-básicos)
+- [Redes](#redes)
+- [Cron y at](#cron-y-at)
+- [ACLs](#acls)
+- [SELinux](#selinux)
+  - [Poner contexto a un directorio y todos sus hijos:](#poner-contexto-a-un-directorio-y-todos-sus-hijos)
+- [FileSystems](#filesystems)
+  - [Directorio NFS de root de usuarios LDAP.](#directorio-nfs-de-root-de-usuarios-ldap)
 - [Operativas con systemd](#operativas-con-systemd)
-  - [Hacer permanentes los logs de journalctl](#hacer-permanentes-los-logs-de-journalctl)
+  - [Journalctl](#journalctl)
+    - [Hacer permanentes los logs de journalctl](#hacer-permanentes-los-logs-de-journalctl)
+- [Firewall](#firewall)
+  - [Flags de _firewall-cmd_](#flags-de-_firewall-cmd_)
 
 # Comandos básicos
 
@@ -42,54 +52,49 @@ Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D*
 # Redes
 
 * **hostname**: ver y modificar en runtime el nombre de host del sistema.  
-  Durante el proceso de arranque del sistema operativo, se establece el nombre del sistema con la ejecución del comando hostname sin parámetros. Si existe el archivo /etc/hostname, se lee de aquí, y esto significa que se configuró de forma estática. Si no existe el archivo, se consulta el /etc/hosts y si ahí no lo encuentra, se hará una consulta al DNS por el hostname del sistema dando la IP (resolución inversa).  
+  Durante el proceso de arranque del sistema operativo, se establece el nombre del sistema con la ejecución del comando hostname sin parámetros. Si existe el archivo `/etc/hostname` se lee de aquí, y esto significa que se configuró de forma estática. Si no existe el archivo, se consulta el `/etc/hosts` y si ahí no lo encuentra, se hará una consulta al DNS por el hostname del sistema dando la IP (resolución inversa).  
   Si al comando hostname le pasamos un nombre, se modifica el hostname del sistema pero no es persistente, en el siguiente arranque de la máquina se ha perdido. Para hacerlo persistente, podemos modificar a mano el archivo `/etc/hostname` o usar el comando `hostanamectl`.
 * **hostnamectl**: ver y establecer de forma persistente el nombre de host y otros datos del sistema. Subcomandos relevantes:
-  - _status_: hostname del sistema y su información relevante.
-  - _set-hostname nombre_: cambiamos el hostname del sistema y se escribe en `/etc/hostname`. Si le pasamos “” en el nombre, reseteamos el hostname.
-  - _set-location texto_: añadimos un texto con indicaciones de donde está ubicado el sistema que será luego visible con hostnamectl status.
+  - `status`: hostname del sistema y su información relevante.
+  - `set-hostname nombre`: cambiamos el hostname del sistema y se escribe en `/etc/hostname`. Si le pasamos “” en el nombre, reseteamos el hostname.
+  - `set-location texto`: añadimos un texto con indicaciones de donde está ubicado el sistema que será luego visible con hostnamectl status.
 * **ip**: ver y modificar rutas, dispositivos, etc. del sistema. Sus subcomandos más relevantes:
-  - _addr list_, _addr show_, _a_: muestra todos los interfaces de red del sistema y su configuración. Para ver sólo la información de uno en concreto, le pasaremos el nombre de la interfaz.
-  - _addr add <dir_ip> dev <interfaz>_, _addr del <dir_ip> dev <interfaz>_: añadir o eliminar una IP de una interfaz de forma no persistente (para que lo sea, usar nmcli).
-  - _link set <interfaz> down_, _link set <interfaz> up_: desactiva o activa una interfaz dado.
+  - `addr list`, `addr show`, `a`: muestra todos los interfaces de red del sistema y su configuración. Para ver sólo la información de uno en concreto, le pasaremos el nombre de la interfaz.
+  - `addr add <dir_ip> dev <interfaz>`, `addr del <dir_ip> dev <interfaz>`: añadir o eliminar una IP de una interfaz de forma no persistente (para que lo sea, usar nmcli).
+  - `link set <interfaz> down`, `link set <interfaz> up`: desactiva o activa una interfaz dado.
     - Mejor hacerlo con nmcli.
-  - _route show_: ver la tabla de enrutamiento del sistema.
-  - _route add <ip_destino>_, _route del <ip_destino>_, _append <ip_destino>_, _change <ip_destino>_: pone, borra, añade y modifica una ruta estática a la tabla de enrutamiento del sistema. La ip de destino puede ser una dirección de red, donde si no se indica prefix, se presupone. Se puede añadir dev <interfaz> para que sólo añada la ruta a esa interfaz.
-* **ping: envía paquetes ICMP a otros hosts dando su dirección IP o su hostname. Por defecto, sigue enviando de forma indefinida hasta que lo detengamos con CTL+C. Que un host no conteste a un comando ping, no significa que esté inaccesible, se puede configurar un sistema de forma que no conteste a los paquetes ICMP. Opciones relevantes:
-◦ -c <numero_paquetes>: envía el número de paquetes dado y se detiene.
-◦ -4, -6: hago un ping con IPv4 o IPv6. Por defecto si no se indica esta opción, es IPv4.
-◦ -i <segundos>: segundos que deben transcurrir entre paquetes. Por defecto si no se
-indica nada es 0.2 segundos.
-◦ -I <interfaz>: usa la interfaz dada para enviar los paquetes.
-* **traceroute o tracepath: muestran la ruta que siguen los paquetes desde el origen hasta el
-destino. Cada línea en la salida representa un salto entre subredes. Su sintaxis es traceroute
-<opciones> <host_destino>. Opciones importantes:
-◦ -i <interfaz>: interfaz por donde se enviarán los paquetes.
-◦ -m <numero>: número máximo de saltos que se darán para intentar llegar al destino.
-◦ -n: mostrar las direcciones IP en lugar de los hostnames.
-◦ -T, -I: envía paquetes TCP o ICMP. Por defecto si no se indica ninguna de estas dos
-opciones, los paquetes son UDP.
-* **ss: ver estadísticas de red. Reemplaza al comando netstat. Sintaxis: ss <opciones>.
-Opciones más relevantes:
-◦ -n: muestra números en lugar de nombres para los interfaces y puertos.
-◦ -t, -u: muestra sockets TCP y UDP respectivamente.
-◦ -l: sólo muestra sockets a la escucha (listening).
-◦ -a: muestra todos los sockets, los que están a la escucha y los establecidos.
-◦ -p: muestra el proceso que está usando el socket.
-50Caso práctico de configuración de sistemas CentOS7
-NOTA: Reglas mnemotécnicas para ss, usar con las opciones “del tulipan”: ss -tulpn o “del
-atún”: ss -atun.
-* **host: pasando como argumento un hostname o ip, hace una consulta al servidor DNS del
-sistema.
+  - `route show`: ver la tabla de enrutamiento del sistema.
+  - `route add <ip_destino>`, `route del <ip_destino>`, `append <ip_destino>`, `change <ip_destino>`: pone, borra, añade y modifica una ruta estática a la tabla de enrutamiento del sistema. La ip de destino puede ser una dirección de red, donde si no se indica prefix, se presupone. Se puede añadir dev <interfaz> para que sólo añada la ruta a esa interfaz.
+* **ping**: envía paquetes ICMP a otros hosts dando su dirección IP o su hostname. Por defecto, sigue enviando de forma indefinida hasta que lo detengamos con CTL+C. Que un host no conteste a un comando ping, no significa que esté inaccesible, se puede configurar un sistema de forma que no conteste a los paquetes ICMP. Opciones relevantes:
+	- `-c <numero_paquetes>`: envía el número de paquetes dado y se detiene.
+	- `-4`, `-6`: hago un ping con IPv4 o IPv6. Por defecto si no se indica esta opción, es IPv4.
+	- `-i <segundos>`: segundos que deben transcurrir entre paquetes. Por defecto si no se indica nada es 0.2 segundos.
+	- `-I <interfaz>`: usa la interfaz dada para enviar los paquetes.
+* **traceroute** o **tracepath**: muestran la ruta que siguen los paquetes desde el origen hasta el destino. Cada línea en la salida representa un salto entre subredes.
+	- Su sintaxis es `traceroute <opciones> <host_destino>`. Opciones importantes:
+	- `-i <interfaz>`: interfaz por donde se enviarán los paquetes.
+	- `-m <numero>`: número máximo de saltos que se darán para intentar llegar al destino.
+	- `-n`: mostrar las direcciones IP en lugar de los hostnames.
+	- `-T`, `-I`: envía paquetes TCP o ICMP. Por defecto si no se indica ninguna de estas dos opciones, los paquetes son UDP.
+* **ss**: ver estadísticas de red. Reemplaza al comando **netstat**.
+	- Sintaxis: `ss <opciones>`.
+	- `-n`: muestra números en lugar de nombres para los interfaces y puertos.
+	- `-t`, `-u`: muestra sockets TCP y UDP respectivamente.
+	- `-l`: sólo muestra sockets a la escucha (listening).
+	- `-a`: muestra todos los sockets, los que están a la escucha y los establecidos.
+	- `-p`: muestra el proceso que está usando el socket.  
+		**NOTA**: Reglas mnemotécnicas para ss,
+		- usar con las opciones “del tulipan”: `ss -tulpn`
+		- usar con las opciones “del atún”: `ss -atun`
+* **host**: pasando como argumento un hostname o ip, hace una consulta al servidor DNS del sistema.
 
-# Cron y at.
+# Cron y at
 
 * `at TIMESPEC`: Nos abre un subsell donde definiremos lo que se ejecutará en _TIMESPEC_
   - `at -q x TIMESPEC`: Nos programa un job en la cola x
 * `atq`: Muestra la cola de AT
   - `at -c <job_id>`: Nos muestra lo que se ejecutará en el Job consultado.
 * `atrm <job_id>`: Borra el job especificado
-
 * `crontab -e`: edita el crontab del usuario actual
 * `crontab -r`: borra el crontab del usuario actual
 * `crontab -l`: muestra el crontab del usuario actual

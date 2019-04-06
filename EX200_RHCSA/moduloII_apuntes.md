@@ -13,9 +13,6 @@
     - [Pasos](#pasos)
 - [Expresiones regulares y grep](#expresiones-regulares-y-grep)
   - [Expresiones regulares](#expresiones-regulares)
-    - [Anclas de línea.](#anclas-de-línea)
-    - [Limitación de palabras](#limitación-de-palabras)
-    - [Comodines y multiplicadores.](#comodines-y-multiplicadores)
   - [grep](#grep)
 - [Vim avanzado](#vim-avanzado)
   - [Paquetes de vim](#paquetes-de-vim)
@@ -91,6 +88,7 @@
 - [Network Storage SMB](#network-storage-smb)
   - [Montajes](#montajes-1)
     - [Montaje manual](#montaje-manual-1)
+    - [fstab](#fstab)
   - [Si no nos identificamos como guest](#si-no-nos-identificamos-como-guest)
   - [Automontaje](#automontaje)
 - [Troubleshooting del arranque](#troubleshooting-del-arranque)
@@ -104,7 +102,7 @@
     - [Shell de depuración temprana](#shell-de-depuración-temprana)
       - [Stuck jobs (trabajos colgados)](#stuck-jobs-trabajos-colgados)
   - [Reparar problemas de FS en el arranque](#reparar-problemas-de-fs-en-el-arranque)
-  - [Problemas con el boot loader](#problemas-con-el-boot-loader)
+  - [Problemas con el bootloader](#problemas-con-el-bootloader)
     - [Algunas directivas](#algunas-directivas)
     - [Reinstalar grub](#reinstalar-grub)
 - [Firewall: limitar comunicaciones de red](#firewall-limitar-comunicaciones-de-red)
@@ -113,8 +111,6 @@
     - [Servicios predefinidos](#servicios-predefinidos)
   - [Configurar el firewall](#configurar-el-firewall)
     - [Flags de _firewall-cmd_](#flags-de-_firewall-cmd_)
-
-
 
 # Automatización de la instalación 
 

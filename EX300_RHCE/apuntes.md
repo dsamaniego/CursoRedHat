@@ -1,3 +1,30 @@
+- [Control de servicios y demonios](#control-de-servicios-y-demonios)
+  - [Servicios y demonios.](#servicios-y-demonios)
+    - [Máscaras](#máscaras)
+  - [El proceso de arranque](#el-proceso-de-arranque)
+    - [Targets](#targets)
+    - [Recuperación de la passwd de root](#recuperación-de-la-passwd-de-root)
+    - [Consola de depuración](#consola-de-depuración)
+    - [Stuck jobs](#stuck-jobs)
+- [IPv6](#ipv6)
+  - [Repaso de IPv4](#repaso-de-ipv4)
+  - [IPv6](#ipv6-1)
+  - [Redes IPv6 predefinidas.](#redes-ipv6-predefinidas)
+- [Agregación de enlaces (teaming) y bridging](#agregación-de-enlaces-teaming-y-bridging)
+  - [Teaming](#teaming)
+    - [Reglas: ¿Cómo maneja esto NetworkManager?](#reglas-cómo-maneja-esto-networkmanager)
+    - [Trabajo con _team interface_](#trabajo-con-_team-interface_)
+      - [Crear el interfaz](#crear-el-interfaz)
+      - [Atributos IPv4/IPv6](#atributos-ipv4ipv6)
+      - [Asginar puertos](#asginar-puertos)
+      - [Cierre y arranque del Teaming](#cierre-y-arranque-del-teaming)
+    - [Administración del Teaming](#administración-del-teaming)
+    - [Troubleshooting](#troubleshooting)
+  - [Software bridge](#software-bridge)
+    - [Procedimiemto para configurar un bridge por software](#procedimiemto-para-configurar-un-bridge-por-software)
+    - [Control de bridge](#control-de-bridge)
+  - [Teaming + Bridging](#teaming--bridging)
+
 # Control de servicios y demonios
 
 ## Servicios y demonios.
@@ -55,7 +82,7 @@ La _units_ son difentes tipos de "servicios", hay de diferentes tipos.
 
 ### Máscaras
 
-RH dice que no son compatibles ***NetworkManager** y **network** y de hecho indican que el que manda el _NetworkManager_ y se apoya para ciertas cosas en _network_ y en caso de caída del primero, el segundo tomaría el control.
+RH dice que no son compatibles **NetworkManager** y **network** y de hecho indican que el que manda el _NetworkManager_ y se apoya para ciertas cosas en _network_ y en caso de caída del primero, el segundo tomaría el control.
 
 `systemctl {mask|umask} servicio`, lo que hace es un link a `/dev/null` de las unidades. (/etc/systemd/system/nombre.service` ó `/usr/lib/systemd/target`)
 
@@ -71,8 +98,9 @@ Estos son los targets del sistema:
 * **rescue.target**: _suloging_ prompt, inicialización básica del sistema
 * **emergency.target**: _sulogin_ prompt y pivote _initramfs_ completo con / montado en modo sólo lectura.
 
-* Dependencias entre targets: `systemctl list-dependencies nombre.target|grep target`
-* Targets del sistema: `systemctl list-units --type=target --all`
+Dependencias entre targets: `systemctl list-dependencies nombre.target|grep target`
+
+Targets del sistema: `systemctl list-units --type=target --all`
   ```bash
   UNIT                   LOAD   ACTIVE   SUB    DESCRIPTION
   basic.target           loaded active   active Basic System
@@ -115,7 +143,7 @@ Estos son los targets del sistema:
 * Obtener el target por defecto: `systemctl get-default`
 * Cambiar el target por defecto: `systemctl set-default nombre`
   ```bash
-  > ls -l /usr/lib/systemd/system/default.target
+  $ ls -l /usr/lib/systemd/system/default.target
   lrwxrwxrwx. 1 root root 16 Mar  8 16:24 /usr/lib/systemd/system/default.target -> graphical.target
   ```
 * Podemos cambiar el target en el arranque cambiando la línea de kernel, poniendo: `systemd.unit=new_target.target` (normalmente ponemos _emergency.target_), después **Ctrl+X**
@@ -146,8 +174,14 @@ Ya visto en el curso de SA:
 
 # IPv6
 
+## Repaso de IPv4
+
+El directorio donde se guarda toda la configuración de networking es `/etc/sysconfig/network-scripts` ahí hay un fichero **ifcfg-_conexion_** por cada conexión que creemos, y podremos manipularlo.
+
+## IPv6
+
 Protocolo que sustituye a IPv4, lleva muchas más cosas por defecto.
-* Direcciones más largas.
+* Direcciones más largas. (128 bits en vez de 32)
 * IPSec activado por defecto.
 * Muy autoconfigurable, básta con tener un router en la red que soporte IPv6.
   - Estática
