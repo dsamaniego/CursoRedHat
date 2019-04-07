@@ -5,14 +5,14 @@ Aquí meteré comandos útiles de cara a los exámenes.
 - [Cron y at](#cron-y-at)
 - [ACLs](#acls)
 - [SELinux](#selinux)
-  - [Poner contexto a un directorio y todos sus hijos:](#poner-contexto-a-un-directorio-y-todos-sus-hijos)
+	- [Poner contexto a un directorio y todos sus hijos:](#poner-contexto-a-un-directorio-y-todos-sus-hijos)
 - [FileSystems](#filesystems)
-  - [Directorio NFS de root de usuarios LDAP.](#directorio-nfs-de-root-de-usuarios-ldap)
+	- [Directorio NFS de root de usuarios LDAP.](#directorio-nfs-de-root-de-usuarios-ldap)
 - [Operativas con systemd](#operativas-con-systemd)
-  - [Journalctl](#journalctl)
-    - [Hacer permanentes los logs de journalctl](#hacer-permanentes-los-logs-de-journalctl)
+	- [Journalctl](#journalctl)
+		- [Hacer permanentes los logs de journalctl](#hacer-permanentes-los-logs-de-journalctl)
 - [Firewall](#firewall)
-  - [Flags de _firewall-cmd_](#flags-de-_firewall-cmd_)
+	- [Flags de _firewall-cmd_](#flags-de-_firewall-cmd_)
 
 # Comandos básicos
 
@@ -51,6 +51,12 @@ Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D*
 
 # Redes
 
+* **nmcli**: Cliente de NetworManager para gestionar las redes.
+	- `nmcli dev status`: Muestra interfaces de red
+	- `nmcli con status`: Muestra conexiones
+	- `nmcli con add <con_name> type <tipo>`: Añadir una conexión configurada por DHCP
+	- `nmcli con add <con_name> type <tipo> ipv4 "W.X.Y.Z" gw4 "w.x.y.z"`: Añadir conexión con configuración estática
+	- `nmcli con mod <con_name> {parámetros_a_modificar}`: Modificar una conexión
 * **hostname**: ver y modificar en runtime el nombre de host del sistema.  
   Durante el proceso de arranque del sistema operativo, se establece el nombre del sistema con la ejecución del comando hostname sin parámetros. Si existe el archivo `/etc/hostname` se lee de aquí, y esto significa que se configuró de forma estática. Si no existe el archivo, se consulta el `/etc/hosts` y si ahí no lo encuentra, se hará una consulta al DNS por el hostname del sistema dando la IP (resolución inversa).  
   Si al comando hostname le pasamos un nombre, se modifica el hostname del sistema pero no es persistente, en el siguiente arranque de la máquina se ha perdido. Para hacerlo persistente, podemos modificar a mano el archivo `/etc/hostname` o usar el comando `hostanamectl`.

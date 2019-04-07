@@ -7,9 +7,12 @@
     - [Consola de depuración](#consola-de-depuración)
     - [Stuck jobs](#stuck-jobs)
 - [IPv6](#ipv6)
-  - [Repaso de IPv4](#repaso-de-ipv4)
-  - [IPv6](#ipv6-1)
-  - [Redes IPv6 predefinidas.](#redes-ipv6-predefinidas)
+  - [Direcciones IPv6](#direcciones-ipv6)
+    - [Subredes](#subredes)
+  - [IPs comunes](#ips-comunes)
+    - [Cálculo de direcciones locales (_link local_)](#cálculo-de-direcciones-locales-_link-local_)
+  - [Configuración de direcciones IPv6](#configuración-de-direcciones-ipv6)
+  - [Configuración](#configuración)
 - [Agregación de enlaces (teaming) y bridging](#agregación-de-enlaces-teaming-y-bridging)
   - [Teaming](#teaming)
     - [Reglas: ¿Cómo maneja esto NetworkManager?](#reglas-cómo-maneja-esto-networkmanager)
@@ -86,7 +89,7 @@ RH dice que no son compatibles **NetworkManager** y **network** y de hecho indic
 
 `systemctl {mask|umask} servicio`, lo que hace es un link a `/dev/null` de las unidades. (/etc/systemd/system/nombre.service` ó `/usr/lib/systemd/target`)
 
-El enmascaramiento nos permite que nadie arranque de forma manual o automática el servicio.
+El enmascaramiento nos permite queSubredes nadie arranque de forma manual o automática el servicio.
 
 ## El proceso de arranque
 
@@ -95,7 +98,7 @@ El enmascaramiento nos permite que nadie arranque de forma manual o automática 
 Estos son los targets del sistema:
 * **graphical.target**: Sistema con múltiples usuarios, logins basados en texto y gráficos.
 * **multi-user.target**: Sistema con múltiples usuarios y login basado en texto.
-* **rescue.target**: _suloging_ prompt, inicialización básica del sistema
+* **rescue.target**: _suloging_ prSubredesompt, inicialización básica del sistema
 * **emergency.target**: _sulogin_ prompt y pivote _initramfs_ completo con / montado en modo sólo lectura.
 
 Dependencias entre targets: `systemctl list-dependencies nombre.target|grep target`
@@ -111,7 +114,7 @@ Targets del sistema: `systemctl list-units --type=target --all`
   graphical.target       loaded active   active Graphical Interface
   local-fs-pre.target    loaded active   active Local File Systems (Pre)
   local-fs.target        loaded active   active Local File Systems
-  multi-user.target      loaded active   active Multi-User System
+  multi-user.target      loaded acSubredestive   active Multi-User System
   network-online.target  loaded inactive dead   Network is Online
   network.target         loaded active   active Network
   nfs.target             loaded active   active Network File System Server
@@ -131,7 +134,7 @@ Targets del sistema: `systemctl list-units --type=target --all`
   timers.target          loaded active   active Timers
   umount.target          loaded inactive dead   Unmount All Filesystems
 
-  LOAD   = Reflects whether the unit definition was properly loaded.
+  LOAD   = Reflects whether the unit definition was properly loaded.Subredes
   ACTIVE = The high-level unit activation state, i.e. generalization of SUB.
   SUB    = The low-level unit activation state, values depend on unit type.
 
@@ -141,7 +144,7 @@ Targets del sistema: `systemctl list-units --type=target --all`
 * Cambiar a un target: `systemctl isolate nombre.target`
   - sólo los que tengan _AllowIsolate=yes_ pueden ser objeto de este cambio
 * Obtener el target por defecto: `systemctl get-default`
-* Cambiar el target por defecto: `systemctl set-default nombre`
+* Cambiar el target por defecto: `systemctl set-default nombre`Subredes
   ```bash
   $ ls -l /usr/lib/systemd/system/default.target
   lrwxrwxrwx. 1 root root 16 Mar  8 16:24 /usr/lib/systemd/system/default.target -> graphical.target
@@ -150,7 +153,7 @@ Targets del sistema: `systemctl list-units --type=target --all`
   - Recordar que una vez arreglado lo que se arregle, `systemctl daemon-reload` para que coja los nuevos fichreros de configuración que hayamos arreglado.
 
 ### Recuperación de la passwd de root
-
+Subredes
 Ya visto en el curso de SA:
 1. Reiniciar el sistema
 2. Interrumpir el _boot loader_ presionando una tecla
@@ -174,21 +177,84 @@ Ya visto en el curso de SA:
 
 # IPv6
 
-## Repaso de IPv4
-
-El directorio donde se guarda toda la configuración de networking es `/etc/sysconfig/network-scripts` ahí hay un fichero **ifcfg-_conexion_** por cada conexión que creemos, y podremos manipularlo.
-
-## IPv6
-
-Protocolo que sustituye a IPv4, lleva muchas más cosas por defecto.
+Protocolo que sustituye a IPv4, llevSubredesa muchas más cosas por defecto.
 * Direcciones más largas. (128 bits en vez de 32)
 * IPSec activado por defecto.
-* Muy autoconfigurable, básta con tener un router en la red que soporte IPv6.
-  - Estática
-  - DHCPv6
-  - SLAAC (_Stateless Address Autoconfiguration_)
+* Muy autoconfigurable, basta con tener un router en la red que soporte IPv6.
 
-## Redes IPv6 predefinidas.
+El mayor problema que tiene es que el protocolo no tiene una forma simple para que sistemas que sólo tinen IPv6 se comuniquen con IPv4. Para solucionarSubredes esto se implementa _DualStrack_, que es configurar una red con IPv4 e IPv6 de forma que recursos de internet que usen uno de los protocolos puedean ser alcanzados desde el host.
+
+## Direcciones IPv6
+
+128 bits distribuidos en 8 grupos de 4 cuartetos hexadecimales, separados por "**:**". Cada cuarteto representa 4 bits de la dirección IPSubredesv6, con lo que cada grupo representa 16 bits.
+
+Reglas de formación:
+* Los ceros a la izquierda no se representan.
+* Si en un grupo hay varios ceros, se agrupan (apócope): `2001:db8:0:10::1`
+* No se pueden apocopar dos grupos de ceros: es incorrecto: `2001:b1::3b4::3a` por que no tenemos forma de saber cuántos grupos van en cada apócope.
+* Para agrupar ceros, se apocopa el mayor conjunto o, en caso de igualdad, el de más a la izquierda: `2001::1f3a:0:0:3ab`Subredes
+* Para representar IP:puerto, se pone la ip entre corchetes: `[2001:1bc::13f:0:a]:8080`
+
+Las direcciones se clasifican en tres tipos:
+* **Unicast**: Identificador para una única interfaz. Un paquete enviado a una dirección unicast es entregado sólo a la interfaz identificada con dicha dirección. Es el equivalente a las direcciones IPv4 actuales.
+* **Anycast**:  Identificador para un conjunto de interfaces (típicamente pertenecen a diferentes nodos). Un  paquete enviado a una dirección anycast es entregado en una (cualquiera) de las interfaces identificadas con dicha dirección (la más próxima, de acuerdo a las medidas de distancia del protocolo de encaminado).  
+	Nos permite crear, por ejemplo, ámbitos de redundancia, de forma que varias máquinas puedan ocuparse del mismo tráfico según una secuencia determinada (por el routing), si la primera “cae”.
+* **Multicast**: Identificador para un conjunto de interfaces (por lo general pertenecientes a diferentes nodos). Un paquete enviado a una dirección multicast es entregado a todas las interfaces identificadas por dicha dirección.  
+	La misión de este tipo de paquetes es evidente: aplicaciones de retransmisión múltiple (broadcast). 
+
+![](./DirsIPv6.png)
+
+### Subredes
+
+Una dirección unicast normal e divide en dos partes, _prefijo de red_ e _interfaz ID_, el primero identifica la subred y el segundo la interfáz de red. Ningún par de interfaces de red pueden tener el mismo _interfaz ID_ en la misma subred.
+
+* IPv6 tiene una máscara de subred estándar **/64**, la mitad de la dirección es subred y la otra mitad interfáz.
+* Típicamente, el proveedor de red asigna un prefijo más corto a una organización, **/48**, lo que deja lo que deja el resto de la red para asignar subredes (16 bits --> 65536 subredes).
+
+## IPs comunes
+
+* **::1/128**: localhost
+* **::**: Dirección sin especificar, indica que está escuchando por todas las IPs configuradas
+* **::/0**: ruta por defecto
+* **2000::/3**: Scope global (IPs públicas) - direcciones globales de unicast
+* **fd00::/8**: Direcciones locales únicas (IPs privadas)
+* **fe80::/10**: Scope link (link local)
+* **ff00::/8**: multicast
+* **ff02::1**: Dirección de multidifusión
+
+### Cálculo de direcciones locales (_link local_)
+
+Las direcciones de link local son direcciones no enrrutables que se usan sólo para hablar con los host en un enlace de red específico. Cada interfáz de red se configura automáticamente con un link-local en la red _fe80::/64_. Para asegurase de que es única, la _interfaz ID_ de la dirección se construye a partir de la MAC de esa interfáz.
+
+1. Partimos de la MAC: `52:74:f2:b1:a8:7f`
+2. Añadimos en el centro _ff:fe_: `52:74:f2:ff:fe:b1:a8:7f`
+3. Pasmos el primer grupo a binario: `52 --> 01010010`
+4. Invertimos bit 6: `01010000 --> 50`
+5. Lo trasladamos a lo que teníamos: `5074:f2ff:feb1:a87f`
+6. Añadimos la máscara del tipo de red: `fe80::5074:f2ff:feb1:a87f`
+
+## Configuración de direcciones IPv6
+
+Hay tres formas de configurar las direcciones:
+* **Estáticas**: como en IPv4
+	- No podemos usar las siguientes direcciones:
+		- El interfaz ID todo ceros: _0:0:0:0_ llamado _subner router unicast_, que usan todos los routers del enlace.
+		- Los identificadores entre: _fdff:ffff:ffff:ff80_ y _fdff:ffff:ffff:ffff_
+* **Dinámicas**: dos formas distintas:
+	- DHCPv6: Funciona un poco diferente que DHCPv4 ya que no hay broadcast:
+		- Un host manda una petición DHCPv6 al puerto 547/UDP por **ff02::1:2** (grupo de multicast _all-dhcp-servers_)
+		- El servidor DHCPv6 manda una respuesta con la información necesaria a través del puerto 546/UDP sobre la dirección local del cliente.
+  - SLAAC (_Stateless Address Autoconfiguration_): Es el método por defecto en RHEL7, paquete **radvd**
+		- El host levanta su interfáz con el link local: **fe80::/64**
+		- Manda una solicitud de router a **ff02::2** (grupo de multicast _all-routers_).
+		- Un router en el link local responde al link-local del host con un prefijo de red y otra información.
+		- El host usa el prefijo con un _interfaz ID_ para construir la dirección de misma forma que lo hacer para la dirección del link-local.
+		- El router manda periódicamente actualizaciones multicast (_router advertisements_) para confirmar o actualizar la información que provee.
+
+## Configuración
+
+Como en IPv4, también se usa **nmcli** cambiando v4 por v6
+
 
 # Agregación de enlaces (teaming) y bridging
 
