@@ -410,4 +410,258 @@ En el fichero de configuración hay un campo interesante: `STP=yes`, que indica 
 
 # Seguridad con los puertos de red
 
+## Cortafuegos: _firewalld_
 
+**firewalld.service** es el método por defecto en RHEL7 para manejar los firewall de alto nivel. Se basa en el subsistema _netfilter_ del kernel de Linux. Entra en conflicto con **iptables**, **ip6tables** y **ebtables** por lo que lo mejor es enmascarar estos:
+
+```bash
+for SERVICE in iptables ip6tables ebtables
+do
+  systemctlt mask ${SERVICE}.service
+done
+``` 
+
+Recordar siempre que vamos a limitar el acceso a nuestra máquina. (Nosotros somos la máquina que es susceptible de ser atacada y a la que hay que protejer).
+
+**firewalld** divide el tráfico en zonas usando los siguientes criterios:
+* ip fuente
+* interfáz entrante
+* zona default (por defecto: public).
+
+Podemos administrar el firewall con:
+* firewall-cmd (se instala con el paquete de firewalld, no se instala en un mínima pero si en la base).
+* firewall-config
+* Manipular `/etc/firewalld` (esto no lo recomienda RedHat).
+
+Los cambios que hagamos se hacen en runtime a no ser que pasemos el parámetro `--permanent`, y en este caso, para pasar a runtime tendremos que hacer `--reload`, y viceversa con `--runtime-to-permanent`.
+
+Podemos establece un timeout `--timeout=<secs>`, en runtime, ponemos una regla en runtime y está activa hasta que pasa el timeout.
+
+El sistema también tiene `/usr/lib/firewalld` que son los defectos del sistema (así que ojito con tocarlo).
+
+### Notas
+
+* Later (post-RHEL 7) versions of firewalld do include a way to save the running configuration, and this is available now in Fedora and in RHEL 7.1. In this case the command is simply:
+  ```bash
+  firewall-cmd --runtime-to-permanent
+  ```
+* Añadir interfáz a una zona
+  ```bash
+  # firewall-cmd --permanent --zone=internal --change-interface=eth0
+  success
+  # nmcli con show | grep eth0
+  System eth0  4de55c95-2368-429b-be65-8f7b1a357e3f  802-3-ethernet  eth0
+  # nmcli con mod "System eth0" connection.zone internal
+  # nmcli con up "System eth0"
+  Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/1)
+  Note1: This operation can also be done by editing the /etc/sysconfig/network-scripts/ifcfg-eth0 file and add ZONE=internal followed by # nmcli con reload
+  # firewall-cmd --get-zone-of-interface=eth0
+  internal
+  ```
+* Crear nuevas zonas
+  ```bash
+  # firewall-cmd --permanent --new-zone=test
+  success
+  # firewall-cmd --reload
+  success
+  ```
+* Mostrar las fuentes admitidas en una zona
+  ```bash
+  # firewall-cmd --permanent --zone=trusted --list-sources
+  192.168.2.0/24 00:11:22:33:44:55 ipset:iplist
+  ```
+* Sacar información de zonas (desde RHEL 7.3):
+  ```bash
+  # firewall-cmd --info-zone=public
+  public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: eth0
+  sources:
+  services: dhcpv6-client ssh
+  ports:
+  protocols:
+  masquerade: no
+  forward-ports:
+  sourceports:
+  icmp-blocks:
+  rich rules:
+  ```
+* Añadir servicios a una zona
+  ```bash
+  # firewall-cmd --zone=internal --add-service={http,https,dns}
+  success
+  ```
+* Sacar ifnormación de servicios (desde RHEL 7.3)
+  ```bash
+  # firewall-cmd --info-service=ftp
+  ftp
+    ports: 21/tcp
+    protocols:
+    source-ports:
+    modules: nf_conntrack_ftp
+    destination:
+  ```
+* Desde RHEL 7.3 se pueden crear _ipsets_. Un _ipset_ es un conjunto de direcciones IP o redes.  
+  Las diferentes categorías pertenece a `hash:ip` o `hash:net`.
+  - To create a permanent IPv4 ipset containing two IP addresses and drop packets coming from these addresses, type:
+  ```bash
+  # firewall-cmd --permanent --new-ipset=blacklist --type=hash:ip
+  success
+  # firewall-cmd --reload
+  success
+  # firewall-cmd --ipset=blacklist --add-entry=192.168.1.11
+  success
+  # firewall-cmd --ipset=blacklist --add-entry=192.168.1.12
+  success
+  # firewall-cmd --add-rich-rule='rule source ipset=blacklist drop'
+  success
+  # firewall-cmd --info-ipset=blacklist
+  blacklist
+  type: hash:ip
+  options:
+  entries: 192.168.1.11 192.168.1.12
+  ```
+  - To create a permanent IPv4 ipset containing two networks, type:
+  ```bash
+  # firewall-cmd --permanent --new-ipset=netlist  <- falta type????
+  success
+  # firewall-cmd --reload
+  success
+  # firewall-cmd --ipset=netlist --add-entry=192.168.1.0/24
+  success
+  # firewall-cmd --ipset=netlist --add-entry=192.168.2.0/24
+  success
+  # firewall-cmd --info-ipset=netlist
+  netlist
+    type: hash:net
+    options: 
+    entries: 192.168.1.0/24 192.168.2.0/24
+  ```
+* To remove the netlist ipset, type: 
+  ```bash
+  # firewall-cmd --permanent --delete-ipset=netlist
+  success
+  # firewall-cmd --reload
+  success
+  # firewall-cmd --get-ipsets
+  blacklist
+```
+
+It is also possible to download the content of an ipset from a file (--add-entries-from-file=file option) or store it enwith the name ipset in the /etc/firewalld/ipsets/ipset.xml
+or /usr/lib/firewalld/ipsets/ipset.xml files according to the following format:
+
+
+### Reglas de firewall
+
+Aparte de las zonas para añadir reglas, los administradores tienen otras dos vías, "reglas directas" y "reglas enriquecidas" (_rich rules_).
+
+#### Reglas directas
+
+Ver `man firewall-cmd` y `man 5 firewalld.direct`, consiste en meter a mano reglas de iptables (ip6tables o ebtables) en las zonas administradas por _firewalld_. Estas reglas pueden llegar a ser difíciles de manejar y ofrecen menos flexibilidad que las reglas estándar y las _rich rules_.
+
+A no ser que sean explicitamente insertadas en una zona controlada por _firewalld_, las reglas directas se evalúan antes que cualquier otra regla de _firewalld_.
+
+#### Reglas enrriquecidas
+
+Proveen a los administradores un lenguaje en el que expresar reglas de firewall que no son cubiertas por la sintaxis básica de _firewalld_. Nos permitirán conexiones a un servicio desde una sóla IP, configurar logs, guardar los logs, reenvío de puertos y conexiones. Más información en `man 5 firewalld.richlanguage`
+
+Formato:
+
+```text
+rule
+  [source]
+  [destination]
+  service|port|protocol|icmp-block|masquerade|forward-port
+  [log]
+  [audit]
+  [accept|reject|drop]
+```
+
+Estos valores, toman la forma: `option=value`, entre reject y drop, es que el primero devuelve respuesta y el segundo tira el paquete. 
+
+Para aplicar las reglas usa un orden:
+1. Enmascaramientos / Port forwarding
+2. logs (secciones log y audit)
+3. denys
+4. accept
+
+**OJO** todo lo que no esté explicitamente permitido, está denegado.
+
+Podemos utilizar el flag `--timeout` o el `--permanent`.
+
+* **Añadir una regla**: `--add-rich-rule='<regla>'`
+* **Borrar uan regla**: `--remove-rich-rule='<regla>'`
+* **Ver una regla**: `--query-rich-rule='<regla>'`
+* **Ver todas las reglas**: `--list-rich-rules`
+
+Hay que definir una familia `family=ipv4` cuando se defina _source_ o _destination_.
+
+De cara al exámen, cada vez que configuremos un servico, tendremos que abrirlo en el firewall (y ponerle las reglas que nos indiquen).
+
+#### Ejemplos
+
+1.  Rechazar 192.168.1.11 en la zona classroom
+  ```
+  firewall-cmd --permanent --zone=classroom --add-rich-rule='rule family=ipv4 source address=192.168.0.11/32 reject'
+  ```
+2. Limitar en tiempo de ejecución el servicio ftp con un límite de 2 conexiones por minuto aceptadas.
+  ```
+  firewall-cmd --add-rich-rule='rule service name=ftp limit value=2/min accept'
+  ```
+3. Descartar todos los paquetes del protocolo esp (ipsec).
+  ```
+  firewall-cmd --permanent --add-rich-rule='rule protocol value=esp drop'
+  ```
+4. Aceptar todos los paquetes TCP, puertos 7900 a 7905, zona vnc, para la subred 192.168.1.0/24
+  ```
+  firewall-cmd --permanent --zone=vnc --add-rich-rule='rule familily=ipv4 source address=192.168.1.0/24 port port=7900-7905 protocol=tcp accept'`
+  ```
+
+#### log y audit
+
+Podemos limitar el número de entradas que podemos meter en los logs (de otra forma, tendríamos ficheros de log kilométricos), ojo que las reglas de log se evalúan primero. Suelen ser las reglas parecidas a la que hemos hecho del número de conexiones.  
+**OJO**: Las reglas de log se procesan al primero peeero, primero se procesan las "deny", y luego las "accept", ya que el control de acceso de los logs pasa a los siguientes.
+
+Entrada típica de log: `log [ previx="texto" [level=<serverity_de_rsyslog>] [limit value="<rate/duracion>"]]` donde:
+* duración puede ser:
+ - 1/s -> mensaje por segundo y conexión
+ - 1/m -> mensaje por minuto y conexión
+ - 1/h -> mensaje por dia y conexión
+ - 1/d -> mensaje por día y conexión
+
+Entrada típica de audit: `audit [limit value="<rate/duracion>"]`
+
+1. Guardar logs de ssh (3 por minuto), configuración permanente:
+  ```
+  firewall-cmd --permanent --zone=work --add-rich-rule='rule service name="ssh" log prefix="ssh_firewall " level="notice" limit value="3/min" accept'
+  ```
+  - esto puede ser interesante de cara a controlar que realmente el servicio está funcionando.
+  - nos puede permitir protegernos contra ataques de denegación de servicio sencillas (por lo menos, las que se basan en llenar el disco).
+
+#### Masquerades y port forwarding (NAT)
+
+NAT (_Netork Address Translation). Dos posibles problemas a resolver... por un lado, tenemos lo que está dentro de nuestra red (detrás de un router) que tiene salida a internet a través de ese ruta, y es el GW de nuestra red interna.
+
+**Masquerading**: Nos permite reenviar paquetes a una ip externa a través de nuestro router, y que nuestro router nos lo devuelva. De nuestro router para fuera, se verá la IP pública de nuestro "enmascarador".
+
+1. Tenemos la VM1 (10.0.0.100, gw: 10.0.0.1) que quiere ir a la 2.17.39.214. 
+2. Como no está en la red tiene que salir por gw por defecto (que es la dirección del FW -y del GW). 
+3. El router (10.0.0.1) enmascara, cambia el paquete la dirección de origen y pone la suya (1.2.3.4), escribe en una tabla de conexiónes de quién viene la conexión (interna).
+4. Vuelve el paquete al FW y busca en su tabla de conexiónes para ver a quien se lo tiene que devolver
+5. el FW envía el paquete al 10.0.0.10
+
+**Sintaxis**: 
+* Regla básica: `firewall-cmd --permanent --zone=<one> --add-masquerade` 
+* Rich Rule: `firewall-cmd --permanent --zone=<zone> --add-rich-rule='rule family=ipv4 source address=192.168.0.0/24 masqeuerade'`
+
+**Port forwarding**: Voy a habilitar una serie de puertos en el FW que se corresponderán con servicios internos. El problema es... ¿cómo vuelve el tráfico?, si queremos salir vamos a necesitar además, un enmascaramiento.
+* Básico:
+```
+firewall-cmd --permanent --zone=<zone> --add-forward-port=<port_number>:proto=<protocol>[:to-port=<port_number>][:to-addr=<ip_addr>]
+```
+_toport_ o _toaddr_ son opcionales, ¡¡¡Pero no los dos a la vez!!!
+* Rich-rule:
+```
+firewall-cmd --permanent --zone=<zone> --add-rich-rule='rule family=ipv4 forward-port port=<port_number> protocol=tcp|udp [to-port=<port_number>][to-addr=<ip_addr>]'
+```
