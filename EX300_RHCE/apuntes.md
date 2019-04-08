@@ -211,7 +211,7 @@ Una dirección unicast normal e divide en dos partes, _prefijo de red_ e _interf
 * IPv6 tiene una máscara de subred estándar **/64**, la mitad de la dirección es subred y la otra mitad interfáz.
 * Típicamente, el proveedor de red asigna un prefijo más corto a una organización, **/48**, lo que deja lo que deja el resto de la red para asignar subredes (16 bits --> 65536 subredes).
 
-![](./subredes_ipv6.jpg)
+![](./Subnet_IPv6.png)
 
 ## IPs comunes
 
