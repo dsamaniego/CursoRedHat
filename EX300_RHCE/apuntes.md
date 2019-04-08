@@ -19,14 +19,24 @@
     - [Trabajo con _team interface_](#trabajo-con-_team-interface_)
       - [Crear el interfaz](#crear-el-interfaz)
       - [Atributos IPv4/IPv6](#atributos-ipv4ipv6)
-      - [Asginar puertos](#asginar-puertos)
+      - [Asignar puertos](#asignar-puertos)
       - [Cierre y arranque del Teaming](#cierre-y-arranque-del-teaming)
     - [Administración del Teaming](#administración-del-teaming)
     - [Troubleshooting](#troubleshooting)
   - [Software bridge](#software-bridge)
-    - [Procedimiemto para configurar un bridge por software](#procedimiemto-para-configurar-un-bridge-por-software)
+    - [Procedimiento para configurar un bridge por software](#procedimiento-para-configurar-un-bridge-por-software)
     - [Control de bridge](#control-de-bridge)
   - [Teaming + Bridging](#teaming--bridging)
+- [Seguridad con los puertos de red](#seguridad-con-los-puertos-de-red)
+  - [Cortafuegos: _firewalld_](#cortafuegos-_firewalld_)
+    - [Notas](#notas)
+    - [Reglas de firewall](#reglas-de-firewall)
+      - [Reglas directas](#reglas-directas)
+      - [Reglas enrriquecidas](#reglas-enrriquecidas)
+      - [Ejemplos](#ejemplos)
+      - [log y audit](#log-y-audit)
+      - [Masquerades y port forwarding (NAT)](#masquerades-y-port-forwarding-nat)
+  - [SELinux](#selinux)
 
 # Control de servicios y demonios
 
@@ -206,9 +216,9 @@ Las direcciones se clasifican en tres tipos:
 
 ### Subredes
 
-Una dirección unicast normal e divide en dos partes, _prefijo de red_ e _interfaz ID_, el primero identifica la subred y el segundo la interfáz de red. Ningún par de interfaces de red pueden tener el mismo _interfaz ID_ en la misma subred.
+Una dirección unicast normal e divide en dos partes, _prefijo de red_ e _interfaz ID_, el primero identifica la subred y el segundo la interfaz de red. Ningún par de interfaces de red pueden tener el mismo _interfaz ID_ en la misma subred.
 
-* IPv6 tiene una máscara de subred estándar **/64**, la mitad de la dirección es subred y la otra mitad interfáz.
+* IPv6 tiene una máscara de subred estándar **/64**, la mitad de la dirección es subred y la otra mitad interfaz.
 * Típicamente, el proveedor de red asigna un prefijo más corto a una organización, **/48**, lo que deja lo que deja el resto de la red para asignar subredes (16 bits --> 65536 subredes).
 
 ![](./SubnetIPv6.png)
@@ -226,7 +236,7 @@ Una dirección unicast normal e divide en dos partes, _prefijo de red_ e _interf
 
 ### Cálculo de direcciones locales (_link local_)
 
-Las direcciones de link local son direcciones no enrrutables que se usan sólo para hablar con los host en un enlace de red específico. Cada interfáz de red se configura automáticamente con un link-local en la red _fe80::/64_. Para asegurase de que es única, la _interfaz ID_ de la dirección se construye a partir de la MAC de esa interfáz.
+Las direcciones de link local son direcciones no enrrutables que se usan sólo para hablar con los host en un enlace de red específico. Cada interfaz de red se configura automáticamente con un link-local en la red _fe80::/64_. Para asegurase de que es única, la _interfaz ID_ de la dirección se construye a partir de la MAC de esa interfaz.
 
 1. Partimos de la MAC: `52:74:f2:b1:a8:7f`
 2. Añadimos en el centro _ff:fe_: `52:74:f2:ff:fe:b1:a8:7f`
@@ -247,7 +257,7 @@ Hay tres formas de configurar las direcciones:
 		- Un host manda una petición DHCPv6 al puerto 547/UDP por **ff02::1:2** (grupo de multicast _all-dhcp-servers_)
 		- El servidor DHCPv6 manda una respuesta con la información necesaria a través del puerto 546/UDP sobre la dirección local del cliente.
   - SLAAC (_Stateless Address Autoconfiguration_): Es el método por defecto en RHEL7, paquete **radvd**
-		- El host levanta su interfáz con el link local: **fe80::/64**
+		- El host levanta su interfaz con el link local: **fe80::/64**
 		- Manda una solicitud de router a **ff02::2** (grupo de multicast _all-routers_).
 		- Un router en el link local responde al link-local del host con un prefijo de red y otra información.
 		- El host usa el prefijo con un _interfaz ID_ para construir la dirección de misma forma que lo hacer para la dirección del link-local.
@@ -269,9 +279,10 @@ Más documentación:
 
 ## Teaming
 
-Nos permite dos o mas tarjetas de red (NICs) como si fueran una sola de forma que nos dará ciertas ventajas.
-* alta disponibilidad
-* mejora del rendimiento
+El _Network teaming_ es una técina que nos permite enlazar lógicamente dos o mas tarjetas de red (NICs) como si fueran una sola de forma que nos dará ciertas ventajas.
+* Tolerancia a fallos.
+* Alta disponibilidad
+* Mejora del rendimiento
 
 Conceptos:
 * **teamd** Nos permite manipular la lógica.
@@ -286,9 +297,9 @@ Conceptos:
 
 ### Reglas: ¿Cómo maneja esto NetworkManager?
 
-* Inicio del teaming no produce el reinicio automático de los puertos asignados.
-* Inicio de un port produce un inicio automático del teaming
-* Parada del teaming  detiene las interfaces port
+* El inicio del teaming no produce el reinicio automático de los puertos asignados.
+* El inicio de un port produce un inicio automático del teaming
+* La parada del teaming detiene las interfaces port
 * Teaming sin ports (NIC) puede tener definida una ip estática.
 * Teaming sin ports (NIC) configurado por DHCP espera a los puertos que lo componen (si no tenemos ningún puerto no tenemos red y no podrá recibir nada de DHCP).
 * Teaming configurado por DHCP espera a los puertos hasta que uno de ellos tiene portadora.
@@ -324,7 +335,7 @@ nmcli con mod CNAME ipv4.addresses IP/PREFIX GW
 nmcli con mod CNAME ipv4.method manual
 ```
 
-#### Asginar puertos
+#### Asignar puertos
 
 Mirar las lineas que vienen en `man nmcli-examples` (ojo, dependiendo de las verisones, puede cambiar el ejemplo).
 
@@ -345,19 +356,19 @@ nmcli dev con up <conex_slave>
 
 ### Administración del Teaming
 
-Todos los ficheros de configuración están en `/etc/sysconfig/network-scripts/` como en cualquier tipo de interfáz de red.
+Todos los ficheros de configuración están en `/etc/sysconfig/network-scripts/` como en cualquier tipo de interfaz de red.
 
 Variables importantes de los ficheros de configuración:
-* **DEVICETYPE**
+* **DEVICETYPE**: Puede ser _team_ o _port_.
 * **TEAM_CONFIG**: aquí viene el json de configuración
 
 ### Troubleshooting
 
 * `teamdctl <team_name> ports`: Muestra los puertos del team
 * `teamdctl <team_name> getoption activeport`: Muestra el puerto activo
-* `teamdctl <team_name> setoption activeprot`: Cambia el puerto activo
+* `teamdctl <team_name> setoption activeport`: Cambia el puerto activo
 * `teamdctl <nombre> status`: Muestra el estado del Team
-* `teamdctl <team_name> config dump`: saca un json con la configuración, si lo pasamos a fichero, podemos luego manipularlo para cargar configuraciones de timming.
+* `teamdctl <team_name> config dump`: saca un json con la configuración, si lo pasamos a fichero, podemos luego manipularlo para cargar configuraciones de teaming.
 * `nmcli con mod <team_name> team.config <fichero>`
 
 ## Software bridge
@@ -368,7 +379,7 @@ En virtualizadores, tendremos unas cuantas tarjetas vituales, si cambiamos la co
 
 NICs virtuales, tienen una tabla de MACs
 
-### Procedimiemto para configurar un bridge por software
+### Procedimiento para configurar un bridge por software
 
 `man nmcli-examples`, ejemplo 8.
 
@@ -392,20 +403,19 @@ En el fichero de configuración hay un campo interesante: `STP=yes`, que indica 
 ## Teaming + Bridging
 
 1. NetworkManager (lo tenemos activo).
-  - Generación standar del teaming (no vamos a tocar las IPs) (Team + Ports)
+     * Generación standar del teaming (no vamos a tocar las IPs) (Team + Ports)
 2. Desactivamos Team0 y NetworkManager (ya no funciona nmcli).
-  - `nmcli dev dis team0`
-  - `systemctl stop NetworkManager && systemctl disable NetworkManager` (o mask)
+    * `nmcli dev dis team0`
+    * `systemctl stop NetworkManager && systemctl disable NetworkManager` (o mask)
 3. Creamos el bridge: **br0team**
-  - creamos el fichero: `ifcfg-br0team`  
-    Contenido:
-      - DEVICE
-      - BOOTPROTO: 
-      - ONBOOT: none
-      - IPPADDR
-      - PREFIX
+     * creamos el fichero: `ifcfg-br0team` con el siguiente contenido:
+        - DEVICE
+        - BOOTPROTO: 
+        - ONBOOT: none
+        - IPPADDR
+        - PREFIX
 4. Editar `ifcfg-team0` y poner `BRIDGE=br0team`
-5. Configuraciones de ip dentro de los puertos que aparezcan en ip config se eliminan
+5. Configuraciones de ip dentro de los puertos que aparezcan en _ip config_ se eliminan
 6. Reinicio de `systemctl restart network.service`
 
 # Seguridad con los puertos de red
@@ -425,7 +435,7 @@ Recordar siempre que vamos a limitar el acceso a nuestra máquina. (Nosotros som
 
 **firewalld** divide el tráfico en zonas usando los siguientes criterios:
 * ip fuente
-* interfáz entrante
+* interfaz entrante
 * zona default (por defecto: public).
 
 Podemos administrar el firewall con:
@@ -435,44 +445,44 @@ Podemos administrar el firewall con:
 
 Los cambios que hagamos se hacen en runtime a no ser que pasemos el parámetro `--permanent`, y en este caso, para pasar a runtime tendremos que hacer `--reload`, y viceversa con `--runtime-to-permanent`.
 
-Podemos establece un timeout `--timeout=<secs>`, en runtime, ponemos una regla en runtime y está activa hasta que pasa el timeout.
+Podemos establecer un timeout `--timeout=<secs>`, en runtime, ponemos una regla en runtime y está activa hasta que pasa el timeout.
 
 El sistema también tiene `/usr/lib/firewalld` que son los defectos del sistema (así que ojito con tocarlo).
 
 ### Notas
 
-* Later (post-RHEL 7) versions of firewalld do include a way to save the running configuration, and this is available now in Fedora and in RHEL 7.1. In this case the command is simply:
+* Versiones post-RHEL 7 de firewalld incluyen una vía simple para hacer los cambios de runtime permanentes:
   ```bash
   firewall-cmd --runtime-to-permanent
   ```
-* Añadir interfáz a una zona
+* Añadir interfaz a una zona
   ```bash
-  # firewall-cmd --permanent --zone=internal --change-interface=eth0
+  > firewall-cmd --permanent --zone=internal --change-interface=eth0
   success
-  # nmcli con show | grep eth0
+  > nmcli con show | grep eth0
   System eth0  4de55c95-2368-429b-be65-8f7b1a357e3f  802-3-ethernet  eth0
-  # nmcli con mod "System eth0" connection.zone internal
-  # nmcli con up "System eth0"
+  > nmcli con mod "System eth0" connection.zone internal
+  > nmcli con up "System eth0"
   Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/1)
-  Note1: This operation can also be done by editing the /etc/sysconfig/network-scripts/ifcfg-eth0 file and add ZONE=internal followed by # nmcli con reload
-  # firewall-cmd --get-zone-of-interface=eth0
+  > firewall-cmd --get-zone-of-interface=eth0 
   internal
   ```
+    Esta operación tambión se puede hacer editando `/etc/sysconfig/network-scripts/ifcfg-eth0` y añadiendo `ZONE=internal` seguido por `nmcli con reload`
 * Crear nuevas zonas
   ```bash
-  # firewall-cmd --permanent --new-zone=test
+  > firewall-cmd --permanent --new-zone=test
   success
-  # firewall-cmd --reload
+  > firewall-cmd --reload
   success
   ```
 * Mostrar las fuentes admitidas en una zona
   ```bash
-  # firewall-cmd --permanent --zone=trusted --list-sources
+  > firewall-cmd --permanent --zone=trusted --list-sources
   192.168.2.0/24 00:11:22:33:44:55 ipset:iplist
   ```
 * Sacar información de zonas (desde RHEL 7.3):
   ```bash
-  # firewall-cmd --info-zone=public
+  > firewall-cmd --info-zone=public
   public (active)
   target: default
   icmp-block-inversion: no
@@ -489,68 +499,66 @@ El sistema también tiene `/usr/lib/firewalld` que son los defectos del sistema 
   ```
 * Añadir servicios a una zona
   ```bash
-  # firewall-cmd --zone=internal --add-service={http,https,dns}
+  > firewall-cmd --zone=internal --add-service={http,https,dns}
   success
   ```
 * Sacar ifnormación de servicios (desde RHEL 7.3)
   ```bash
-  # firewall-cmd --info-service=ftp
+  > firewall-cmd --info-service=ftp
   ftp
     ports: 21/tcp
-    protocols:
+    protocols: 
     source-ports:
     modules: nf_conntrack_ftp
     destination:
   ```
 * Desde RHEL 7.3 se pueden crear _ipsets_. Un _ipset_ es un conjunto de direcciones IP o redes.  
-  Las diferentes categorías pertenece a `hash:ip` o `hash:net`.
-  - To create a permanent IPv4 ipset containing two IP addresses and drop packets coming from these addresses, type:
+  Las diferentes categorías pertenecen a `hash:ip` o `hash:net`.
+  - Para crear un ipset IPv4 permanente que contenga 2 direcciones IP y que rechace dos paquetes que vengan de esas direcciones: 
   ```bash
-  # firewall-cmd --permanent --new-ipset=blacklist --type=hash:ip
+  > firewall-cmd --permanent --new-ipset=blacklist --type=hash:ip
   success
-  # firewall-cmd --reload
+  > firewall-cmd --reload
   success
-  # firewall-cmd --ipset=blacklist --add-entry=192.168.1.11
+  > firewall-cmd --ipset=blacklist --add-entry=192.168.1.11
   success
-  # firewall-cmd --ipset=blacklist --add-entry=192.168.1.12
+  > firewall-cmd --ipset=blacklist --add-entry=192.168.1.12
   success
-  # firewall-cmd --add-rich-rule='rule source ipset=blacklist drop'
+  > firewall-cmd --add-rich-rule='rule source ipset=blacklist drop'
   success
-  # firewall-cmd --info-ipset=blacklist
+  > firewall-cmd --info-ipset=blacklist
   blacklist
   type: hash:ip
   options:
   entries: 192.168.1.11 192.168.1.12
   ```
-  - To create a permanent IPv4 ipset containing two networks, type:
+  - Para crear un ipset IPv4 que contenga 2 redes:
   ```bash
-  # firewall-cmd --permanent --new-ipset=netlist  <- falta type????
+  > firewall-cmd --permanent --new-ipset=netlist  <- falta type????
   success
-  # firewall-cmd --reload
+  > firewall-cmd --reload
   success
-  # firewall-cmd --ipset=netlist --add-entry=192.168.1.0/24
+  > firewall-cmd --ipset=netlist --add-entry=192.168.1.0/24
   success
-  # firewall-cmd --ipset=netlist --add-entry=192.168.2.0/24
+  > firewall-cmd --ipset=netlist --add-entry=192.168.2.0/24
   success
-  # firewall-cmd --info-ipset=netlist
+  > firewall-cmd --info-ipset=netlist
   netlist
     type: hash:net
     options: 
     entries: 192.168.1.0/24 192.168.2.0/24
   ```
-* To remove the netlist ipset, type: 
+* Para borrar el netlist ipset: 
   ```bash
-  # firewall-cmd --permanent --delete-ipset=netlist
+  > firewall-cmd --permanent --delete-ipset=netlist
   success
-  # firewall-cmd --reload
+  > firewall-cmd --reload
   success
-  # firewall-cmd --get-ipsets
+  > firewall-cmd --get-ipsets
   blacklist
-```
+  ```
 
-It is also possible to download the content of an ipset from a file (--add-entries-from-file=file option) or store it enwith the name ipset in the /etc/firewalld/ipsets/ipset.xml
-or /usr/lib/firewalld/ipsets/ipset.xml files according to the following format:
-
+Es posible cargar el contenido de un ipset desde fichero (`--add-entries-from-file=file option`) o guardarlo en `/etc/firewalld/ipsets/ipset.xml`
 
 ### Reglas de firewall
 
@@ -578,7 +586,7 @@ rule
   [accept|reject|drop]
 ```
 
-Estos valores, toman la forma: `option=value`, entre reject y drop, es que el primero devuelve respuesta y el segundo tira el paquete. 
+Estos valores, toman la forma: `option=value`. La diferencia entre _reject_ y _drop_, es que el primero devuelve respuesta y el segundo tira el paquete. 
 
 Para aplicar las reglas usa un orden:
 1. Enmascaramientos / Port forwarding
@@ -601,19 +609,19 @@ De cara al exámen, cada vez que configuremos un servico, tendremos que abrirlo 
 
 #### Ejemplos
 
-1.  Rechazar 192.168.1.11 en la zona classroom
+Rechazar 192.168.1.11 en la zona classroom
   ```
   firewall-cmd --permanent --zone=classroom --add-rich-rule='rule family=ipv4 source address=192.168.0.11/32 reject'
   ```
-2. Limitar en tiempo de ejecución el servicio ftp con un límite de 2 conexiones por minuto aceptadas.
+Limitar en tiempo de ejecución el servicio ftp con un límite de 2 conexiones por minuto aceptadas.
   ```
   firewall-cmd --add-rich-rule='rule service name=ftp limit value=2/min accept'
   ```
-3. Descartar todos los paquetes del protocolo esp (ipsec).
+Descartar todos los paquetes del protocolo esp (ipsec).
   ```
   firewall-cmd --permanent --add-rich-rule='rule protocol value=esp drop'
   ```
-4. Aceptar todos los paquetes TCP, puertos 7900 a 7905, zona vnc, para la subred 192.168.1.0/24
+Aceptar todos los paquetes TCP, puertos 7900 a 7905, zona vnc, para la subred 192.168.1.0/24
   ```
   firewall-cmd --permanent --zone=vnc --add-rich-rule='rule familily=ipv4 source address=192.168.1.0/24 port port=7900-7905 protocol=tcp accept'`
   ```
@@ -623,8 +631,7 @@ De cara al exámen, cada vez que configuremos un servico, tendremos que abrirlo 
 Podemos limitar el número de entradas que podemos meter en los logs (de otra forma, tendríamos ficheros de log kilométricos), ojo que las reglas de log se evalúan primero. Suelen ser las reglas parecidas a la que hemos hecho del número de conexiones.  
 **OJO**: Las reglas de log se procesan al primero peeero, primero se procesan las "deny", y luego las "accept", ya que el control de acceso de los logs pasa a los siguientes.
 
-Entrada típica de log: `log [ previx="texto" [level=<serverity_de_rsyslog>] [limit value="<rate/duracion>"]]` donde:
-* duración puede ser:
+Entrada típica de log: `log [ previx="texto" [level=<serverity_de_rsyslog>] [limit value="<rate/duracion>"]]` donde duración puede ser:
  - 1/s -> mensaje por segundo y conexión
  - 1/m -> mensaje por minuto y conexión
  - 1/h -> mensaje por dia y conexión
@@ -632,7 +639,7 @@ Entrada típica de log: `log [ previx="texto" [level=<serverity_de_rsyslog>] [li
 
 Entrada típica de audit: `audit [limit value="<rate/duracion>"]`
 
-1. Guardar logs de ssh (3 por minuto), configuración permanente:
+Guardar logs de ssh (3 por minuto), configuración permanente:
   ```
   firewall-cmd --permanent --zone=work --add-rich-rule='rule service name="ssh" log prefix="ssh_firewall " level="notice" limit value="3/min" accept'
   ```
@@ -641,7 +648,7 @@ Entrada típica de audit: `audit [limit value="<rate/duracion>"]`
 
 #### Masquerades y port forwarding (NAT)
 
-NAT (_Netork Address Translation). Dos posibles problemas a resolver... por un lado, tenemos lo que está dentro de nuestra red (detrás de un router) que tiene salida a internet a través de ese ruta, y es el GW de nuestra red interna.
+NAT (_Netork Address Translation_). Dos posibles problemas a resolver... por un lado, tenemos lo que está dentro de nuestra red (detrás de un router) que tiene salida a internet a través de ese ruta, y es el GW de nuestra red interna.
 
 **Masquerading**: Nos permite reenviar paquetes a una ip externa a través de nuestro router, y que nuestro router nos lo devuelva. De nuestro router para fuera, se verá la IP pública de nuestro "enmascarador".
 
@@ -652,7 +659,7 @@ NAT (_Netork Address Translation). Dos posibles problemas a resolver... por un l
 5. el FW envía el paquete al 10.0.0.10
 
 **Sintaxis**: 
-* Regla básica: `firewall-cmd --permanent --zone=<one> --add-masquerade` 
+* Regla básica: `firewall-cmd --permanent --zone=<zone> --add-masquerade` 
 * Rich Rule: `firewall-cmd --permanent --zone=<zone> --add-rich-rule='rule family=ipv4 source address=192.168.0.0/24 masqeuerade'`
 
 **Port forwarding**: Voy a habilitar una serie de puertos en el FW que se corresponderán con servicios internos. El problema es... ¿cómo vuelve el tráfico?, si queremos salir vamos a necesitar además, un enmascaramiento.
@@ -665,3 +672,5 @@ _toport_ o _toaddr_ son opcionales, ¡¡¡Pero no los dos a la vez!!!
 ```
 firewall-cmd --permanent --zone=<zone> --add-rich-rule='rule family=ipv4 forward-port port=<port_number> protocol=tcp|udp [to-port=<port_number>][to-addr=<ip_addr>]'
 ```
+
+## SELinux
