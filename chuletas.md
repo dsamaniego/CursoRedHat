@@ -51,7 +51,7 @@ Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D*
 
 # Redes
 
-* **nmcli**: Cliente de NetworManager para gestionar las redes.
+* **nmcli**: Cliente de NetworkManager para gestionar las redes.
 	- `nmcli dev status`: Muestra interfaces de red
 	- `nmcli con status`: Muestra conexiones
 	- `nmcli con add <con_name> type <tipo>`: Añadir una conexión configurada por DHCP
@@ -59,8 +59,9 @@ Vamos metiendo línea a línea hasta que hayamos terminado, para salir **Ctrl+D*
 	- `nmcli con mod <con_name> {parámetros_a_modificar}`: Modificar una conexión
 * **hostname**: ver y modificar en runtime el nombre de host del sistema.  
   Durante el proceso de arranque del sistema operativo, se establece el nombre del sistema con la ejecución del comando hostname sin parámetros. Si existe el archivo `/etc/hostname` se lee de aquí, y esto significa que se configuró de forma estática. Si no existe el archivo, se consulta el `/etc/hosts` y si ahí no lo encuentra, se hará una consulta al DNS por el hostname del sistema dando la IP (resolución inversa).  
-  Si al comando hostname le pasamos un nombre, se modifica el hostname del sistema pero no es persistente, en el siguiente arranque de la máquina se ha perdido. Para hacerlo persistente, podemos modificar a mano el archivo `/etc/hostname` o usar el comando `hostanamectl`.
-* **hostnamectl**: ver y establecer de forma persistente el nombre de host y otros datos del sistema. Subcomandos relevantes:
+  Si al comando hostname le pasamos un nombre, se modifica el hostname del sistema pero no es persistente, en el siguiente arranque de la máquina se ha perdido. Para hacerlo persistente, podemos modificar a mano el archivo `/etc/hostname` o usar el comando `hostnamectl`.
+* **hostnamectl**: ver y establecer de forma persistente el nombre de host y otros datos del sistema.  
+  Subcomandos relevantes:
   - `status`: hostname del sistema y su información relevante.
   - `set-hostname nombre`: cambiamos el hostname del sistema y se escribe en `/etc/hostname`. Si le pasamos “” en el nombre, reseteamos el hostname.
   - `set-location texto`: añadimos un texto con indicaciones de donde está ubicado el sistema que será luego visible con hostnamectl status.

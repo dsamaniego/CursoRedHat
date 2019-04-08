@@ -211,6 +211,8 @@ Una dirección unicast normal e divide en dos partes, _prefijo de red_ e _interf
 * IPv6 tiene una máscara de subred estándar **/64**, la mitad de la dirección es subred y la otra mitad interfáz.
 * Típicamente, el proveedor de red asigna un prefijo más corto a una organización, **/48**, lo que deja lo que deja el resto de la red para asignar subredes (16 bits --> 65536 subredes).
 
+![](./subredes_ipv6.jpg)
+
 ## IPs comunes
 
 * **::1/128**: localhost
@@ -272,19 +274,19 @@ Nos permite dos o mas tarjetas de red (NICs) como si fueran una sola de forma qu
 * mejora del rendimiento
 
 Conceptos:
-* **teamd** Nos permite manipular la lógica
-* **kernel** Manipula los paquetes
-* **runners** Los modos en que puede estar trabajando el teaming
+* **teamd** Nos permite manipular la lógica.
+* El **kernel** manipula los paquetes del teaming.
+* **runners** Los modos en que puede estar trabajando el teaming.
   - _broadcast_: A todos los nodos del teaming.
-  - _round robin_: Distribución entre los puertos de teaming el trabajo.
+  - _round robin_: Distribución det trabajo entre los puertos.
   - _active backup_: Un puerto trabaja y el otro está de refuerzo.
   - _load balance_: distribuye la carga entre los interfaces que forman los puertos del teaming.
-  - _LACP_: Preparado para ejecutar el protocolo de agregación 802.3ad - Pone los dos puertos trabajando a la vez, con lo que doblamos el ancho de banda
+  - _LACP_: Preparado para ejecutar el protocolo de agregación 802.3ad - Pone los dos puertos trabajando a la vez, con lo que doblamos el ancho de banda.
 * **port**: cada una de las NIC que forman el team
 
 ### Reglas: ¿Cómo maneja esto NetworkManager?
 
-* Inicio del teaming no produce el reinicio automático de los puerts asignados.
+* Inicio del teaming no produce el reinicio automático de los puertos asignados.
 * Inicio de un port produce un inicio automático del teaming
 * Parada del teaming  detiene las interfaces port
 * Teaming sin ports (NIC) puede tener definida una ip estática.
@@ -305,6 +307,7 @@ Lo vamos a hacer con _NetworkManager_ y con _network_.
 ```
 nmcli con add type team con-name CNAME ifname INAME [config JSON]
 ```
+
 Donde:
 * CNAME: nombre del Teaming
 * INAME: nombre de la interfaz del Teaming
@@ -323,7 +326,8 @@ nmcli con mod CNAME ipv4.method manual
 
 #### Asginar puertos
 
-Mirar las lienas qeu viene en `man nmcli-examples` (ojo, dependiendo de las verisones, puede cambiar el ejemplo).
+Mirar las lineas que vienen en `man nmcli-examples` (ojo, dependiendo de las verisones, puede cambiar el ejemplo).
+
 ```
 $ nmcli con add type team-slave con-name Team1-slave1 ifname em1 master Team1
 $ nmcli con add type team-slave con-name Team1-slave2 ifname em2 master Team1
@@ -341,8 +345,7 @@ nmcli dev con up <conex_slave>
 
 ### Administración del Teaming
 
-
-Todos los ficheros de comunicación están en `/etc/sysconfig/network-scripts/` como en cualquier tipo de interfáz de red.
+Todos los ficheros de configuración están en `/etc/sysconfig/network-scripts/` como en cualquier tipo de interfáz de red.
 
 Variables importantes de los ficheros de configuración:
 * **DEVICETYPE**
@@ -359,11 +362,11 @@ Variables importantes de los ficheros de configuración:
 
 ## Software bridge
 
-EL bridge está basado en direcciones MAC. Está para dar servicio a NICs virtuales.
+El bridge está basado en direcciones MAC. Está para dar servicio a NICs virtuales.
 
-En virtualizadores, tendremos unas cuantas tarjetas vituales, si cambiamos la configuración de la máquina virtual, nos cambia la mac, se interpreta que es otra tarjeta y se pierden las configuraciones.
+En virtualizadores, tendremos unas cuantas tarjetas vituales, si cambiamos la configuración de la máquina virtual, nos cambia la MAC, se interpreta que es otra tarjeta y se pierden las configuraciones.
 
-NICs virtaules, tienen una tabla de MACs
+NICs virtuales, tienen una tabla de MACs
 
 ### Procedimiemto para configurar un bridge por software
 
@@ -380,7 +383,8 @@ El bridge no admite interfaces agregadas con NetworkManager, lo que implica que 
 
 Esto será util si queremos añadir un Teaming a un Bridge. (Tenemos unas cuantas máquinas virtuales con sus mac virtuales y queremos que salgan de la máquina física).
 
-En el fichero de configuración hay un campo interesante: `STP=yes`, que indica que se active el protocolo `ºSpanning Tree` para evitar que no haya bucles.
+En el fichero de configuración hay un campo interesante: `STP=yes`, que indica que se active el protocolo `Spanning Tree` para evitar que haya bucles.
+
 ### Control de bridge
 
 `brctl show`: Nos muestra los bridges software.
@@ -403,3 +407,7 @@ En el fichero de configuración hay un campo interesante: `STP=yes`, que indica 
 4. Editar `ifcfg-team0` y poner `BRIDGE=br0team`
 5. Configuraciones de ip dentro de los puertos que aparezcan en ip config se eliminan
 6. Reinicio de `systemctl restart network.service`
+
+# Seguridad con los puertos de red
+
+
