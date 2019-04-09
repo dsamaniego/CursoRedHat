@@ -690,4 +690,197 @@ Vamos a ir etiquetando los puertos. La política que estamos usando sigue siendo
 
 El paquete _selinux-policy-devel_ nos instala las ayudas de SELinux, una vez instalado, regeneramos la BD de ayuda (`mandb`) y una vez hecho esto podemos buscar con `man -k _selinux`
 
+# DNS
+
+DNS = _Domain Name Service_ Es el servicio que provee la resolución de nombres, e.d. a cada IP le asigna un nombre.
+
+* Es un sistema jerárquico basado en ficheros y sistemas en red.
+* **Registros de recursos**: Definen parares IP-Nombre.
+* La jerarquía empieza por ".", de donde parten las ramas de los diferentes dominios (net., com., co.uk., es.)
+* **Dominio DNS** recopilación de registros DNS que parten de un nombre común.
+* **Generic TLDs** Dominios de nivel superior genéricos (.com, .net, ...)
+* **Country Codes TLDs** Dominios de nivel superior de nmbres de país.
+* **Subdominio** Subarbol de  un dominio superior.
+* **Zona** Parte de un dominio de la que el servidor es la autoridad
+
+## Búsquedas DNS
+
+Nuestra máquina en `/etc/resolv.conf` hace una búsqueda en los servidores de dominio que tiene configurados (como cliente) y de ahí consulta a los servidroes DNS.
+
+**¿Cómo hago la búsqueda?**
+1. Datos autoritativos locales: Yo soy responsable de una zona de DNS, cuando me llega la consulta de DNS respondo diciendo que es una _authoritative answer_ (**aa**). Una vez resuelta la consulta la cacheo con un tiempo de vida (TTL) para futuras consultas.  
+  Ataque típtico: Autoritative Poissoning, alguien se hace pasar por un DNS válido y mete en caché lo que queramos que "piquemos"
+2. Datos no autoritativos locales en caché: se queda con el autoritativo que le ha respondido y la próxima búsqueda que necesite, tira de él.  Sigo respondiendo con un dato en local que tiene un una caché
+3. Datos no autoritativos remotos obtenidos recursivamente: los obtengo de los **aa** superiores
+
+Formato registro: `owner-name  TTL class  type	 data`
+
+### Registros
+
+* Registro A: Tipo Registro Host IPv4. (`example.com. 86400 IN	A 172.25.254.254`)
+* Registro AAAA: Tipo Registro Host IPv6. (`example.com. 86400 IN AAAA <ipv6>`)
+* Registro CNAME (Alias DNS): Un nombre que apunta a otro nombre (`www.example.com  IN  CNAME	www.redhat.com` No tienen TTL), hay que tener cuidado, porque podemos hacer bucles.
+* Registro PTR (pointer): Asigna direcciones IP a nombre de host (Resolucion DNS inversa) 
+  - IPv4: `in.addr.arpa.`, se le da la vuelta a la IP (`10.10.25.172.in.addr.arpa. IN PTR desktop0.example.com`)
+  - IPv6: `ip6.arpa.`, lo mismo que en la anterior, (le damos la vuelta a la dir IPv6)
+* Registro NS (name server): Mapea un nombre de dominio indicando quién es la autoridad para su zona. Este es obligatorio para ser una zona DNS.
+* Registro SOA (Start of Authority): Contiene informacion sobre la zona de DNS.
+  - servidor primario/maestro de la zona. (_Master namesever_)
+  - Información sobre el modo de trabajo de los esclavos
+  - contacto con admin. de la zona (_RNAME_)
+* Registro MX (mail exchange): Mapea un nombre del dominio como servidor de correo que aceptará correos para ese nombre.
+  - Viene un número de preferencia
+  - Un nombre de host
+* Registro TXT (text): Contienen datos.
+* Registro SRV (service): Se usan para localizar los servidores del dominio que proporcionan cierto servicio.
+  - `_service._protocol.domainname.`
+  - Identifica servicios
+  - Campo peso se puede usar añadido al de prioridad, a igual prioridad, el de más peso lleva más el servicio.
+
+### Host típico
+
+* **Cliente o server sencillo**:
+  - 1 o mas A ó AAAA
+  - 1 o mas PTR
+  - 1 o mas CNAME
+* **Zona DNS**:
+  - 1 SOA
+  - 1 ó mas NS
+  - 1 ó más MX
+  - Opcionales:
+    - TXT
+    - SRV
+
+## Cacheo de NameServer
+
+**NOTA**: Esto cae en el exámen de ingeniero sí o sí.
+
+Vamos a configurar DNSec para confirmar que la entidad autoritativa es quien dice ser, y después de esto, guardarlo en caché. (Si nos engañaran, se produciría un ataque _poisoning cache_). Esto es muy importante sobre todo al principio cuando no tenemos todavía entradas en nuestra resolución de nombres.
+
+DNS trabaja con el 53/UDP, para ciertos valores de la consulta usa TCP.
+
+Paquetes **unbound** (servidor DNS con DNSSec habilitado por defecto), **bind**, **dnsmasq**:
+1. Instalar unbound `yum install -y unbound`
+2. Habilitamos en el inicio y arrancamos: `systemctl start unbound && systemctl enable unbound`
+3. Tocar ficheros de configuración: `/etc/unbound/unbound.conf`
+  * `interface: 0.0.0.0`: escucha en todas las interfaces, habrá que configurarla, por defecto escucharemos en localhost
+  * `interface: <ip_servidor>`
+  *  Por defecto rechaza todo, a no ser que metamos esta directiva, define la subred: `access-control: 172.25.0.0/24 allow`:
+  * todo lo que no atendamos nosotros los resolverá la _forward-zone_:
+    ```
+    forward-zone:
+      name: "."
+      forward-addr: 172.25.254.254
+    ```
+  * Validación DNSSec, tenemos que poner lo que excluimos de la validación con _domain-insecure_
+    ```
+    domain_insecure: example.com
+    ```
+  * Instalar entidades de autorización (_trust-anchor_), para lo que tendremos que obtener el registro DNSKey para la clave de firma KSK (clave de la zona):
+    - Obtenemos la clave
+    ```
+    dig +dnssec DNSKey example.com
+    ```
+    - añadimos la línea: `trust-anchor: "example.com <ttl> IN DNSKEY x y z <clave obtenida en el paso anterior>"`
+4. Guardamos el fichero de configuración.
+5. Chequeamos la sintaxis: `unbound-checkconf`
+6. Reiniciamos: `systemctl restart unbound`
+7. Añadimos al firewall:
+  ```
+  firewall-cmd --permanent --add-service=dns
+  firewall-cmd --reload
+  ```
+
+Con esto tenemos funcionando el DNS.
+
+### Trabajar con la caché
+
+* Volcado de la caché: `unbound-control dump_cache > dump.out`
+* Carga de la caché: `unbound-control load_cache dump.out`
+* Purgado de un registro (aunque no haya superado el TTL): `unbound-control flush www.example.com`
+* Purgado de una zona: `unbound-control flush_zone example.com`
+* `dnssec-trigger`: reconfigura el fichero de unbound para que podamos obtener el caché de los servidores confiables.
+  - hay que instalar el paquete `yum install -y dnssec-trigger`
+
+## Trobleshooting
+
+Hacer consultas al DNS, herramientas
+* `host -v -t A example.com` 
+* _Domain Internet Groper_: `dig @servidor <tipo> <nombre_búsqueda>`
+* **getent** del paquete _glibc-common_
+* **gethostip** del paquete _syslinux_
+
+Puntos de fallo:
+* Dado que DNS se basa en una estructura jerárquica, hay muchos posibles puntos de fallo que investigar cuando falla algo.
+* El uso de caché va a reducir la carga del DNS y mejora su rendimiento, pero añade otro punto de fallo si no está actualizada la caché.
+
+El punto crítico en el trobleshooting del DNS es pillar enseguida el punto de fallo.
+
+### Posibles fallos
+
+1. El caché del servidor está desactualizado. 
+2. El fichero `/etc/hosts` ó `/etc/nsswitch.conf` no están bien:
+  - `getent hosts <dominio>`
+  - `gethostip <dominio>`
+3. Cliente: Fichero `resolv.conf` en la parte cliente. ¿bien configurados los DNSs?
+4. Cliente: ¿Problemas de network? ¿están abiertos los puertos 53/udp, 53/tcp?
+  - Inicialmente las comunicaciones son por udp, pero si la trama supera 512 bytes en servidores stándar ó 4096 bytes en servidores EDNS, las gestiona tcp.
+  - Nos puede dar una pista que unas veces funcione y otras no.
+  - Para comprobar que está habilitado: `dig +tcp A example.com`
+5. Usar _dig_ para preguntar a DNS.
+6. Servidor: Si hay IPs incorrectas, ver la parte de _forward-zone_ de la configuración.
+7. Comprobar el firewall 
+
+También podemos usar **tcpdump** para ver el tráfico de networking... luego se puede procesar el fichero de salida con _whireshark_.
+
+### dig
+
+Suele soltar información relacionada con la consulta que hemos hecho:
+```
+> dig @server12 A example.com
+; <<>> DiG 9.9.4-RedHat-9.9.4-14.el7 <<>> @server12 A example.com
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 33692
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;example.com.			IN	A
+
+;; ANSWER SECTION:
+example.com.		86400	IN	A	172.25.254.254
+
+;; Query time: 0 msec
+;; SERVER: 172.25.12.11#53(172.25.12.11)
+;; WHEN: Tue Apr 09 20:31:35 CEST 2019
+;; MSG SIZE  rcvd: 56
+```
+
+Nos puede devolver un código de error:
+* **SERVFAIL**: El servidor tiene un fallo procesando la petición.
+  - Debido a que el Servidor de Nombres Autoritativos no está disponible.
+  - Problemas de cortafuego
+  - Problemas de red
+  - Lo primero es saber a qué servidor no llegamos: `dig +trace `
+* **NXDOMAIN**: No encuentra los registros
+  - Alias apuntando a algo que ya no existe
+  - Se ha borrado de la caché
+* **REFUSED**: El servidor rechaza la petición del cliente
+  - El cliente no pertenece al segmento de red autorizado
+
+### Fallos de caché.
+
+* `dig A example.com`: comprobar que nos responde con el flag **aa**, esto nos da la seguridad de que no nos responde de caché.
+* Comprobar el TTL (si va disminuyendo es que estamos consultado a caché).
+* Registro borrado que sigue respondiendo: alguien ha metido `*.example.com IN A <ip>`. Esto se resuelve definiendo los registros con FQDNs.o
+* Los NS, MX, SOA estén correctamente definidos
+* Ojo a los bucles: CNAME que apunte a otro CNAME que apunta al primero.
+* Un CNAME que se queda huérfano no devuelve error.
+* PTRs, afectarán a las búsquedas inversas... y con el `netstat` nunca acaba (si no es numérico).
+  - si tiras el netstat (sin -n) no responde núnca.
+
+Una cierta protección de esto es el **_Round-robin DNS_**, que consiste a un mismo nombre darle diferentes IPs, de forma que se hace cierto balanceo de carga, cada vez responde con una IP distinta. OJO, como alguna esté mal, se saque de mantenimiento o algo así, podemos dar fallos intermitentes.
 
