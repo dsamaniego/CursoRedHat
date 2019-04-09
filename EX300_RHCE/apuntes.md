@@ -676,15 +676,15 @@ firewall-cmd --permanent --zone=<zone> --add-rich-rule='rule family=ipv4 forward
 ## SELinux
 
 Vamos a ir etiquetando los puertos. La política que estamos usando sigue siendo la _targeted_. 
-* Puerto 22/tpp: Etiqueta `ssh_port_t` --> de esta forma un servicio sin derechos a usar estos puertos, no podrá usarlo.
-* Si queremos usar un puerto no estándar, tendresmos que configurarlo en SELinux y hacer un módulo de SELinux que implemente la política.
+* Puerto 22/tcp: Etiqueta `ssh_port_t` --> de esta forma un servicio sin derechos a usar estos puertos, no podrá usarlo.
+* Si queremos usar un puerto no estándar, tendremos que configurarlo en SELinux y hacer un módulo de SELinux que implemente la política.
 
 * `semanage port -l`: listado de puertos  
   Formato: `tipo_contexto_puerto tpc|udp puertos,separados,por,comas` (una línea para TCP y otra para UDP en su caso).
 * `semanage port -l -C`: lista puertos añadidos a la política (recordemos, que para la misma política puede haber dos líneas).
-* system-config-selinux`: herramienta gráfica para manipular SELinux (se instala con _policycoreutils-gui_)
+* `system-config-selinux`: herramienta gráfica para manipular SELinux (se instala con _policycoreutils-gui_)
 * Configuracón de puertos: 
-  - Crear una nueva política: `semanage port -a -t port_label_t [tcp|udp] port_number`
+  - Crear una nueva política: `semanage port -a -t port_label_t {tcp|udp} port_number`
   - Modificar una política: `semanage port -m ...`
   - Borrar una política: `semanage port -d ...`
 
@@ -696,53 +696,53 @@ DNS = _Domain Name Service_ Es el servicio que provee la resolución de nombres,
 
 * Es un sistema jerárquico basado en ficheros y sistemas en red.
 * **Registros de recursos**: Definen parares IP-Nombre.
-* La jerarquía empieza por ".", de donde parten las ramas de los diferentes dominios (net., com., co.uk., es.)
+* La **jerarquía** empieza por "**.**", de donde parten las ramas de los diferentes dominios (net., com., co.uk., es.)
 * **Dominio DNS** recopilación de registros DNS que parten de un nombre común.
 * **Generic TLDs** Dominios de nivel superior genéricos (.com, .net, ...)
-* **Country Codes TLDs** Dominios de nivel superior de nmbres de país.
-* **Subdominio** Subarbol de  un dominio superior.
+* **Country Codes TLDs** Dominios de nivel superior de nombres de país.
+* **Subdominio** Subárbol de  un dominio superior.
 * **Zona** Parte de un dominio de la que el servidor es la autoridad
 
 ## Búsquedas DNS
 
-Nuestra máquina en `/etc/resolv.conf` hace una búsqueda en los servidores de dominio que tiene configurados (como cliente) y de ahí consulta a los servidroes DNS.
+Nuestra máquina en `/etc/resolv.conf` hace una búsqueda en los servidores de dominio que tiene configurados (como cliente) y de ahí consulta a los servidores DNS.
 
-**¿Cómo hago la búsqueda?**
-1. Datos autoritativos locales: Yo soy responsable de una zona de DNS, cuando me llega la consulta de DNS respondo diciendo que es una _authoritative answer_ (**aa**). Una vez resuelta la consulta la cacheo con un tiempo de vida (TTL) para futuras consultas.  
-  Ataque típtico: Autoritative Poissoning, alguien se hace pasar por un DNS válido y mete en caché lo que queramos que "piquemos"
-2. Datos no autoritativos locales en caché: se queda con el autoritativo que le ha respondido y la próxima búsqueda que necesite, tira de él.  Sigo respondiendo con un dato en local que tiene un una caché
-3. Datos no autoritativos remotos obtenidos recursivamente: los obtengo de los **aa** superiores
+**_¿Cómo hago la búsqueda?_**
+1. **Datos autoritativos locales**: Yo soy responsable de una zona de DNS, cuando me llega la consulta de DNS respondo diciendo que es una _authoritative answer_ (**aa**). Una vez resuelta la consulta la cacheo con un tiempo de vida (TTL) para futuras consultas.  
+  Ataque típico: _Autoritative Poissoning_, alguien se hace pasar por un DNS válido y mete en caché datos falsos para que vayamos a otros lugares falsos en vez de a los auténticos.
+2. **Datos no autoritativos locales en caché**: se queda con la respuesta del autoritativo que le ha respondido y la próxima búsqueda que necesite, tira de él porque la ha almacenado en la caché DNS. Sigo respondiendo con un dato en local que tiene un una caché.
+3. **Datos no autoritativos remotos obtenidos recursivamente**: los obtengo de los **aa** superiores.
 
 Formato registro: `owner-name  TTL class  type	 data`
 
-### Registros
+### Tipos de registros
 
-* Registro A: Tipo Registro Host IPv4. (`example.com. 86400 IN	A 172.25.254.254`)
-* Registro AAAA: Tipo Registro Host IPv6. (`example.com. 86400 IN AAAA <ipv6>`)
-* Registro CNAME (Alias DNS): Un nombre que apunta a otro nombre (`www.example.com  IN  CNAME	www.redhat.com` No tienen TTL), hay que tener cuidado, porque podemos hacer bucles.
-* Registro PTR (pointer): Asigna direcciones IP a nombre de host (Resolucion DNS inversa) 
-  - IPv4: `in.addr.arpa.`, se le da la vuelta a la IP (`10.10.25.172.in.addr.arpa. IN PTR desktop0.example.com`)
+* **A**: Tipo Registro Host IPv4. (`example.com. TTL IN	A 172.25.254.254`)
+* **AAAA**: Tipo Registro Host IPv6. (`example.com. 86400 IN AAAA <ipv6>`)
+* **CNAME** (Alias DNS): Un nombre que apunta a otro nombre (`www.example.com TTL IN  CNAME	www.redhat.com`), hay que tener cuidado, porque podemos hacer bucles.
+* **PTR** (pointer): Asigna direcciones IP a nombre de host (Resolucion DNS inversa) 
+  - IPv4: `in.addr.arpa.`, se le da la vuelta a la IP (`10.10.25.172.in.addr.arpa. TTL IN PTR desktop0.example.com`)
   - IPv6: `ip6.arpa.`, lo mismo que en la anterior, (le damos la vuelta a la dir IPv6)
-* Registro NS (name server): Mapea un nombre de dominio indicando quién es la autoridad para su zona. Este es obligatorio para ser una zona DNS.
-* Registro SOA (Start of Authority): Contiene informacion sobre la zona de DNS.
+* **NS** (name server): Mapea un nombre de dominio indicando quién es la autoridad para su zona. Este es obligatorio para ser una zona DNS.
+* **SOA** (Start of Authority): Contiene informacion sobre la zona de DNS.
   - servidor primario/maestro de la zona. (_Master namesever_)
   - Información sobre el modo de trabajo de los esclavos
   - contacto con admin. de la zona (_RNAME_)
-* Registro MX (mail exchange): Mapea un nombre del dominio como servidor de correo que aceptará correos para ese nombre.
+* **MX** (mail exchange): Mapea un nombre del dominio como servidor de correo que aceptará correos para ese nombre.
   - Viene un número de preferencia
   - Un nombre de host
-* Registro TXT (text): Contienen datos.
-* Registro SRV (service): Se usan para localizar los servidores del dominio que proporcionan cierto servicio.
-  - `_service._protocol.domainname.`
+* **TXT** (text): Contienen datos.
+* **SRV** (service): Se usan para localizar los servidores del dominio que proporcionan cierto servicio.
+  - `_service._protocol.domainname. TTL IN SRV p w 17.30.212.11`
   - Identifica servicios
   - Campo peso se puede usar añadido al de prioridad, a igual prioridad, el de más peso lleva más el servicio.
 
 ### Host típico
 
 * **Cliente o server sencillo**:
-  - 1 o mas A ó AAAA
-  - 1 o mas PTR
-  - 1 o mas CNAME
+  - 1 ó mas A ó AAAA
+  - 1 ó mas PTR
+  - 1 ó mas CNAME
 * **Zona DNS**:
   - 1 SOA
   - 1 ó mas NS
@@ -753,18 +753,18 @@ Formato registro: `owner-name  TTL class  type	 data`
 
 ## Cacheo de NameServer
 
-**NOTA**: Esto cae en el exámen de ingeniero sí o sí.
+**NOTA**: Esto cae en el exámen de ingeniero sí o sí. Cómo montamos un DNS.
 
-Vamos a configurar DNSec para confirmar que la entidad autoritativa es quien dice ser, y después de esto, guardarlo en caché. (Si nos engañaran, se produciría un ataque _poisoning cache_). Esto es muy importante sobre todo al principio cuando no tenemos todavía entradas en nuestra resolución de nombres.
+Vamos a configurar un DNS que use DNSSec para confirmar que la entidad autoritativa es quien dice ser, y después de esto, guardarlo en caché. Esto es muy importante sobre todo al principio cuando no tenemos todavía entradas en nuestra resolución de nombres.
 
-DNS trabaja con el 53/UDP, para ciertos valores de la consulta usa TCP.
+DNS trabaja con el 53/UDP, pero para ciertos tamaños de la consulta usa 53/53/53/53/53/TCP.
 
 Paquetes **unbound** (servidor DNS con DNSSec habilitado por defecto), **bind**, **dnsmasq**:
 1. Instalar unbound `yum install -y unbound`
-2. Habilitamos en el inicio y arrancamos: `systemctl start unbound && systemctl enable unbound`
+2. Habilitamos en el inicio y arrancamos: `systemctl start unbound.service && systemctl enable unbound.service`
 3. Tocar ficheros de configuración: `/etc/unbound/unbound.conf`
-  * `interface: 0.0.0.0`: escucha en todas las interfaces, habrá que configurarla, por defecto escucharemos en localhost
-  * `interface: <ip_servidor>`
+  * `interface: 0.0.0.0` por defecto: escucha en todas las interfaces, en localhost
+  * `interface: <ip_servidor>`, esto para un servidor
   *  Por defecto rechaza todo, a no ser que metamos esta directiva, define la subred: `access-control: 172.25.0.0/24 allow`:
   * todo lo que no atendamos nosotros los resolverá la _forward-zone_:
     ```
@@ -772,7 +772,7 @@ Paquetes **unbound** (servidor DNS con DNSSec habilitado por defecto), **bind**,
       name: "."
       forward-addr: 172.25.254.254
     ```
-  * Validación DNSSec, tenemos que poner lo que excluimos de la validación con _domain-insecure_
+  * Validación DNSSec, tenemos que poner lo que excluimos de la validación con _domain-insecure_:
     ```
     domain_insecure: example.com
     ```
@@ -824,7 +824,7 @@ El punto crítico en el trobleshooting del DNS es pillar enseguida el punto de f
   - `gethostip <dominio>`
 3. Cliente: Fichero `resolv.conf` en la parte cliente. ¿bien configurados los DNSs?
 4. Cliente: ¿Problemas de network? ¿están abiertos los puertos 53/udp, 53/tcp?
-  - Inicialmente las comunicaciones son por udp, pero si la trama supera 512 bytes en servidores stándar ó 4096 bytes en servidores EDNS, las gestiona tcp.
+  - Inicialmente las comunicaciones son por udp, pero si la trama supera 512 bytes en servidores estándar ó 4096 bytes en servidores EDNS, las gestiona tcp.
   - Nos puede dar una pista que unas veces funcione y otras no.
   - Para comprobar que está habilitado: `dig +tcp A example.com`
 5. Usar _dig_ para preguntar a DNS.
@@ -864,7 +864,7 @@ Nos puede devolver un código de error:
   - Debido a que el Servidor de Nombres Autoritativos no está disponible.
   - Problemas de cortafuego
   - Problemas de red
-  - Lo primero es saber a qué servidor no llegamos: `dig +trace `
+  - Lo primero es saber a qué servidor no llegamos: `dig +trace example.com`
 * **NXDOMAIN**: No encuentra los registros
   - Alias apuntando a algo que ya no existe
   - Se ha borrado de la caché
@@ -875,12 +875,14 @@ Nos puede devolver un código de error:
 
 * `dig A example.com`: comprobar que nos responde con el flag **aa**, esto nos da la seguridad de que no nos responde de caché.
 * Comprobar el TTL (si va disminuyendo es que estamos consultado a caché).
-* Registro borrado que sigue respondiendo: alguien ha metido `*.example.com IN A <ip>`. Esto se resuelve definiendo los registros con FQDNs.o
+* Registro borrado que sigue respondiendo: alguien ha metido `*.example.com IN A <ip>`. Esto se resuelve definiendo los registros con FQDNs.
 * Los NS, MX, SOA estén correctamente definidos
 * Ojo a los bucles: CNAME que apunte a otro CNAME que apunta al primero.
 * Un CNAME que se queda huérfano no devuelve error.
 * PTRs, afectarán a las búsquedas inversas... y con el `netstat` nunca acaba (si no es numérico).
   - si tiras el netstat (sin -n) no responde núnca.
 
-Una cierta protección de esto es el **_Round-robin DNS_**, que consiste a un mismo nombre darle diferentes IPs, de forma que se hace cierto balanceo de carga, cada vez responde con una IP distinta. OJO, como alguna esté mal, se saque de mantenimiento o algo así, podemos dar fallos intermitentes.
+Una cierta protección de esto es el **_Round-robin DNS_**, que consiste a un mismo nombre darle diferentes IPs, de forma que se hace cierto balanceo de carga, cada vez responde con una IP distinta.
+
+**OJO**, como alguna esté mal, se saque de mantenimiento o algo así, podemos dar fallos intermitentes.
 
