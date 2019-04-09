@@ -650,7 +650,7 @@ Guardar logs de ssh (3 por minuto), configuración permanente:
 
 NAT (_Netork Address Translation_). Dos posibles problemas a resolver... por un lado, tenemos lo que está dentro de nuestra red (detrás de un router) que tiene salida a internet a través de ese ruta, y es el GW de nuestra red interna.
 
-**Masquerading**: Nos permite reenviar paquetes a una ip externa a través de nuestro router, y que nuestro router nos lo devuelva. De nuestro router para fuera, se verá la IP pública de nuestro "enmascarador".
+**Masquerading**: Nos permite reenviar paquetes a una ip externa a través de nuestro router, y que nuestro router nos lo devuelva. De nuestro router para fuera, se verá la IP pública de nuestro "enmascarador". Sólo se puede usar con IPv4.
 
 1. Tenemos la VM1 (10.0.0.100, gw: 10.0.0.1) que quiere ir a la 2.17.39.214. 
 2. Como no está en la red tiene que salir por gw por defecto (que es la dirección del FW -y del GW). 
@@ -662,7 +662,7 @@ NAT (_Netork Address Translation_). Dos posibles problemas a resolver... por un 
 * Regla básica: `firewall-cmd --permanent --zone=<zone> --add-masquerade` 
 * Rich Rule: `firewall-cmd --permanent --zone=<zone> --add-rich-rule='rule family=ipv4 source address=192.168.0.0/24 masqeuerade'`
 
-**Port forwarding**: Voy a habilitar una serie de puertos en el FW que se corresponderán con servicios internos. El problema es... ¿cómo vuelve el tráfico?, si queremos salir vamos a necesitar además, un enmascaramiento.
+**Port forwarding**: Voy a habilitar una serie de puertos en el FW que se corresponderán con servicios internos. El problema es... ¿cómo vuelve el tráfico?, si queremos salir vamos a necesitar además, un enmascaramiento. Se usa para ocular un servidor tras otra máquinas... de cara al exterior es la máquina de fuera la que responde, pero internamente apunta al servidor interior o para proporcionar servicio en otro puerto.
 * Básico:
 ```
 firewall-cmd --permanent --zone=<zone> --add-forward-port=<port_number>:proto=<protocol>[:to-port=<port_number>][:to-addr=<ip_addr>]
@@ -674,3 +674,20 @@ firewall-cmd --permanent --zone=<zone> --add-rich-rule='rule family=ipv4 forward
 ```
 
 ## SELinux
+
+Vamos a ir etiquetando los puertos. La política que estamos usando sigue siendo la _targeted_. 
+* Puerto 22/tpp: Etiqueta `ssh_port_t` --> de esta forma un servicio sin derechos a usar estos puertos, no podrá usarlo.
+* Si queremos usar un puerto no estándar, tendresmos que configurarlo en SELinux y hacer un módulo de SELinux que implemente la política.
+
+* `semanage port -l`: listado de puertos  
+  Formato: `tipo_contexto_puerto tpc|udp puertos,separados,por,comas` (una línea para TCP y otra para UDP en su caso).
+* `semanage port -l -C`: lista puertos añadidos a la política (recordemos, que para la misma política puede haber dos líneas).
+* system-config-selinux`: herramienta gráfica para manipular SELinux (se instala con _policycoreutils-gui_)
+* Configuracón de puertos: 
+  - Crear una nueva política: `semanage port -a -t port_label_t [tcp|udp] port_number`
+  - Modificar una política: `semanage port -m ...`
+  - Borrar una política: `semanage port -d ...`
+
+El paquete _selinux-policy-devel_ nos instala las ayudas de SELinux, una vez instalado, regeneramos la BD de ayuda (`mandb`) y una vez hecho esto podemos buscar con `man -k _selinux`
+
+
