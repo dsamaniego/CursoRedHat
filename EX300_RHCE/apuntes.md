@@ -892,7 +892,7 @@ Una cierta protección de esto es el **_Round-robin DNS_**, que consiste a un mi
 
 **OJO**, como alguna esté mal, se saque de mantenimiento o algo así, podemos dar fallos intermitentes.
 
-# Configurar servidor de correo
+# Configurar el servidor de correo
 
 Vamos a usar **postfix**. Postfix se apoya en _sendmail_ (`/usr/sbin/sendmail`) que se instala cuando se instala postfix.
 
@@ -911,18 +911,16 @@ Usaremos **mutt** para ver los correos (probar).
   - Reenvía todos los correos electrónicos a SMTP
   - No acepta correos locales (sólo rebota los correos que le lleguen).
 * Puerto SMTP: 25/tcp (sin autenticación).
-  - Es el propio SMTP tiene configurado a quien permite hacer relay.
+  - El propio SMTP tiene configurado a quien permite hacer relay.
 
 El postfix, si no le indicamos lo contrario, buscará en el DNS un registro MX que se asemeje a lo que le estemos pasando.
 
-* POP3: Los mensajes los descargas para siempre
+* POP3: Los mensajes se descargan para siempre
 * IMAP: conserva los mensajes en el servidor.
 
-## Funcionameinto de SMTP
+## Funcionamiento de SMTP
 
-Incialmente enviamos a SMTP
-Vamos al DNS para encontrar el servidor de correo
-
+Incialmente enviamos a SMTP. Vamos al DNS para encontrar el servidor de correo
 
 Postfix es modular:
 * Proceso principal: master
@@ -932,21 +930,15 @@ Postfix es modular:
 
 ## Directivas
 
-Vienen en el `/etc/postfix/main.cf`. Ojo, que el fichero no se come cualquier cosa. El fichero no se editará, si no que se usará **postconf**.
-* **inet_interfaces**:
-* **myorigin**:
-* **relayhost**:
-* **mydestination**:
-* **local_transport**:
-* **mynetworks**:
+Vienen en el `/etc/postfix/main.cf`. Ojo, que el fichero no se come cualquier cosa. El fichero no se editará, sino que se usará **postconf** para tocarlo.
 
 ### inet_interfaces
 
 Controla por qué interfaces de red escucha Postfix para mensajes entrantes y salientes.
-* **loopback-only** escucha en 127.0.0.1 y en ::1 (interfáz de loopback).
+* **loopback-only** escucha en 127.0.0.1 y en ::1 (interfaz de loopback).
 * **localhost** valor por defecto
 * **all** escucha en todas las interfaces de red
-* Uno o más interfáces puede incluirse en la lista.
+* Uno o más interfaces pueden incluirse en la lista.
 
 ### myorigin
 
@@ -957,7 +949,7 @@ Si envías desde el dominio de máquina, la respuesta irá al dominio de la máq
 
 ### relayhost
 
-A qué servidor tiene que reenviar los mensajes: servidor SMPT. Entre corchetes, busca en el regisro del DNS `[smtp.example.com]`
+A qué servidor tiene que reenviar los mensajes: servidor SMTP. Entre corchetes, busca en el regisro del DNS `[smtp.example.com]`
 
 Por defecto viene vacío. Todos los email se interpretan como locales y se los queda.
 
@@ -969,17 +961,17 @@ Valor por defecto: `($myhostname, localhost@mydomain, localhost)`
 
 ### local_transport
 
-Tiene definido qué medio va a usar para hacer las entregas locales. en el caso del _null client_.
+Tiene definido qué medio va a usar para hacer las entregas locales.
 
 Valor por defecto: `local:$myhostname`
 
-Con el valor: `error: local error disabled`
+En el caso del "null client", valor: `error: local error disabled`
 
 ### mynetworks
 
 Indica las direcciones IP o lista de subredes CIDR (separadas por coma) a las que permitimos la transmisión de correos a través del servidor.
 
-* Valor por defecto: `$mynetworks.style=subnet` --> permite el relay de todas las interfaces en las que tengamos una pata (ojo si tenemos entre ellas una IP pública).
+* Valor por defecto: `$mynetworks.style=subnet`: permite el relay de todas las interfaces en las que tengamos una pata (ojo si tenemos entre ellas una IP pública).
 * Valor predeterminado: `mynetworks = 127.0.0.1/8 [::1]/128`
 
 ## Configuración de un cliente NULL
@@ -989,7 +981,6 @@ Los cambios de configuración se toman cuando se hace un restart del servicio `
 * **$** indica que es una variable
 * Para ver todas las variables: `postconf`
 * `postconf -e "setting = value"`: cambia el valor de la variable
-  - EJ: `postconf -e "myorigin = example.com"
 * `/var/log/maillog`: Se escriben los log de las interacciones.
 * `postqueue`: consulta la cola de mensajes
   - **-p**: mostrar mensajes
@@ -1005,7 +996,7 @@ Para configurar el cliente nulo en RHEL7
 ### Ejemplo de configuración.
 
 1. Vamos a configurar server12.example.com
-2. usará smpt12.example.com como servidro SMTP
+2. Usará smpt12.example.com como servidor SMTP
 3. La dirección del remitente tiene que ser: desktop12.example.com
 
 Proceso.
