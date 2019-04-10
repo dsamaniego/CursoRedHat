@@ -906,7 +906,7 @@ Usaremos **mutt** para ver los correos (probar).
 
 * **MUA (_Mail User Agent_)**: El que envía
 * **MTA (_Mail Transfer Agent_)**: Agente de transferencia de correo (recibe y envía).
-* **MSA (_Mail Sender Agent_)**: Agente de envío de correo. Escucha por el puerto 587/tcp donde sí que estás autenticado.
+* **MSA (_Mail Submission Agent_)**: Agente de envío de correo. Escucha por el puerto 587/tcp donde sí que estás autenticado.
 * **Cliente null**: Crearemos un servidor de Postfix que nos escuchará a nosotros y reenviará los correos que le pasemos nosotros, tendrá configurado un servidro SMTP al que enviará los correos.
   - Reenvía todos los correos electrónicos a SMTP
   - No acepta correos locales (sólo rebota los correos que le lleguen).
@@ -938,7 +938,7 @@ Controla por qué interfaces de red escucha Postfix para mensajes entrantes y sa
 * **loopback-only** escucha en 127.0.0.1 y en ::1 (interfaz de loopback).
 * **localhost** valor por defecto
 * **all** escucha en todas las interfaces de red
-* Uno o más interfaces pueden incluirse en la lista.
+* Uno o más interfaces pueden incluirse en la lista (separados por espacios).
 
 ### myorigin
 
@@ -963,9 +963,9 @@ Valor por defecto: `($myhostname, localhost@mydomain, localhost)`
 
 Tiene definido qué medio va a usar para hacer las entregas locales.
 
-Valor por defecto: `local:$myhostname`
+Valor por defecto: `local:$myhostname` enviará el correo entrante a la cola local de mail `/etc/spool/mail`
 
-En el caso del "null client", valor: `error: local error disabled`
+En el caso del "null client", valor: `error: local error disabled`, con esto se desactiva totalmente la entrega local.
 
 ### mynetworks
 
@@ -981,7 +981,7 @@ Los cambios de configuración se toman cuando se hace un restart del servicio `
 * **$** indica que es una variable
 * Para ver todas las variables: `postconf`
 * `postconf -e "setting = value"`: cambia el valor de la variable
-* `/var/log/maillog`: Se escriben los log de las interacciones.
+* `/var/log/maillog`: Se escriben los log de las interacciones para depuración, tambien mirar en `journalctl`
 * `postqueue`: consulta la cola de mensajes
   - **-p**: mostrar mensajes
   - **-f**: fuerza el reenvio de los mensajes en la cola (si no hacemos nada, en 1h vuelva a intentar enviarlos).
@@ -989,9 +989,11 @@ Los cambios de configuración se toman cuando se hace un restart del servicio `
 Para configurar el cliente nulo en RHEL7
 1. sendmail --> relay smtp
 2. postfix no acepta ninguna entrega local
-3. Cliente de correo (nulo) para enviar y recibir los emails.
+3. Cliente de correo para enviar y recibir emails (los usuarios).
 
 ![](./null_client.jpg)
+
+Mas información en **man 5 postconf**
 
 ### Ejemplo de configuración.
 
@@ -1007,3 +1009,8 @@ Proceso.
 5. `postconf -e "mydestination="`: No me quedo con nada
 6. `postconf -e "local_transport=error: local delivery disabled"`: No manda correos locales a nadie
 7. `systemctl restart postfix`
+
+# iSCSI
+
+Va sobre red.
+
