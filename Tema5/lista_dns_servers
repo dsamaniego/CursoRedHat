@@ -1,0 +1,49 @@
+http://ipaddress.com
+
+Free Public DNS  Servers UE
+
+UnoDNS Servers (Canadian Company)
+176.67.169.172   Primary DNS (Frankfurt) 		
+54.247.108.9 Secondary DNS (Ireland) 		
+
+FreeDNS
+37.235.1.174 (Austria)
+37.235.1.177 (Austria)
+
+DNS.WATCH (ipv6 also)
+84.200.69.80 (Germany)
+84.200.70.40 (Germany)
+2001:1608:10:25::1c04:b12f (Germany)
+2001:1608:10:25::9249:d69b (Germany)
+
+
+Free Public DNS  Servers  (US)
+
+Comodo Secure DNS
+8.26.56.26
+8.20.247.20
+
+OpenDNS (US)
+208.67.220.220
+208.67.222.222
+
+DNS Advantage (US and more)
+156.154.70.1
+156.154.71.1
+
+Norton DNS
+198.153.192.50
+198.153.194.50
+
+
+BENCHMARK performance of external DNS lookups 
+
+dnsperf -s 8.8.4.4 -p 53 -d query.txt
+
+cat query.txt
+google.com.	AAAA
+yahoo.es.	MX
+dm.unibo.it.	A
+terra.es.	A
+
+(another way: time dig @severToTest host )

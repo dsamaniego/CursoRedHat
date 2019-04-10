@@ -1,0 +1,71 @@
+EJERCICIO DNS DE CACHING EN PUERTO 63
+======================================
+
+En serverX, desplegar un servidor DNS unbound en el puerto 63 para permitir a los clientes de la red 172.25.X.0/24 las consultas.
+
+En desktopX, usando como servidor DNS a serverX, hacer las consultas de "www.redhat.com", "www.elmundo.es", "www.elpais.es" y ver
+en serverX que en la caché se almacenan estas consultas.
+
+PISAS:
+Y por cómo funciona el DNS del TIC Getafe, tengo que añadir la línea:
+	module-config: "iterator"
+y buscar la línea "val-permissive-mode: no" y dejarla a yes:
+	val-permissive-mode: yes
+
+---------------------------------------
+Solucion:
+
+Instalo el paquete unbound y lo activo
+yum install -y unbound
+systemctl enable unbound.service && systemctl start unbound.service
+
+En el fichero /etc/unbound/unbound.conf
+---------------------------------------------
+interface: 0.0.0.0
+port: 63
+access-control: 172.25.12.0/24 allow
+domain-insercuer: "example.com"
+forward-zone:
+  name: "."
+  forward-addr: 172.25.254.254
+module-config: "iterator"
+val-permissive-mode: yes
+--------------------------------------------
+Chequeo el fichero: unbound-chkconfig
+
+Reinicio: systemctl restart unbound.config
+
+Abro el firewall para el puerto 53 y el 63
+
+firewall-cmd --add-service=dns --permanent
+firewall-cmd --addport=63/udp --permanent
+firewall-cmd --addport=63/tcp --permanent
+
+Redirijo tráfico:
+firewall-cmd --add-forward-port=port=53:proto=tcp:toprot=63 --permanent
+firewall-cmd --add-forward-prot=port=53:proto=udp:toport=63 --permanent
+
+firewall-cmd --reload
+
+Modifico SELinux
+semanage port -a -t dns_port_t -p tcp 63
+semanage port -a -t dns_port_t -p udp 63
+
+Probamos: con dig...
+
+9.- Vuelco la cache y veo que no hay nada:
+  
+unbound-control dump_cache
+
+10.- Desdes desktopX, hago:
+
+dig @server0.example.com www.redhat.com
+dig @server0.example.com www.elmundo.es
+dig @server0.example.com www.elpais.es
+
+	   
+11.- En serverX, vuelco la cache y veo que las consultas están almacenadas:
+	    
+unbound-control dump_cache
+
+

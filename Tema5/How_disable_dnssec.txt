@@ -1,0 +1,30 @@
+Unbound: Howto Turn Off DNSSEC
+By W.C.A. Wijngaards, NLnet Labs, June 2010.
+
+If you find yourself having problems while DNSSEC is configured and you have carefully assessed that the problems have to do with the validation, and have assessed you are not under attack, you may want to follow one of the following steps to disable DNSSEC. Please be warned, do not take disabling DNSSEC lightly, it may make you vulnerable to certain kinds of attacks.
+
+You need administrator privileges and to restart the server to re-read the config file.
+1. Permissive mode
+
+Does not actually turn off dnssec, but stops the resolver from withholding bogus answers from clients. Resolution may be slow due to validation failures but can still proceed. Add to the unbound.conf file:
+
+server:
+        val-permissive-mode: yes
+
+2. Remove trust anchors
+
+If you remove the trust-anchor definitions from the unbound.conf file DNSSEC is not used for those domains.
+3. Disable the validator module
+
+This also disables validation for other domains, as well as DLV. In the unbound.conf file:
+
+server:
+        module-config: "iterator"
+
+4. Stop a broken chain of trust
+
+To work around a broken chain of trust use a temporary item until the proper DS or DNSKEY records are published, put in the unbound.conf file:
+
+server:
+        domain-insecure: "example"
+

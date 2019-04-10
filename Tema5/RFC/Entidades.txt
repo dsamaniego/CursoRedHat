@@ -1,0 +1,11 @@
+Originalmente:
+The Internet Engineering Task Force (IETF) 
+Internet Assigned Numbers Authority (IANA)
+
+Ahora:
+ICANN:con objeto de encargarse de cierto número de tareas realizadas con anterioridad a esa fecha por otra organización, la IANA. En particular, las funciones de gestión del sistema de dominio.
+
+Ever since the Internet became a phenomenon, ICANN has been constantly asked to approve the support for character sets in the top level of the DNS, other than the 26 letters of the basic Latin alphabet. With the approval of Internationalized Domain Names, TLDs can now include characters other than the traditional ASCII characters (A through Z).
+
+ROOT servers
+Some organizations that operate these root servers are US Army Research Lab, Internet Systems Consortium, NASA AMES Research Center, US Department of Defense, University of Maryland, Cogent, University of Southern California, Netnod, RIPE, Verisign, ICANN, and WIDE

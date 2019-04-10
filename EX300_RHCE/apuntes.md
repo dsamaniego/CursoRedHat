@@ -694,8 +694,14 @@ El paquete _selinux-policy-devel_ nos instala las ayudas de SELinux, una vez ins
 
 DNS = _Domain Name Service_ Es el servicio que provee la resolución de nombres, e.d. a cada IP le asigna un nombre.
 
-* Es un sistema jerárquico basado en ficheros y sistemas en red.
-* **Registros de recursos**: Definen parares IP-Nombre.
+Es un sistema jerárquico basado en ficheros y sistemas en red. La información en el directorio mapea nombres de red a datos que son mantenidos en entradas lógicas llamadas _registros de recursos_.
+
+## Definiciones
+
+* **Dominio (_domain_)**: Es una colección de registros que terminan en un nombre común y representa un árbol entero del espacio de nombres DNS. El mayor dominio posible es el _root domain_, "**.**".
+* **Subdominio (_subdomain_)**:
+* **Zona (_zone_)**:
+* **Registros de recursos**: Definen pares IP-Nombre.
 * La **jerarquía** empieza por "**.**", de donde parten las ramas de los diferentes dominios (net., com., co.uk., es.)
 * **Dominio DNS** recopilación de registros DNS que parten de un nombre común.
 * **Generic TLDs** Dominios de nivel superior genéricos (.com, .net, ...)
@@ -886,3 +892,127 @@ Una cierta protección de esto es el **_Round-robin DNS_**, que consiste a un mi
 
 **OJO**, como alguna esté mal, se saque de mantenimiento o algo así, podemos dar fallos intermitentes.
 
+# Configurar servidor de correo
+
+Vamos a usar **postfix**. Postfix se apoya en _sendmail_ (`/usr/sbin/sendmail`) que se instala cuando se instala postfix.
+
+¿Por qué postfix? Es el predeterminado de RHEL7 (paquete postfix).
+
+Lo que vamos a hacer es un servidor nulo (_NULL CLIENT_) que mandará los correos que reciba a un servidor SMTP.
+
+Usaremos **mutt** para ver los correos (probar).
+
+## Definiciones.
+
+* **MUA (_Mail User Agent_)**: El que envía
+* **MTA (_Mail Transfer Agent_)**: Agente de transferencia de correo (recibe y envía).
+* **MSA (_Mail Sender Agent_)**: Agente de envío de correo. Escucha por el puerto 587/tcp donde sí que estás autenticado.
+* **Cliente null**: Crearemos un servidor de Postfix que nos escuchará a nosotros y reenviará los correos que le pasemos nosotros, tendrá configurado un servidro SMTP al que enviará los correos.
+  - Reenvía todos los correos electrónicos a SMTP
+  - No acepta correos locales (sólo rebota los correos que le lleguen).
+* Puerto SMTP: 25/tcp (sin autenticación).
+  - Es el propio SMTP tiene configurado a quien permite hacer relay.
+
+El postfix, si no le indicamos lo contrario, buscará en el DNS un registro MX que se asemeje a lo que le estemos pasando.
+
+* POP3: Los mensajes los descargas para siempre
+* IMAP: conserva los mensajes en el servidor.
+
+## Funcionameinto de SMTP
+
+Incialmente enviamos a SMTP
+Vamos al DNS para encontrar el servidor de correo
+
+
+Postfix es modular:
+* Proceso principal: master
+* Ficheros de configuración:
+  - `/etc/postfix/main.cf`: directivas
+  - `/etc/postfix/master.cf`: Módulos que se levantan, para afinar el funcionamiento
+
+## Directivas
+
+Vienen en el `/etc/postfix/main.cf`. Ojo, que el fichero no se come cualquier cosa. El fichero no se editará, si no que se usará **postconf**.
+* **inet_interfaces**:
+* **myorigin**:
+* **relayhost**:
+* **mydestination**:
+* **local_transport**:
+* **mynetworks**:
+
+### inet_interfaces
+
+Controla por qué interfaces de red escucha Postfix para mensajes entrantes y salientes.
+* **loopback-only** escucha en 127.0.0.1 y en ::1 (interfáz de loopback).
+* **localhost** valor por defecto
+* **all** escucha en todas las interfaces de red
+* Uno o más interfáces puede incluirse en la lista.
+
+### myorigin
+
+Vuelve a escribir el correo electrónico enviado localmente para que parezca del dominio que pongamos en este campo.
+* Defecto: $myhostname
+
+Si envías desde el dominio de máquina, la respuesta irá al dominio de la máquina y no a la empresa.
+
+### relayhost
+
+A qué servidor tiene que reenviar los mensajes: servidor SMPT. Entre corchetes, busca en el regisro del DNS `[smtp.example.com]`
+
+Por defecto viene vacío. Todos los email se interpretan como locales y se los queda.
+
+### mydestination
+
+Dominios de los correos que me quedo para entregar localmente. Configura los dominios para los que el servidor de correo es punto final. En el caso del _null client_ rebotamos todos.
+
+Valor por defecto: `($myhostname, localhost@mydomain, localhost)`
+
+### local_transport
+
+Tiene definido qué medio va a usar para hacer las entregas locales. en el caso del _null client_.
+
+Valor por defecto: `local:$myhostname`
+
+Con el valor: `error: local error disabled`
+
+### mynetworks
+
+Indica las direcciones IP o lista de subredes CIDR (separadas por coma) a las que permitimos la transmisión de correos a través del servidor.
+
+* Valor por defecto: `$mynetworks.style=subnet` --> permite el relay de todas las interfaces en las que tengamos una pata (ojo si tenemos entre ellas una IP pública).
+* Valor predeterminado: `mynetworks = 127.0.0.1/8 [::1]/128`
+
+## Configuración de un cliente NULL
+
+Los cambios de configuración se toman cuando se hace un restart del servicio `
+* `postconf <var1> <var2> ...` para consultar las variables
+* **$** indica que es una variable
+* Para ver todas las variables: `postconf`
+* `postconf -e "setting = value"`: cambia el valor de la variable
+  - EJ: `postconf -e "myorigin = example.com"
+* `/var/log/maillog`: Se escriben los log de las interacciones.
+* `postqueue`: consulta la cola de mensajes
+  - **-p**: mostrar mensajes
+  - **-f**: fuerza el reenvio de los mensajes en la cola (si no hacemos nada, en 1h vuelva a intentar enviarlos).
+
+Para configurar el cliente nulo en RHEL7
+1. sendmail --> relay smtp
+2. postfix no acepta ninguna entrega local
+3. Cliente de correo (nulo) para enviar y recibir los emails.
+
+![](./null_client.jpg)
+
+### Ejemplo de configuración.
+
+1. Vamos a configurar server12.example.com
+2. usará smpt12.example.com como servidro SMTP
+3. La dirección del remitente tiene que ser: desktop12.example.com
+
+Proceso.
+1. `postconf -e "relayhost = [smtp12.example.com]"`
+2. `postconf -e "inet_interfaces= loopback-only"`
+3. `postconf -e "mynetworks=127.0.0.0/8 [::1]/128"`
+4. `postconf -e "myorigin=desktop12.example.com"`
+5. `postconf -e "mydestination="`: No me quedo con nada
+6. `postconf -e "local_transport=error: local delivery disabled"`: No manda correos locales a nadie
+7. `systemctl restart postfix`

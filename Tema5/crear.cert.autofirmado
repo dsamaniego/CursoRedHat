@@ -1,0 +1,22 @@
+VER SI YA HAY ALGUNO PARA ESE fqdn
+# ls /etc/pki/tls/certs
+GENERAR CLAVE PRIVADA
+# openssl genrsa -des3 -out /etc/pki/tls/private/centos7-dns.example.com.key 365
+VER
+# cd /etc/pki/tls/
+# ls certs/
+# ls private/
+# cd private/
+# less centos7-dns.example.com.key 
+GENERAR CERTIFICADO crs "Certificate Signing Request"
+# openssl req -sha256 -new -key /etc/pki/tls/private/centos7-dns.example.com.key -out /etc/pki/tls/certs/centos7-dns.example.com.crs
+VERLO
+# cd ../certs/
+# ls
+# less centos7-dns.example.com.crs 
+# openssl req -text -in centos7-dns.example.com.crs 
+AUTOFIRMAR EL CERTIFICADO CON MI CLAVE
+# openssl x509 -sha256 -req -days 365 -in /etc/pki/tls/certs/centos7-dns.example.com.crs -signkey /etc/pki/tls/private/centos7-dns.example.com.key -out /etc/pki/tls/certs/centos7-dns.example.com.crt
+VER EL CERTIFICADO YA FIRMADO
+# openssl x509 -text -in centos7-dns.example.com.crt 
+

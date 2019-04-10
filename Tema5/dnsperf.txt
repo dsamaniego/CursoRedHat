@@ -1,0 +1,107 @@
+[root@lenovo.fedora24.com ~]# cat query.txt 
+google.com.	AAAA
+yahoo.es.	MX
+dm.unibo.it.	A
+terra.es.	A
+
+[root@lenovo.fedora24.com ~]# dnsperf -s 8.8.8.8 -p 53 -d query.txt
+DNS Performance Testing Tool
+Nominum Version 2.1.0.0
+
+[Status] Command line: dnsperf -s 8.8.8.8 -p 53 -d query.txt
+[Status] Sending queries (to 8.8.8.8)
+[Status] Started at: Tue Feb 28 10:56:07 2017
+[Status] Stopping after 1 run through file
+[Status] Testing complete (end of file)
+
+Statistics:
+
+  Queries sent:         4
+  Queries completed:    4 (100.00%)
+  Queries lost:         0 (0.00%)
+
+  Response codes:       NOERROR 4 (100.00%)
+  Average packet size:  request 27, response 53
+  Run time (s):         0.053103
+  Queries per second:   75.325311
+
+  Average Latency (s):  0.022571 (min 0.004843, max 0.051905)
+  Latency StdDev (s):   0.022505
+
+
+[root@lenovo.fedora24.com ~]# dnsperf -s 8.8.4.4 -p 53 -d query.txt
+DNS Performance Testing Tool
+Nominum Version 2.1.0.0
+
+[Status] Command line: dnsperf -s 8.8.4.4 -p 53 -d query.txt
+[Status] Sending queries (to 8.8.4.4)
+[Status] Started at: Tue Feb 28 10:53:24 2017
+[Status] Stopping after 1 run through file
+[Status] Testing complete (end of file)
+
+Statistics:
+
+  Queries sent:         4
+  Queries completed:    4 (100.00%)
+  Queries lost:         0 (0.00%)
+
+  Response codes:       NOERROR 4 (100.00%)
+  Average packet size:  request 27, response 53
+  Run time (s):         0.052868
+  Queries per second:   75.660135
+
+  Average Latency (s):  0.022296 (min 0.004838, max 0.051447)
+  Latency StdDev (s):   0.022256
+
+[root@lenovo.fedora24.com ~]# dnsperf -s 176.67.169.172 -p 53 -d query.txt 
+DNS Performance Testing Tool
+Nominum Version 2.1.0.0
+
+[Status] Command line: dnsperf -s 176.67.169.172 -p 53 -d query.txt
+[Status] Sending queries (to 176.67.169.172)
+[Status] Started at: Tue Feb 28 10:57:42 2017
+[Status] Stopping after 1 run through file
+[Status] Testing complete (end of file)
+
+Statistics:
+
+  Queries sent:         4
+  Queries completed:    4 (100.00%)
+  Queries lost:         0 (0.00%)
+
+  Response codes:       NOERROR 4 (100.00%)
+  Average packet size:  request 27, response 46
+  Run time (s):         0.266798
+  Queries per second:   14.992616
+
+  Average Latency (s):  0.139058 (min 0.030974, max 0.265473)
+  Latency StdDev (s):   0.097709
+
+[root@lenovo.fedora24.com ~]# dnsperf -s 8.26.56.26 -p 53 -d query.txt
+DNS Performance Testing Tool
+Nominum Version 2.1.0.0
+
+[Status] Command line: dnsperf -s 8.26.56.26 -p 53 -d query.txt
+[Status] Sending queries (to 8.26.56.26)
+[Status] Started at: Tue Feb 28 10:55:13 2017
+[Status] Stopping after 1 run through file
+[Timeout] Query timed out: msg id 0
+[Status] Testing complete (end of file)
+
+Statistics:
+
+  Queries sent:         4
+  Queries completed:    3 (75.00%)
+  Queries lost:         1 (25.00%)
+
+  Response codes:       NOERROR 2 (66.67%), SERVFAIL 1 (33.33%)
+  Average packet size:  request 27, response 112
+  Run time (s):         1.537515
+  Queries per second:   1.951200
+
+  Average Latency (s):  0.705173 (min 0.035218, max 1.534940)
+  Latency StdDev (s):   0.762526
+
+
+
+

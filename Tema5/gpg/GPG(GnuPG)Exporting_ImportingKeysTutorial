@@ -1,0 +1,91 @@
+De la URL http://forum.codecall.net/topic/48243-gpg-gnupg-exportingimporting-keys-tutorial/#axzz29MPTuc57
+
+
+I've been working with GPG a lot lately and the need arose to export keys from one machine and import them on another machine.  I couldn't find any good, well written articles for this so I decided to write one myself.  I'll show you how to export first and then import the key on another machine.
+
+Exporting
+To export a key you'll need two keys, the public and secret key. To begin export the public key:
+
+# gpg --output <filename> --export <keyname>
+
+
+If I wanted to export the key "Jordan" to a file named myPublicKey I would execute this command:
+
+gpg --output myPublicKey --export Jordan
+
+
+After running this command you should be brought back to the prompt but a new file will exist named myPublicKey.  Now we need to export the secret key:
+
+gpg --output <filename> --export-secret-keys <keyname>
+
+
+If you wanted to export to mySecretKey from the user Jordan you would execute this command:
+
+gpg --output mySecretKey --export-secret-keys Jordan
+
+
+Now that you have both keys exported we need to import the keys on a different system.
+
+Importing
+After you have moved the keys to a new system importing is fairly easy. Let's start by importing the public key.  You issue the command
+
+gpg --import <filename>
+
+
+In our case we want to import myPublicKey so the command would be:
+
+gpg --import myPublicKey
+
+
+If this is your first import you will see output with WARNINGs:
+
+gpg: directory `/jordan/.gnupg' created
+gpg: new configuration file `/jordan/.gnupg/gpg.conf' created
+gpg: WARNING: options in `/jordan/.gnupg/gpg.conf' are not yet active during this run
+gpg: keyring `/jordan/.gnupg/secring.gpg' created
+gpg: keyring `/jordan/.gnupg/pubring.gpg' created
+gpg: /jordan/.gnupg/trustdb.gpg: trustdb created
+gpg: key EC6271C0: public key "Jordan (Jordan) <my@email.com>" imported
+gpg: Total number processed: 1
+gpg:                       imported: 1
+
+
+If this isn't the first time you've ran GPG (generated a key or imported a key) you will see output similar to this:
+
+gpg: key EC6271C0: "Jordan (Jordan) <my@email.com>" not changed
+gpg: Total number processed: 1
+gpg:                      unchanged: 1
+
+
+Now we need to import our secret key.  You import it using the same command above:
+
+gpg --import <filename>
+
+
+We will import our secret key by executing:
+
+gpg --import mySecretKey
+
+
+You should see output similar to:
+
+gpg: key EC6271C0: secret key imported
+gpg: key EC6271C0: "Jordan (Jordan) <no@email.com>" not changed
+gpg: Total number processed: 1
+gpg:                      unchanged: 1
+gpg:       secret keys read: 1
+gpg:   secret keys imported: 1
+
+
+Testing
+You can test by encrypting a file on System A and moving it to System B.  Use GPG to decrypt that file on System B. You should be asked to enter your passphrase and your file should look the same as on System A.
+
+If you have any questions don't hesitate to ask! 
+
+
+
+
+
+
+
+
