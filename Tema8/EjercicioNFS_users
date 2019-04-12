@@ -1,0 +1,31 @@
+Exercise  - Configuring an NFS server
+Reset your serverX.
+
+1. You must now create the data that you want to make accessible via NFS. Create directories
+                       /usr/local/student
+                       /usr/local/janis
+for your NFS-exported area. Place files in each directory. The permissions of 'student' and of all the files in it should be 700 and owned by student. The permissions of 'janis' and of all the files in it should be 700 and owned by janis.
+
+
+2.Start the nfs service.
+
+3. Firewall: Only 172.25.X.0/24 network can access to nfs service.
+
+
+6. Create an /etc/exports file that exports /usr/local/student and /usr/local/janis to the world unrestricted. 
+
+7. export the filesystem
+
+8. On desktopX system, create two directories /remote1 /remote2. Then mount your serverX exported filesystems
+on these directories using the rw option.
+
+9. As student, cd to /remote{1,2}. Can you cd to each directory?
+As janis, cd to /remote{1,2}. Can you cd to each directory?
+
+10.  As student, cd to /remote{1,2} and try to create a file. Can you?
+As janis, cd to /remote{1,2} and try to create a file. Can you?
+
+11. cd off of the directory and unmount it. Back on the serverX machine, change the mount options of your exported
+filesystem to include rw. Then re-export your filesystem and retry the experiment (as student and janis).
+
+13. Configure NFS to be available when your system starts.

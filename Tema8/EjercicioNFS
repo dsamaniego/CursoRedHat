@@ -1,0 +1,42 @@
+Exercise  - Configuring an NFS server
+Reset your serverX.
+
+1. On your VM, investigate what packages are related to nfs using yum list *nfs*. Can you
+ascertain which package provides basic NFS functionality? (You may need to run yum info
+on the packages)
+
+2.Check that there are no updates pending for the package you found in 1. If so, update it.
+
+3. Firewall: Only 172.25.X.0/24 network can access to nfs service.
+
+4.Start the nfs service.
+
+5. You must now create the data that you want to make accessible via NFS. Create a directory /usr/local/export
+for your NFS-exported area. Create two subdirectories in /usr/local/export, one named 'root'
+and one named 'all'. Place files in each directory. The permissions of 'all' and of all the files in it should be 777. 
+The permissions of 'root' should be 700.
+Both directories and all the files should be owned by root.
+
+6. Create an /etc/exports file that exports /usr/local/export to the world unrestricted. 
+
+7. export the filesystem
+
+8. On desktopX system, create a directory /remote. Then mount your serverX exported filesystem
+on this directory using the rw option.
+
+9. As root, cd to /remote. Can you cd to each directory?
+As student, cd to /remote. Can you cd to each directory?
+
+10.  As root, cd to 'all' and try to create a file. Can you?
+As student, cd to 'all' and try to create a file. Can you?
+
+11. cd off of the directory and unmount it. Back on the serverX machine, change the mount options of your exported
+filesystem to include rw. Then re-export your filesystem and retry the experiment (as root and student).
+
+12. Again, cd off the directory and unmount it. Back on the serverX machine, add the mount option no_root_squash
+to your filesystem and re-export it. After you remount the filesystem on the client, as root and student try to cd to the directory
+'root' and create a file in it.
+
+13. Fix your exports file so that /usr/local/export is exported read-only to all clients on your
+subnet, with root_squash and sync options. Re-export your filesystems and configure NFS
+to be available when your system starts.

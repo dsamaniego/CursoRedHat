@@ -1,0 +1,2 @@
+Script que para los usuarios regulares en el sistema, les haga usuarios Samba con la password "sambapass".
+Si un usuario ya es usuario Samba, que no haga nada.

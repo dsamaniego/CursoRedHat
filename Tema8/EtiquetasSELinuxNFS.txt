@@ -1,0 +1,15 @@
+Exportar contexto SELinux NFS RHEL > 7.3
+==========================================
+
+El servidor ya usa por defecto la versión 4.2 de NFS, por lo que ya no hay que tocar nada en /ets/sysconfig/nfs. 
+
+Hubo quejas de gente que quería que los recursos se sirvieran por defecto con la etiqueta 'nfs_t' así que hicieron un apaño. En los parámetros de exportación del recurso hay que añadir la opción 'security_label'
+
+EJ:
+echo "/nfscompartido *(rw,security_label,sec=sys)" >> /etc/exports
+
+
+En el cliente todo sigue igual, simplemente hay que forzarle a usar la version 4.2.
+
+Esto aparece en las release notes de RHEL 7.4
+

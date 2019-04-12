@@ -1,0 +1,64 @@
+
+
+
+NFS y SELinux
+
+
+- los demonios de nfs están confinados, el proceso nfsd tiene el type  unconfined "kernel_t"
+
+- las políticas de SELinux permiten a nfs compartir file por defecto
+
+- Esta ya soportado pasar labels de SELinux entre cliente y servidor
+
+- Cuando se monta en el cliente el recurso tiene por defecto el type nfs_t. Esto lo puede cambiar el cliente montando el recurso con otro contexto:
+clienteNFS ~]# mount -o context=---
+
+
+- contexts types default de nfs en servidor:
+  var_lib_nfs_t --> del dir /var/lib/nfs
+  nfsd_exec_t ---> de /usr/sbin/rpc.nfsd y de otros ejecutables y lebrerías relacionadas con nfs
+  
+
+- booleanos para el servidor (# sepolicy booleans -b booleano_name)
+  ftpd_use_nfs
+  cobbler_use_nfs
+  git_system_use_nfs
+  httpd_use_nfs
+  samba_share_nfs
+  ...
+  use_nfs_home_dirs
+  
+- Habilitar la exportación de contextos
+  EN EL SERVIDOR NFS
+  1. parar nfs-server (y nfs-secure-server si está activo)
+  2. cambiar nfs a versión 4.2 en su file de conf
+     ...
+     RPCNFSARGS="-V 4.2" 
+  3. start  nfs-server (y nfs-secure-server si procede)
+  EN EL CLIENTE NFS
+  1. montar usando la versión de nfs 4.2:
+     # mount -o v4.2 serverNFS:/recurso /mount/point
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
