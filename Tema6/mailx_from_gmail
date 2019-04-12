@@ -1,0 +1,49 @@
+The mailx or mail command in Linux is still providing service for guys like me, especially when we need to send email automatically by script. gmail is great. Now, how to use gmail’s smtp in mailx/mai
+
+
+
+~/.mozilla/firefox/yyyyyyyy.default
+
+
+CON COMANDO
+mailx -v -s "$EMAIL_SUBJECT"
+-S smtp-use-starttls
+-S ssl-verify=ignore
+-S smtp-auth=login
+-S smtp=smtp://smtp.gmail.com:587
+-S from="$FROM_EMAIL_ADDRESS($FRIENDLY_NAME)"
+-S smtp-auth-user=$FROM_EMAIL_ADDRESS
+-S smtp-auth-password=$EMAIL_ACCOUNT_PASSWORD
+-S ssl-verify=ignore
+-S nss-config-dir=~/.mozilla/firefox/yyyyyyyy.default/
+$TO_EMAIL_ADDRESS
+
+
+
+CON VARIABLES
+set smtp-use-starttls
+set nss-config-dir=~/.mozilla/firefox/yyyyyyyy.default/ (o set nss-config-dir=/etc/pki/nssdb/ )
+set ssl-verify=ignore
+set smtp=smtp://smtp.gmail.com:587
+set smtp-auth=login
+set smtp-auth-user=$FROM_EMAIL_ADDRESS
+set smtp-auth-password=$EMAIL_ACCOUNT_PASSWORD
+set from="$FROM_EMAIL_ADDRESS($FRIENDLY_NAME)"
+
+..luego
+mailx -v -s "$EMAIL_SUBJECT" $TO_EMAIL_ADDRESS
+
+
+EJEMPLO:
+cat .mailrc
+
+alias aula student@server2 student@server5 visitor@desktop5.example.com
+
+set smtp-use-starttls
+set nss-config-dir=/etc/pki/nssdb/
+set ssl-verify=ignore
+set smtp=smtp://smtp.gmail.com:587
+set smtp-auth=login
+set smtp-auth-user=xxxx.yyyyy@edustance.com
+set smtp-auth-password=WWWWWWWWWW
+set from="xxxx.yyyyy@edustance.com"

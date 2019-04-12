@@ -1,0 +1,83 @@
+1. INSTALAR SOFTWARE
+
+ [root@desktop0 ~]# yum repolist
+Loaded plugins: langpacks, search-disabled-repos
+repo id                                             repo name                        status
+epel/x86_64                                         Extra Packages for Enterprise Li  9,556
+epel-testing/x86_64                                 Extra Packages for Enterprise Li    828
+ius/x86_64                                          IUS Community Packages for Enter    198
+rhel-7-server-eus-rpms/7Server/x86_64               Red Hat Enterprise Linux 7 Serve 10,348
+rhel-7-server-optional-rpms/7Server/x86_64          Red Hat Enterprise Linux 7 Serve  8,300
+rhel-7-server-rpms/7Server/x86_64                   Red Hat Enterprise Linux 7 Serve 10,348
+rhel-7-server-rt-beta-rpms/x86_64                   Red Hat Enterprise Linux for Rea     15
+rhel-7-server-rt-rpms/7Server/x86_64                Red Hat Enterprise Linux for Rea     88
+rhel-ha-for-rhel-7-server-eus-rpms/7Server/x86_64   Red Hat Enterprise Linux High Av    203
+rhel-ha-for-rhel-7-server-rpms/7Server/x86_64       Red Hat Enterprise Linux High Av    203
+rhel-rs-for-rhel-7-server-eus-rpms/7Server/x86_64   Red Hat Enterprise Linux Resilie    236
+rhel-rs-for-rhel-7-server-rpms/7Server/x86_64       Red Hat Enterprise Linux Resilie    236
+rhel-sap-for-rhel-7-server-rpms/7Server/x86_64      Red Hat Enterprise Linux for SAP     33
+rhel-sap-hana-for-rhel-7-server-rpms/7Server/x86_64 Red Hat Enterprise Linux for SAP      2
+rhel-sjis-for-rhel-7-server-rpms/7Server/x86_64     Red Hat Enterprise Linux for S-J      0
+rhel_dvd                                            Remote classroom copy of dvd      4,305
+repolist: 44,899
+
+
+ yum install squirrelmail httpd dovecot php mod_ssl
+
+2. FIREWALL
+  firewall-cmd --add-service=http
+ firewall-cmd --add-service=https
+firewall-cmd --add-service=smtp 
+firewall-cmd --add-service=http --permanent 
+ firewall-cmd --add-service=https --add-service=http
+ firewall-cmd --add-service=https --permanent 
+firewall-cmd --add-service=smtp --permanent 
+
+3. POSTFIX
+ postconf -e 'inet_interfaces = all'
+ postconf inet_interfaces
+postconf home_mailbox
+postconf -e 'home_mailbox = Maildir/'
+systemctl restart postfix.service 
+ mail -s test1 student@desktop0.example.com
+[student@desktop0 ~]$ cat Maildir/new/1457011802.Vfd01I1814813M194324.desktop0.example.com
+
+4. DOVECOT
+    vi /etc/dovecot/dovecot.conf
+protocols = imap pop3 lmtp
+    
+    vi /etc/dovecot/conf.d/10-mail.conf 
+mail_location = maildir:~/Maildir
+
+    vi /etc/dovecot/conf.d/10-auth.conf 
+disable_plaintext_auth = yes
+auth_mechanisms = plain login
+
+
+    vi /etc/dovecot/conf.d/10-master.conf 
+#mode = 0600
+   user = postfix
+   group = postfix
+[...]
+    systemctl restart dovecot
+    systemctl enable dovecot
+    systemctl status dovecot
+
+  
+   yum install telnet
+   telnet localhost pop3
+
+
+5. SQUIRRELMAIL
+
+   cd /usr/share/squirrelmail/config/
+  ls -l
+  ./conf.pl  --> script interactivo
+
+6. HTTPD
+   
+   systemctl start httpd
+   systemctl enable httpd
+ less /etc/httpd/conf.d/squirrelmail.conf
+ 
+   

@@ -1,0 +1,58 @@
+CONFIGURAR UN RELAY POSTFIX QUE USE UNA CUENTA DE GOOGLE		Last Update: 18-Jul-2018 10:47
+========================================================
+PREREQUISITOS: Usar una cuenta de gmail que tenga en su configuración que las aplicaciones menos seguras tengan acceso:
+	En la configuración de la cuenta -> "Inicio de sesión y seguridad" -> "Aplicaciones con acceso a la cuenta" ->
+	"Permitir el acceso de aplicaciones menos seguras: SI"
+
+1.- Instalar Postfix, Mailx y cyrus-sasl-plain si no lo están ya: 
+  	
+	yum install postfix mailx cyrus-sasl-plain -y
+
+2.- Arrancar, reiniciar y activar el servicio postfix:
+
+	systemctl start postfix
+	systemctl restart postfix
+	systemctl enable postfix
+	
+3.- Añadir al final del fichero /etc/postfix/main.cf la configuración siguiente:
+	
+	myhostname = server0.example.com				<- Nombre de mi sistema, es opcional
+	relayhost = [smtp.gmail.com]:587
+	smtp_use_tls = yes
+	smtp_sasl_auth_enable = yes
+	smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+	smtp_tls_CAfile = /etc/ssl/certs/ca-bundle.crt
+	smtp_sasl_security_options = noanonymous
+	smtp_sasl_tls_security_options = noanonymous
+
+4.- Cambiar la configuración de postfix para que escuche en todos los interfaces y use el protocolo upv4:
+
+	postconf -e inet_interfaces=all
+	postconf -e inet_protocols=ipv4		(Si no se pone esto así, se ve en el maillog: connect to gmail-smtp-in.l.google.com[2001:4860:8005::1b]:25: Network is unreachable)
+
+5.- Crear el fichero /etc/postfix/sasl_passwd con los permisos, owner y grupo y contenido adecuado:
+
+	echo "[smtp.gmail.com]:587 usuario@gmail.com:password" >> /etc/postfix/sasl_passwd    <- En usuario poner el usuario de gmail y el password la password
+	postmap /etc/postfix/sasl_passwd
+	chown root:postfix /etc/postfix/sasl_passwd*
+	chmod 640 /etc/postfix/sasl_passwd*
+
+6.- Reiniciar postfix para que tenga en cuenta los cambios de los puntos 3, 4 y 5
+
+	systemctl reload postfix.service 
+
+7.- Probar el envío de un mail a una dirección de correo, p.e. mmartinez@edustance.com:
+
+	echo ” Prueba de correo” | mail -s “Prueba de correo desde server0” mmartinez@edustance.com
+
+
+NOTAS: 
+	Ver que está ocurriendo cuando envía un mail: tail -f /var/log/maillog
+	Subir el nivel de log en la configuracion de postfix con los parámetros: debug_peer_list=smtp.gmail.com y debug_peer_level=3
+	      	y hacer reload del servicio (quitar estos parámetros una vez terminado con el debug, impactan en el rendimiento del server)
+		
+
+Referencias:
+	https://yousharedsite.wordpress.com/2017/03/19/how-to-configure-postfix-relay-in-centos-7/   <- OK
+	https://devops.profitbricks.com/tutorials/configure-a-postfix-relay-through-gmail-on-centos-7/
+	https://www.centos.org/forums/viewtopic.php?t=63627

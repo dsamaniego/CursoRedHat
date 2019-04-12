@@ -1,0 +1,70 @@
+en desktopX
+
+1. INSTALAR SOFTWARE, todas las dependencias están  en el tar
+
+yum install epel-release-latest-7.noarch.rpm
+yum install  php-mbstring-5.4.16-42.el7.x86_64.rpm squirrelmail httpd dovecot php mod_ssl
+
+
+
+2. SELINUX
+
+setenforce 0
+
+2. FIREWALL
+  firewall-cmd --add-service=http
+ firewall-cmd --add-service=https
+firewall-cmd --add-service=smtp 
+firewall-cmd --add-service=http --permanent 
+ firewall-cmd --add-service=https --permanent 
+firewall-cmd --add-service=smtp --permanent 
+
+3. POSTFIX
+ postconf -e 'inet_interfaces = all'
+ postconf inet_interfaces
+postconf home_mailbox
+postconf -e 'home_mailbox = Maildir/'
+systemctl restart postfix.service 
+ mail -s test1 student@desktopX.example.com
+[student@desktopX ~]$ cat Maildir/new/1457011802.Vfd01I1814813M194324.desktop0.example.com
+
+
+4. DOVECOT
+    vi /etc/dovecot/dovecot.conf
+protocols = imap pop3 lmtp
+    
+    vi /etc/dovecot/conf.d/10-mail.conf 
+mail_location = maildir:~/Maildir
+
+    vi /etc/dovecot/conf.d/10-auth.conf 
+disable_plaintext_auth = yes
+auth_mechanisms = plain login
+
+
+    vi /etc/dovecot/conf.d/10-master.conf 
+#mode = 0600
+   user = postfix
+   group = postfix
+[...]
+    systemctl restart dovecot
+    systemctl enable dovecot
+    systemctl status dovecot
+ yum install telnet
+   telnet localhost pop3
+
+
+5. SQUIRRELMAIL
+
+   cd /usr/share/squirrelmail/config/
+  ls -l
+  ./conf.pl  --> script interactivo
+
+6. HTTPD
+   
+   systemctl start httpd
+   systemctl enable httpd
+ less /etc/httpd/conf.d/squirrelmail.conf
+
+
+
+

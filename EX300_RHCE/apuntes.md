@@ -1012,5 +1012,177 @@ Proceso.
 
 # iSCSI
 
-Va sobre red.
+iSCSI (_Internet Small Computer System Interface) es un protocolo TCP/IP para emular un bus de almacenamiento local de alto rendimiento basado en redes IP. Es un tipo de SAN (_Storage Area Network_) que provee almacenamiento de datos independiente de la localización.  
+
+SCSI tenía una suite de comandos CDB (_Command Descriptor Block_) sobre el protocolo del bus, iSCSI soporta también, (pero en este caso el protocolo es sobre IP).
+
+iSCSI a nivel productivo necesita una red dedicada para evitar latencias y degradación de rendimiento.
+
+En cuanto a seguridad, normalmente iSCSI está en los CPDs y estos ya tienen seguridad, se pude meter una capa mas de seguiridad con IPSec
+
+Topologías:
+
+![](./iscsi_topology.png)
+
+**¿Cómo hace la emulación?**
+
+Usa ficheros, volúmenes lógicos o discos independientemente del tipo de almacenamiento subyacente (_backstore_), llamados _targets_.
+
+## Operativa básica
+
+1. Instalar paquetes necesarios:
+```
+[root@server12 ~]# yum install -y targetcli
+[root@server12 ~]# yum install -y iscsi-initiator-utils
+[root@server12 /]# yum install lsscsi -y
+``` 
+2. Tendremos que meter la "clave" con la que nos logaremos al iSCSI (Nos las dará el servidor de iSCSI).
+```
+[root@server12 ~]# cat /etc/iscsi/initiatorname.iscsi 
+InitiatorName=iqn.2017-06.com.example:desktop12
+``` 
+3. Ver qué nos ofrece:
+```
+[root@server12 iscsi]# iscsiadm -m discovery -t st -p 172.25.0.11
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-1
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-2
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-3
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-4
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-5
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-6
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-7
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-8
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-9
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-10
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-11
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-12
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-13
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-14
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-15
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-16
+172.25.0.11:3260,1 iqn.2017-06.com.example:server0-17
+```
+4. Esto nos descubre los almacenamientos iSCASI provistos por el servidor 172.25.0.11, los tendremos en:
+``` 
+root@server12 iscsi]# ls -lrt /var/lib/iscsi/nodes/
+total 0
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-1
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-8
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-7
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-6
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-5
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-4
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-3
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-2
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-9
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-17
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-16
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-15
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-14
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-13
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-12
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-11
+drw-------. 3 root root 31 Apr 12 16:41 iqn.2017-06.com.example:server0-10
+``` 
+5. Atachamos el que nos toca y ya lo veremos como un disco local:
+``` 
+[root@server12 /]# iscsiadm -m node -T iqn.2017-06.com.example:server0-12 -p 172.25.0.11 -l
+[root@server12 /]# lsblk
+[root@server12 /]# lsscsi
+[15:0:0:0]   disk    LIO-ORG  block12          4.0   /dev/sda 
+
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  300M  0 disk 
+vda    253:0    0   10G  0 disk 
+└─vda1 253:1    0   10G  0 part /
+vdb    253:16   0   10G  0 disk 
+```
+
+Ahora ya podemos formatear el disco, montarlo, etc... 
+
+* OJO: si vamos a montar un disco de estos en varios equipos hay que formatearlo con un tipo de FS que nos permita concurrencia.
+* ADEMAS: El SW tiene un bus y cuando se reincia no monta bien, por lo que habrá que hacer un power off y luego inciar de nuevo.
+
+# Provision de almacenamiento basado en ficheros (NFS y Samba).
+
+## NFS (_Network File System_)
+
+Sistema para exportar ficheros por red. Transmite texto en claro a no ser que usemos Kerberos.
+
+* Necesitamos instalar **nfs-utils**
+* Ficheros de exportación: /etc/exports, pero se pueden meter en /etc/exports.d/*.exports
+* No se pude exportar algo con NFS y Samba a la vez porque usan diferentes mecanismos de bloqueo.
+* NFS no es concurrente.
+* Puerto por defecto: 2049/tcp
+
+** Exportaciones**
+
+`/ruta_a_exportar  maquinas_clientes(opciones_montaje)`
+* Se puden poner diferentes maquinas clientes separadas por espacios.
+* se puden usar comodines.
+* Se pueden usar corchetes para indicar listas.
+* Se pueden poner IPs, subredes.
+* Se pueden usar expresiones regulares.
+* Las opciones de montaje van cada una con su cliente (separadas por comas).
+  - no_root_squash: Permiten heredar permisos de root (permite escribir al root del sistema remoto como root de sistema local, lo predeterminado es que root escriba como _nfsnobody_
+  - ro
+  - rw
+  - sync/async
+
+### Crear exportaciones
+
+1. `systemctl start nfs-server && systemctl enable nfs-server`
+2. Crear ruta a exportar
+3. Editar la exportación en el fichero de exportación (`/etc/exports` ó `/etc/exports.d/*.export`)
+4. Exportar: `exportfs -r` (exporta todo lo nuevo que haya en el fichero de exportación).
+5. Abrir el firewall `firewall-cmd --permanent --add-service=nfs && firewall-cmd --reload`
+
+Para montar lo que hemos exportado (en el cliente): mount -t nfs server_nfs:/ruta_exportada /punto_montaje`
+
+### Protección de los exports (Kerberos)
+
+Por defecto, NSF no requier ningún tipo de autenticación excepto la basada en dirección IP o nombre de cliente. Para hacer mas seguro todo esto NFS da 5 opciones (ya vistas antes)
+* **none**: opción por dfecto, acceso anónimo a los ficheros. Como las escrituras son anónimas, necesitamos un permiso de SELinux que habilite escrituras anóminas (_nfsd_anon_write yes). (buscar man -k _selinux, nfsd_selinux).
+* **sys**: Basado en permisos estándar de Linux
+* Familia kerberos: (necesitamos en el cliente _nfs-secure_ y en servidor _nfs-secure-server_, necesitamos el _/etc/krb5.keytab_)
+  - **krb5**
+  - **krb5i**
+  - **krb5p**
+
+#### Configurar el servidor:
+
+1. `wget -O ruta_al_krb5.keytab` --> que sea binario, y contexto selinux (para depurar necesitamos el paquete: **krb5-workstatiton**)
+2. `systemctl start nfs-server && systemctl enable nfs-server`
+3. `systemctl start nfs-secure-server && systemctl enable nfs-secure-server`
+4. Crear ruta a exportar
+5. Editar la exportación en el fichero de exportación (`/etc/exports` ó `/etc/exports.d/*.export`)
+  - opciones de exportación: `(sec=krb5p,rw)`
+6. Exportar: `exportfs -r` (exporta todo lo nuevo que haya en el fichero de exportación).
+7. Abrir el firewall `firewall-cmd --permanent --add-service=nfs && firewall-cmd --reload`
+
+En el cliente, como ya vimos.
+
+### SELinux y NFS etiquetado
+
+Con SELinux podemos poner seguridad adicional. Por defecto lso montajes NFS llevan el contexto `nfs_t`. Este comportamiento se puede cambiar con el contexto:
+```
+[root@desktop ~]# mount -o context="system_u:object_r:public_context_rw_t:s0" server:/shared /mnt/nfsexport
+```
+
+Aparte de la opción de montaje, se puede usar la v.4.2 de exportaciones (versión en pruebas). Aquí puede exportar los contextos, para usarla:
+1. editar `/etc/sysconfig/nfs` la variable **RPCNFSDARG="-V 4.2"**
+2. Reiniciar **nfs-server** y**nfs-secure-server**
+3. En el lado cliente, hacer elmontaje con la opción `-o v4.2`:
+  ```
+  mount -o sec=krb5p,v4.2 server:/shares /mnt/directorio
+  ```
+Con esto, lo que hemos conseguido es "unificar" los selinux.
+
+#### Contextos NFS
+
+* Los booleanos `nfs_export_all_ro` y `nfs_export_all_rw` están habilitados: así el demonio NFS lee y escribe en casi todos los ficheros.
+* Contextos
+  - Para que NFS pueda leer: `public_content_t` y `nfs_t
+  - Para que NFS escriba: `public_content_rw_t` + booleano `nfsd_anon_write = yes`
+
 

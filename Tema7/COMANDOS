@@ -1,0 +1,73 @@
+ To set the scheduler or scheduler preference order for a particular storage device, edit the /sys/block/devname/queue/scheduler file, where devname is the name of the device you want to configure.
+
+# echo cfq > /sys/block/hda/queue/scheduler
+
+[root@lenovo.fedora24.com ~]#  lsblk -io KNAME,TYPE,SIZE,MODEL
+KNAME TYPE    SIZE MODEL
+sr0   rom    1024M DVD-RW DS8A8SH  
+sda   disk  698.7G HITACHI HTS54757
+sda2  part  595.8G 
+dm-1  lvm     7.8G 
+dm-2  lvm    37.3G 
+dm-0  lvm      50G 
+dm-3  lvm   500.8G 
+dm-4  crypt 500.8G 
+sda1  part    500M 
+
+[root@lenovo.fedora24.com ~]# lshw -class disk
+  *-disk                    
+       description: ATA Disk
+       product: HITACHI HTS54757
+       vendor: Hitachi
+       physical id: 0.0.0
+       bus info: scsi@0:0.0.0
+       logical name: /dev/sda
+       version: D60D
+       serial: J2140059D9AN2A
+       size: 698GiB (750GB)
+       capabilities: partitioned partitioned:dos
+       configuration: ansiversion=5 logicalsectorsize=512 sectorsize=4096 signature=4afed5bb
+  *-cdrom
+       description: DVD-RAM writer
+       product: DVD-RW DS8A8SH
+       vendor: PLDS
+       physical id: 0.0.0
+       bus info: scsi@2:0.0.0
+       logical name: /dev/cdrom
+       logical name: /dev/sr0
+       version: KL31
+       capabilities: removable audio cd-r cd-rw dvd dvd-r dvd-ram
+       configuration: ansiversion=5 status=nodisc
+
+
+^_^[yo@lenovo //14:02:20// ~]$ udisksctl info -b /dev/sda
+/org/freedesktop/UDisks2/block_devices/sda:
+  org.freedesktop.UDisks2.Block:
+    Configuration:              []
+    CryptoBackingDevice:        '/'
+    Device:                     /dev/sda
+    DeviceNumber:               2048
+    Drive:                      '/org/freedesktop/UDisks2/drives/HITACHI_HTS547575A9E384_J2140059D9AN2A'
+    HintAuto:                   false
+    HintIconName:               
+    HintIgnore:                 false
+    HintName:                   
+    HintPartitionable:          true
+    HintSymbolicIconName:       
+    HintSystem:                 true
+    Id:                         by-id-ata-HITACHI_HTS547575A9E384_J2140059D9AN2A
+    IdLabel:                    
+    IdType:                     
+    IdUUID:                     
+    IdUsage:                    
+    IdVersion:                  
+    MDRaid:                     '/'
+    MDRaidMember:               '/'
+    PreferredDevice:            /dev/sda
+    ReadOnly:                   false
+    Size:                       750156374016
+    Symlinks:                   /dev/disk/by-id/ata-HITACHI_HTS547575A9E384_J2140059D9AN2A
+                                /dev/disk/by-id/wwn-0x5000cca6dfd256d0
+                                /dev/disk/by-path/pci-0000:00:1f.2-ata-1
+  org.freedesktop.UDisks2.PartitionTable:
+    Type:         

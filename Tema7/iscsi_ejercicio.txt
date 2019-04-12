@@ -1,0 +1,3 @@
+El server iSCSI server0 (172.25.0.11) te permite utilizar un disco remoto en desktopX con el nombre de initiator: iqn.2017-06.com.example:desktopX.
+
+Crea un volumen lógico de 200Mib en ese disco y monta un file system xfs en /compartir que exportarás en rw por NFS al serverX-1.
