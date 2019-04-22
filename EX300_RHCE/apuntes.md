@@ -1185,4 +1185,95 @@ Con esto, lo que hemos conseguido es "unificar" los selinux.
   - Para que NFS pueda leer: `public_content_t` y `nfs_t
   - Para que NFS escriba: `public_content_rw_t` + booleano `nfsd_anon_write = yes`
 
+## SMB (Samba)
 
+* Protocolo _Server Message Block_. Contenido en el protocolo CIFS.
+* Vamos a usarlo con grupos de trabajo (_WORKGROUP_) que anunciará los servidores y clientes en la subred local, y los que pertenezcan a este grupo podrán acceder.
+* Cada servidor administrador administra sus propias cuentas y contraseñas locales, no vamos a usar ni AD, ni nos autenticaremos contra un controlador de dominio (DC).
+* El paquete: **samba** (servidor), **cifs-utils** + **kernel** (montajes como cliente). Si montamos un recurso con samba, no lo podemos montar con NFS.
+* Lo que compartimos es un recurso (_/SHARE)
+
+### Compartición con samba
+
+Pasos generales.
+1. Instalamos el paquete samba: `sudo yum install -y samba`
+2. Preparamos directorio con sus permisos: `mkdir /sharedpath`
+  * Damos permisos de directorio a los usuarios que vayan a acceder (los que van a hacer el montaje).
+    - El de montaje, que siempre hay que darlo, siempre será un usuario de montaje que, en principio, no será el que haga las operaciones en el FS. (debería tener `rw`).
+    - Lo normal será crear un grupo del samba al que pertenecerán los usuarios.  
+  * Revisar SELinux (dos contextos):
+    - `samba_share_t`: permite rw (si sólo va a ser un directorio de samba).
+      ```bash
+      semanage -a -t samba_share_t '/sharepath(/.*)?' && restorecon -vvFR /sharedpath`
+      ```
+    - `public_content_t` + `public_content_rw_t` + `smbd_anon_write yes`: genéricos de contenido público
+    - En caso de duda `yum install selinux_policy_devel && mandb && man -k '_selinux'` nos dará los contextos necesarios
+3. Configurar `/etc/samba/smb.conf`, comentarios "#" ó ";".
+  * Fichero organizado en secciones (entre corchetes).
+    - `[global]`: contiene una lista de parámetros que hacen referencia a la configuración del servidor en general.
+      a. `workgroup = <nombre_grupo>`, ojo, en los windows actuales existe el **WORKGROUP** en los windows antigüos **MSHOME**
+      b. `security = <valor>`: control de accesos de samba para atenticar a los clientes. Por defecto, **user**
+      c. `host allow = <hosts>`: lista de accesos: (mas info en `man 5 host_access`
+	- Hosts que tienen acceso separados por comas, espacios o tabuladores.
+	- Redes: formato 172.25.10.0/24, 172.25.10.0/255.255.255.0, 172.25.10. [2001:db8:0:1::/64]
+	- Nombres DNS
+	- Dominios
+    - `[homes]`: Recurso compartido especial, que pone a disposición de samba los directorios $HOME de los usuarios, la ruta la coge automáticamente.
+      - Para usar este recurso, tenemos que tener el booleano de SELinux **samba_enable_home_dirs** habilitado (en el servidor).
+      - Pero hay otro: **use_samba_home_dirs** que nos permite exportaciones de samba como $HOME de un usuario (en el cliente).
+    - `[printers]`: impresoras exportadas
+    - `[recurso]`: Los recursos que nosotros creemos tendrán su propia sección.
+      a. `path = /sharedpath`
+      b. `writable = yes` es equivalente a `readonly = no`: habilita la escritura. Por defecto: `writable = no`
+      c. `write list = <valores>`: lsita de grupos (@grupo) y/o usuarios separados por coma
+      d. `valid users = <valores>`: lista de acceso al recurso (si se configura)
+  * Después de tocar el fichero, podemos validarlo con `testparm`.  
+  **NOTA:** En el examen nos pueden tocar las narices en esta sección.  
+  **CONSEJO:** Ir de fuera a dentro, e.d.: ponemos en permisivo en el fichero de configuración y ajustamos los permisos de sistema del directorio y luego ya nos metemos en los permisos de las secciones de samba.
+4. Preparar los usuarios: Por defecto, la seguridad viene dada por `security = user`, tendremos que crear un usuario y darle una contraseña para samba.
+  ```bash
+  useradd -s /sbin/nologin fred
+  yum install -y samba-client
+  smbpasswd -a fred # Cambia la contraseña del usuario si existe
+  smbpasswd -x user # Elimina el usuario
+  ```
+  * Podemos ver todos los usuarios (si somos root), con `pdbedit -L`, es una herramienta más potente.
+5. Levantamos samba, (dos servicios):
+  ```bash
+  systemctl start smb nmb
+  systemctl enable smb nmb
+  ```
+6. Abrir firewall puertos: TCP-445 139 (smb) UDP: 137 138 (nmb)
+  ```bash
+  firewall-cmd --permanent --add-service=samba
+  firewall-cmd --reload
+  ```
+7. Probar el montaje (en cliente): Tenemos que tener instalado el paquete **cifs-utils**
+  * Por defecto, las opciones de montaje: `sec=ntlmssp` para que autentique las contraseñas con NTLMv2
+  * se pueden meter usuario y password como opciones de montaje o paserselo con un fichero donde tengamos usuario y contraña (y WORKGROUP).
+
+Si estamos modificando el fichero de configuración, cada cierto tiempo el demonio samba lee su fichero de configuración por lo que puede meter los cambios que estemos haciendo en ese momento.
+
+### Montaje SMB Multiuser
+
+Permisos del punto de montaje para poder usar múltiples usuarios. Tendremos:
+* 1 usuario de montaje. --> Montaje mínimo
+* Otros usuarios.
+
+Necesitamos credenciales _sec = NTLMSSP_ que nos permite multiples usuarios y múltimples passwords.
+
+Para guardar los credenciales vamos a usar **cifscreds** en una bd de credenciales (proporcionado en el paquete _cifs-utils_). Actuará sobre usuarios del sistema. Facilita tener almacenadas todos los credenciales para todos los montajes.
+
+la base de datos de credenciales, está en `/usr/bin/smbpasswd`, que está cifrado, para verlo tenemos que usar el comando `pdbedit -L`
+
+#### Servidor
+
+En la parte de servidor, tendremos que hacer los smbpasswd de cada uno de los usuarios que van a poder usar el recurso
+
+#### Cliente
+
+1. Creamos el punto de montaje: `mkdir /pto/montaje
+2. `mount -o multiuser -sec=ntlmssp,username=fred //server/share /pto/montaje`
+3. Usamos cifscreds para manejar los credenciales de samba (sin no le pasamon el parámetro `-u username` la operación se hará sobre el usuario con el que estemos logados:  
+  `cifscreds [-u username] {add|update|clear} hostmane_server_samba`   
+  `cifscreds clearall` limpia la BD par el usuario que ejecuta la orden.

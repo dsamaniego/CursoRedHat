@@ -216,3 +216,6 @@ Forma alternativa:
 
 Para pasar de runtime a permanent, usar el flag `--runtime-to-permanent`
 
+# Scripting
+
+`$?`: variable de entorno que nos devuelve el resultado del último comando (0 - correcto, no 0 - error)
