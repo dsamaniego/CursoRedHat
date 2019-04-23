@@ -1272,8 +1272,248 @@ En la parte de servidor, tendremos que hacer los smbpasswd de cada uno de los us
 
 #### Cliente
 
-1. Creamos el punto de montaje: `mkdir /pto/montaje
+1. Creamos el punto de montaje: `mkdir /pto/montaje`
 2. `mount -o multiuser -sec=ntlmssp,username=fred //server/share /pto/montaje`
 3. Usamos cifscreds para manejar los credenciales de samba (sin no le pasamon el parámetro `-u username` la operación se hará sobre el usuario con el que estemos logados:  
   `cifscreds [-u username] {add|update|clear} hostmane_server_samba`   
   `cifscreds clearall` limpia la BD par el usuario que ejecuta la orden.
+
+# MariaDB
+
+Es difícil aprobar el examen si no dominamos MariaDB.
+
+**Modelo Entidad/Relación.**  
+Tenemos entidades que van a estar relacionadas entre sí con una serie de cardinalidades.
+* Cada entidad se refleja en una tabla de la base de datos.
+* Las relaciones entre las tablas viene dada por las claves.
+* Cada fila de la tabla es un registro compuesto por campos.
+* Todo este esquema pertenece a una Base de Datos con un nombre.
+
+* **Primary Key** Atributo (o conjunto de atributos) que identifica de manera unívoca un registro en una tabla.
+* **Foreing Key** Un atributo de una tabla que hace referencia a una clave primaria de otra tabla.
+
+RHEL7 proporciona dos paquetes de BB.DD. relacionales:
+* PostgreSQL
+* MariaDB: Rama de MySQL que viene integrada en el kernel, cógido abierto gratuito.
+  - Instalación sencilla.
+* MySQL: tambien podemos instalarlo pero no viene en el repositorio estándar, sino en el _Red Hat Software Collections_.
+
+## Instalación
+
+Se instalan grupos de paquetes:
+* **@mariadb**: El servidor, compuesto de tres paquetes:
+  - _mariadb-server_: Obligatorio
+  - _mariadb-bench_: scripts de evaluación
+  - _mariadb-test_: conjunto de pruebas
+* **@mariadb-client**
+  - _mariadb_: Obligatorio
+  - _MySQL-python_: Predeterminado
+  - _mysql-connector-odbc_: Predeterminado
+  - _mysql-connector-jdbc_
+  - _libdbi-dbd-mysql_
+  - -perl-DBD-MySQL_
+* Fichero de configuración: `/etc/my.cnf`
+  - Ficheros de configuración adicionales: `/etc/my.cnf.d/*.cnf`
+
+Con instalar los grupos nos vale.
+```bash
+yum groupinstall mariadb mariadb-client -y
+systemctl start mariadb && systemctl enable mariadb
+systemctl status mariadb
+```
+
+El fichero de logs por defecto es `/var/log/mariadb/mariadb.log`
+
+Ahora mismo tenemos la base de datos "pelada", podemos securizarla ejecutando `mysql_secure_installation` de forma interactiva:
+* Pone una contraseña para las cuentas de root
+* Quita las cuentas de root accesibles desde fuera del host local
+* Quita la BD de test
+* Quita las cuenta de usuario anónimas
+
+### Networking
+
+MariaDB se puede configurar para ser accedida de forma remota, con dos arquitecturas:
+1. Conviviendo en una misma máquina el servidor de aplicacion y el servidor de base de datos.
+  - mas seguro
+  - menor rendimiento
+2. En una arquitectura cliente servidor en dos máquinas distintas.
+  - necesitamos tener comunicación entre la BD y el servidor de aplicación
+  - habrá que meter un FW, ...
+  - los usuarios tienen accesos externos
+  - habrá que abrir el puerto 3306/TCP (mejor habilitar el servicio _mysql_)
+
+### Fichero de configuración: `/etc/my.conf`
+
+* Seccion `[mysqldb]`
+  - **bind-address**: si no ponemos nada, esto escucha en todas las interfaces:  
+    `bind-address 0.0.0.0` ó `bind-address ::`  
+    De forma predeterminada, ningún usuario tieen acceso externo
+  - **skip-networking**:  
+    0 --> por defecto
+    1 --> todas las conexiones son a través del sokect (`/var/lib/mysql/mysql.sock`)
+  - **port**: puerto por el que se escucha (por defecto, 3306/TCP).
+
+Después reiniciarmos MariaDB y abrimos el firewall:
+```bash
+systemctl restart mariadb
+firewall-cmd --permanent --add-service=mysql
+firewall-cmd --reload
+```
+
+## Conexión a la base de datos
+
+```bash
+mysql -u <user> [-h <host>] -p [-P <puerto>]
+```
+
+Nos pedirá la contraseña para el usuario.
+
+Comandos de manejo de la base de datos (en principio los comandos no son _casesensitive_ pero puede que las tablas y los campos si):
+* **SHOW DATABASES;** Muestra las BB.DD.
+* **CREATE DATABASE <nombre_db>;** Crea una base de datos
+* **USE <database>;**: Se conecta al esquema (conectarse a otra base de datos).
+* **SHOW TABLES;**: Muestra las tablas de la base de datos
+* **DESCRIBE <tabla>;**: Describe los campos de la tabla.
+
+## SQL (_Structured Query Language_)
+
+Es un lenguaje para manejar datos en las BB.DD. relacionales
+
+* Operaciones CRUD (_Create, Read, Update and Delete_):
+  - `INSERT into <tabla> set (campo1, campo2, ...) values (valor1, valor2, ...);` 
+  - `SELECT <lista campos> FROM <tabla> [WHERE <condiciones>];`
+  - `UPDATE <tabla> set campo1=valor1, campo2=valor2, ... WHERE <condiciones>;`
+  - `DELETE FROM <tabla> WHERE <condiciones>;`
+
+## Administración de usuarios y permisos
+
+La gestión de usuarios la hace metiéndolos en tablas, (no hay nada almacenado como ficheros de sistemas), concretamente se meten en la tabla **USER**.
+
+Necesitamos privilegios:
+* `global CREATE USER`
+* `global INSERT`
+
+* `CREATE USER <usuario>@'<host>' IDENTIFIED BY '<password>';`
+  - Un usuario puede conectarse desde muchos host, con lo que tendrá que tener una entrada por host desde el que se vaya a conectar.
+  - Esto puede servir para hacer grano fino con los privilegios.
+* `GRANT <permisos> ON <database>.<table> TO <usuario>@'<host>';`
+  - Los permisos pueden ser:
+    - SELECT
+    - CREATE
+    - ALTER
+    - DROP
+    - ALL
+  - Para otorgar estos privilegios el usuario que los esté dando tiene que tener el privilegio _GRANT OPTION_
+  - Si ponemos `@%` le damos permisos al usuario para que acceda desde cualquier sitio.
+* `REVOKE <permisos> ON <database>.<table> FROM <usuario>@'<host>';` Quita permisos
+* Después de hacer una operación de privilegios para que surtan efecto: `FLUSH PRIVILEGES;`
+* Ver los privilegios de un usuario: `SHOW GRANTS FOR <user>@'<host>';`
+* Borrar un usuario: `DROP USER <user>@'<host>';`, ojo que no echamos al usuario si está conectado.
+
+### Privilegios
+
+Podemos fijarlos a nivel:
+* globales: Administración global del servidor.
+  - CREATE USER
+  - SHOW DATABASES
+* BB.DD: Para manejar bases de datos
+  - CREATE
+  - DELETE
+* Tablas: Operaciones CRUD
+* Columna.
+* Otros.
+
+**NOTA:** Podemos poner como paginador less, con la orden `pager less XFS`, con esto, cuando usemos el _help_ dentro de mariaDB, así podemos paginar en la ayuda y cuando salgamos, dejarlo en pantalla para que podamos copiar y pegar.
+
+## Backups
+
+Es importante tener copias de seguridad de las BB.DD. ya que suelen tener información crítica de la organización.
+
+Dos vías:
+* Backup físico: usando LVM snapshots
+* Backup lógico: Usando MariaDB
+
+### Backups lógicos
+
+Exportan la información de los registros en texto plano (`*.dump`).
+
+* Muy portables.
+* Pueden ser restaurados en otra base de datos.
+* Se pueden hacer mientras en servidor está funcionando.
+* No incluyen logs ni ficheros de configuración.
+* Son más lentas, lo que implica más tiempo de afectación del rendimiento.
+
+Privilegios para el usuario:
+* SELECT sobre todas las tablas
+* SHOW VIEW para todas las vistas
+* TRIGGER disparador (acción que se ejecuta cuando ocurre algo).
+
+```bash
+mysqldump -u root -p --all-databases > /backup/mariadb.dump
+mysqldump -u root -p inventory > /backup/inventory.dump
+```
+Opciones: 
+* `--add-drop-tables`: Borra las tablas y después los vuelve a escribir
+* `--no-data`: copia la estructura de la BB.DD. pero no los datos
+* `--lock-all-tables`: asegura la consistencia de la BB.DD. bloqueando las tablas para que no se hagan inserciones.
+* `--add-drop-databases`: hace un drop database antes de meter la BB.DD. en la restauración.
+
+La primera opción incluye la base de datos _mysql_ que puede incluir información comprometida.
+
+#### Restauración
+
+Para restaurarla:
+```bash
+mysql -u root -p inventory < /backup/inventory.dump
+```
+
+### Backups físicos
+
+* Son copias RAW, me llevo el sistema de ficheros.
+* Son mas compactos.
+* Nos llevamos todos los ficheros.
+* Son menos portables.
+* Son más rápidas.
+
+Esto sería conveniente tener replicación, para esto puede ser útil [DRBD](https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/)
+
+Para hacer una copia física:
+1. Obtenemos los directorios de datos: `mysqladmin variables |grep datadir`
+2. Comprobamos el tamaño del FS (así sabemos que tamaño necesitamos): `df /var/lib/mysql` (nos devuelve, por ejempo: `/dev/vg-mariadb/lv-mariadb y que ocupa 10G`)
+3. Tenemos que calcular el tamaño del snapshot que dependerá del tiempo que vayamos a estar haciendo los snapshots y el espacio que ocupe cada uno. El funcionamiento del snapshot es algo parecido a esto:
+  - tengo un LV con sus ficheros con su tabla de inodos
+  - creo un Snapshot asociado al LV (inicialmente está vacio), con su tabla de inodos apuntando a los bloques del FS.
+  - Si se modifica algo en un bloque, se copia el bloque original al snapshot y se modifica el bloque original.
+  - De esta forma, el snapshot contendrá sólo los bloques que han sido modificados y al restaurar el snapshot sólo tendré que coger del LV original los bloques no modificaos y del LV snapshot el bloque original antes de la modificación.
+  - El tamaño del snapshot será: num-modificaciones*tamaño-modificacion.
+4. Comprobar que tenemos espacio en el VG donde vayamos a crear el snapshot (mismo LV origen): `vgdisplay vg0|grep free`
+5. Bloqueamos la base de datos (y no cerrar la sesión):
+  ```SQL
+  mysql -u root -p
+  FLUSH TABLES WITH READ LOCK;
+  ```
+6. Hacemos el snapshot: `lvcreate -L20G -s -n mariadb-backup /dev/vg-mariadb/lv-mariadb`
+7. Desbloqueamos la base de datos (en la misma sección): 
+  ```SQL
+  UNLOCK TABLES;
+  ```
+8. Montamos el snapshot en una localización:
+  ```bash
+  mkdir /mnt/snapshot
+  mount /dev/vg-mariadb/mariadb-backup /mnt/snapshot
+  ```
+9. Ahora cogemos los ficheros de este snapshot y los copiamos como queramos y los llevamos a donde sea. (por ejemplo con un tar).
+10. Desmontamos y nos deshacemos dell snapshot:
+  ```bash
+  umount /mnt/snapshot
+  lvremove /dev/vg-mariadb/mariadb-backup
+  ```
+
+#### Restauración
+
+1. Paramos la base de datos: `systemctl stop mariadb`
+2. Borramos `rm -rf /var/lib/mysql/*`
+3. Restauramos la copia física que hicimos.
+4. Arrancamos la base de datos: `systemctl start mariadb`
+
+**NOTA:** Si tenemos el LVsnapshot podemos hacer un merge: `lvconvert --merge /dev/vg-mariadb/mariadb-backup`

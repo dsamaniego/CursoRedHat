@@ -1,0 +1,1373 @@
+region	name
+Africa	Abyssinian
+Africa	African Bush Elephant
+Africa	African Civet
+Africa	African Clawed Frog
+Africa	African Forest Elephant
+Africa	African Palm Civet
+Africa	African Penguin
+Africa	African Tree Toad
+Africa	African Wild Dog
+Africa	Ant
+Africa	Anteater
+Africa	Antelope
+Africa	Aye Aye 
+Africa	Baboon
+Africa	Bactrian Camel
+Africa	Barb
+Africa	Barn Owl
+Africa	Basenji Dog
+Africa	Bat
+Africa	Beetle
+Africa	Bird
+Africa	Black Rhinoceros
+Africa	Bongo
+Africa	Bonobo
+Africa	Buffalo
+Africa	Bumble Bee
+Africa	Butterfly
+Africa	Camel
+Africa	Caracal
+Africa	Cat
+Africa	Caterpillar
+Africa	Catfish
+Africa	Chameleon
+Africa	Cheetah
+Africa	Chimpanzee
+Africa	Cichlid
+Africa	Cockroach
+Africa	Common Buzzard
+Africa	Cow
+Africa	Crab
+Africa	Crane
+Africa	Crocodile
+Africa	Cross River Gorilla
+Africa	Dog
+Africa	Donkey
+Africa	Dormouse
+Africa	Dragonfly
+Africa	Duck
+Africa	Dwarf Crocodile
+Africa	Earwig 
+Africa	Eastern Gorilla
+Africa	Eastern Lowland Gorilla
+Africa	Egyptian Mau
+Africa	Elephant Shrew
+Africa	Fennec Fox
+Africa	Flamingo
+Africa	Fly
+Africa	Fossa
+Africa	Frog
+Africa	Gecko
+Africa	Gerbil
+Africa	Giant African Land Snail
+Africa	Giraffe
+Africa	Glass Lizard
+Africa	Glow Worm
+Africa	Golden Oriole
+Africa	Gorilla
+Africa	Grasshopper
+Africa	Green Bee-Eater
+Africa	Grey Mouse Lemur
+Africa	Guinea Fowl
+Africa	Hamster
+Africa	Hedgehog
+Africa	Heron
+Africa	Hippopotamus
+Africa	Honey Bee
+Africa	Horse
+Africa	Human
+Africa	Hummingbird
+Africa	Hyena
+Africa	Ibis
+Africa	Impala
+Africa	Indri
+Africa	Insect
+Africa	Jackal
+Africa	Kingfisher
+Africa	Kudu
+Africa	Ladybird
+Africa	Leaf-Tailed Gecko
+Africa	Lemur
+Africa	Leopard
+Africa	Leopard Tortoise
+Africa	Liger
+Africa	Lion
+Africa	Lizard
+Africa	Magpie
+Africa	Mandrill
+Africa	Mayfly
+Africa	Meerkat
+Africa	Millipede
+Africa	Mole
+Africa	Mongoose
+Africa	Mongrel
+Africa	Monitor Lizard
+Africa	Monkey
+Africa	Moorhen
+Africa	Moth
+Africa	Mountain Gorilla
+Africa	Mouse
+Africa	Mule
+Africa	Nightingale
+Africa	Okapi
+Africa	Ostrich
+Africa	Otter
+Africa	Panther
+Africa	Parrot
+Africa	Patas Monkey
+Africa	Peacock
+Africa	Pheasant
+Africa	Pika
+Africa	Puss Moth
+Africa	Pygmy Hippopotamus
+Africa	Quail
+Africa	Rabbit
+Africa	Radiated Tortoise 
+Africa	Rat
+Africa	Rattlesnake
+Africa	Rhinoceros
+Africa	River Turtle
+Africa	Robin
+Africa	Rock Hyrax
+Africa	Scorpion
+Africa	Seahorse
+Africa	Serval
+Africa	Shrimp
+Africa	Snail
+Africa	Snake
+Africa	Sparrow
+Africa	Squirrel
+Africa	Stick Insect
+Africa	Swan
+Africa	Termite
+Africa	Tortoise
+Africa	Tree Frog
+Africa	Vervet Monkey
+Africa	Vulture
+Africa	Warthog
+Africa	Wasp
+Africa	Water Buffalo
+Africa	Western Gorilla
+Africa	Western Lowland Gorilla
+Africa	White Rhinoceros
+Africa	Wildebeest
+Africa	Wolf
+Africa	Wolverine
+Africa	Woodlouse
+Africa	Woodpecker
+Africa	Yak
+Africa	Zebra
+Africa	Zebu
+Africa	Zonkey
+Africa	Zorse
+Antarctica	Adelie Penguin
+Antarctica	Centipede
+Antarctica	Chinstrap Penguin
+Antarctica	Emperor Penguin
+Antarctica	Fly
+Antarctica	Gentoo Penguin
+Antarctica	Insect
+Antarctica	King Penguin
+Antarctica	Leopard Seal
+Antarctica	Macaroni Penguin
+Antarctica	Mouse
+Antarctica	Penguin
+Antarctica	Pika
+Antarctica	Rat
+Antarctica	Rockhopper Penguin
+Antarctica	Royal Penguin
+Antarctica	Snail
+Arctic Ocean	Arctic Fox
+Arctic Ocean	Arctic Hare
+Arctic Ocean	Arctic Wolf
+Arctic Ocean	Barnacle
+Arctic Ocean	Bear
+Arctic Ocean	Bird
+Arctic Ocean	Blue Whale
+Arctic Ocean	Centipede
+Arctic Ocean	Crab
+Arctic Ocean	Cuttlefish
+Arctic Ocean	Fish
+Arctic Ocean	Flounder
+Arctic Ocean	Fly
+Arctic Ocean	Grouse
+Arctic Ocean	Humpback Whale
+Arctic Ocean	Insect
+Arctic Ocean	Jellyfish
+Arctic Ocean	Killer Whale
+Arctic Ocean	King Crab
+Arctic Ocean	Lobster
+Arctic Ocean	Pika
+Arctic Ocean	Polar Bear
+Arctic Ocean	Puffin
+Arctic Ocean	Reindeer
+Arctic Ocean	Seal
+Arctic Ocean	Shrimp
+Arctic Ocean	Snail
+Arctic Ocean	Snowy Owl
+Arctic Ocean	Sponge
+Arctic Ocean	Squid
+Arctic Ocean	Stellers Sea Cow
+Arctic Ocean	Stingray
+Arctic Ocean	Walrus
+Arctic Ocean	Woolly Mammoth
+Atlantic Ocean	Angelfish
+Atlantic Ocean	Barnacle
+Atlantic Ocean	Barracuda
+Atlantic Ocean	Basking Shark
+Atlantic Ocean	Bird
+Atlantic Ocean	Blue Whale
+Atlantic Ocean	Boston Terrier
+Atlantic Ocean	Bottle Nosed Dolphin
+Atlantic Ocean	Bull Shark
+Atlantic Ocean	Butterfly Fish
+Atlantic Ocean	Clown Fish
+Atlantic Ocean	Coral
+Atlantic Ocean	Crab
+Atlantic Ocean	Cuttlefish
+Atlantic Ocean	Dolphin
+Atlantic Ocean	Dusky Dolphin
+Atlantic Ocean	Elephant Seal
+Atlantic Ocean	Fin Whale
+Atlantic Ocean	Fish
+Atlantic Ocean	Flounder
+Atlantic Ocean	Fly
+Atlantic Ocean	Fur Seal
+Atlantic Ocean	Great White Shark
+Atlantic Ocean	Grey Seal
+Atlantic Ocean	Hammerhead Shark
+Atlantic Ocean	Hermit Crab
+Atlantic Ocean	Horseshoe Crab
+Atlantic Ocean	Humpback Whale
+Atlantic Ocean	Insect
+Atlantic Ocean	Jellyfish
+Atlantic Ocean	Killer Whale
+Atlantic Ocean	King Crab
+Atlantic Ocean	Lobster
+Atlantic Ocean	Manatee
+Atlantic Ocean	Manta Ray
+Atlantic Ocean	Minke Whale
+Atlantic Ocean	Moray Eel
+Atlantic Ocean	Nurse Shark
+Atlantic Ocean	Octopus
+Atlantic Ocean	Oyster
+Atlantic Ocean	Panther
+Atlantic Ocean	Pelican
+Atlantic Ocean	Penguin
+Atlantic Ocean	Pika
+Atlantic Ocean	Prawn
+Atlantic Ocean	Puffer Fish
+Atlantic Ocean	Rockhopper Penguin
+Atlantic Ocean	Sea Lion
+Atlantic Ocean	Sea Slug
+Atlantic Ocean	Sea Squirt
+Atlantic Ocean	Sea Turtle
+Atlantic Ocean	Sea Urchin
+Atlantic Ocean	Seahorse
+Atlantic Ocean	Seal
+Atlantic Ocean	Shrimp
+Atlantic Ocean	Snail
+Atlantic Ocean	Sperm Whale
+Atlantic Ocean	Spiny Dogfish
+Atlantic Ocean	Sponge
+Atlantic Ocean	Squid
+Atlantic Ocean	Starfish
+Atlantic Ocean	Stingray
+Atlantic Ocean	Tiger Shark
+Atlantic Ocean	Tropicbird
+Atlantic Ocean	Whale Shark
+Atlantic Ocean	Wrasse
+Australia	Ant
+Australia	Anteater
+Australia	Australian Cattle Dog
+Australia	Australian Kelpie Dog
+Australia	Australian Mist
+Australia	Australian Shepherd
+Australia	Australian Terrier
+Australia	Avocet
+Australia	Bandicoot
+Australia	Barn Owl
+Australia	Bat
+Australia	Bearded Dragon
+Australia	Beetle
+Australia	Bird
+Australia	Birds Of Paradise
+Australia	Budgerigar
+Australia	Burrowing Frog
+Australia	Butterfly
+Australia	Camel
+Australia	Cassowary
+Australia	Cat
+Australia	Caterpillar
+Australia	Catfish
+Australia	Centipede
+Australia	Chamois
+Australia	Chicken
+Australia	Cockroach
+Australia	Cow
+Australia	Crab
+Australia	Crane
+Australia	Crested Penguin
+Australia	Crocodile
+Australia	Cuscus
+Australia	Dingo
+Australia	Dog
+Australia	Donkey
+Australia	Dragonfly
+Australia	Duck
+Australia	Earwig 
+Australia	Echidna
+Australia	Emu
+Australia	Fly
+Australia	Frilled Lizard
+Australia	Frog
+Australia	Gecko
+Australia	Glow Worm
+Australia	Grasshopper
+Australia	Hamster
+Australia	Heron
+Australia	Highland Cattle
+Australia	Honey Bee
+Australia	Horse
+Australia	Human
+Australia	Hummingbird
+Australia	Ibis
+Australia	Indian Palm Squirrel
+Australia	Insect
+Australia	Kakapo
+Australia	Kangaroo
+Australia	Kiwi
+Australia	Koala
+Australia	Labradoodle
+Australia	Ladybird
+Australia	Little Penguin
+Australia	Lizard
+Australia	Magpie
+Australia	Mayfly
+Australia	Millipede
+Australia	Mongrel
+Australia	Monitor Lizard
+Australia	Monkey
+Australia	Moorhen
+Australia	Moth
+Australia	Mouse
+Australia	Numbat
+Australia	Otter
+Australia	Pademelon
+Australia	Panther
+Australia	Parrot
+Australia	Peacock
+Australia	Pheasant
+Australia	Pika
+Australia	Platypus
+Australia	Possum
+Australia	Quail
+Australia	Quokka
+Australia	Quoll
+Australia	Rat
+Australia	Rattlesnake
+Australia	River Turtle
+Australia	Robin
+Australia	Scorpion
+Australia	Sea Dragon
+Australia	Seahorse
+Australia	Sheep
+Australia	Shrimp
+Australia	Snail
+Australia	Snake
+Australia	Sparrow
+Australia	Stick Insect
+Australia	Striped Rocket Frog
+Australia	Swan
+Australia	Tasmanian Devil
+Australia	Termite
+Australia	Thorny Devil
+Australia	Tortoise
+Australia	Tuatara
+Australia	Wallaby
+Australia	Wasp
+Australia	Water Buffalo
+Australia	Water Dragon
+Australia	Wombat
+Australia	Woodlouse
+Australia	Yellow-Eyed Penguin
+Canada	Alaskan Malamute
+Canada	American Bulldog
+Canada	American Cocker Spaniel
+Canada	American Coonhound
+Canada	American Eskimo Dog
+Canada	American Foxhound
+Canada	American Pit Bull Terrier
+Canada	American Staffordshire Terrier
+Canada	American Water Spaniel
+Canada	Anatolian Shepherd Dog
+Canada	Ant
+Canada	Australian Shepherd
+Canada	Balinese
+Canada	Bat
+Canada	Bear
+Canada	Beaver
+Canada	Beetle
+Canada	Bird
+Canada	Bison
+Canada	Black Bear
+Canada	Black Widow Spider
+Canada	Blue Lacy Dog
+Canada	Bluetick Coonhound
+Canada	Bobcat
+Canada	Bombay
+Canada	Boston Terrier
+Canada	Boykin Spaniel
+Canada	Brown Bear
+Canada	Bumble Bee
+Canada	Butterfly
+Canada	Carolina Dog
+Canada	Cat
+Canada	Caterpillar
+Canada	Catfish
+Canada	Chesapeake Bay Retriever
+Canada	Chicken
+Canada	Chinook
+Canada	Chipmunk
+Canada	Cockroach
+Canada	Common Loon
+Canada	Cougar
+Canada	Cow
+Canada	Coyote
+Canada	Crane
+Canada	Deer
+Canada	Dog
+Canada	Dragonfly
+Canada	Duck
+Canada	Eagle
+Canada	Earwig 
+Canada	English Shepherd
+Canada	Eskimo Dog
+Canada	Fly
+Canada	Fox
+Canada	Glass Lizard
+Canada	Glow Worm
+Canada	Goose
+Canada	Gopher
+Canada	Grasshopper
+Canada	Grizzly Bear
+Canada	Hamster
+Canada	Hare
+Canada	Heron
+Canada	Highland Cattle
+Canada	Himalayan
+Canada	Honey Bee
+Canada	Horse
+Canada	Human
+Canada	Insect
+Canada	Javanese
+Canada	Kingfisher
+Canada	Ladybird
+Canada	Lemming
+Canada	Lizard
+Canada	Long-Eared Owl
+Canada	Lynx
+Canada	Maine Coon
+Canada	Millipede
+Canada	Mole
+Canada	Mongrel
+Canada	Moose
+Canada	Moth
+Canada	Mountain Lion
+Canada	Mouse
+Canada	Mule
+Canada	Newfoundland
+Canada	Opossum
+Canada	Otter
+Canada	Panther
+Canada	Pheasant
+Canada	Pika
+Canada	Pike
+Canada	Polar Bear
+Canada	Puffin
+Canada	Puma
+Canada	Quail
+Canada	Raccoon
+Canada	Ragdoll
+Canada	Rat
+Canada	Reindeer
+Canada	River Turtle
+Canada	Salamander
+Canada	Shrimp
+Canada	Siberian Husky
+Canada	Skunk
+Canada	Snail
+Canada	Snake
+Canada	Snapping Turtle
+Canada	Snowshoe
+Canada	Snowy Owl
+Canada	Somali
+Canada	Spadefoot Toad
+Canada	Sparrow
+Canada	Squirrel
+Canada	Stick Insect
+Canada	Stoat
+Canada	Swan
+Canada	Tiffany
+Canada	Vulture
+Canada	Wasp
+Canada	Weasel
+Canada	Wolf
+Canada	Woodlouse
+Canada	Woodpecker
+Eurasia-Asia	Afghan Hound
+Eurasia-Asia	Ainu Dog
+Eurasia-Asia	Akita
+Eurasia-Asia	Alligator
+Eurasia-Asia	Ant
+Eurasia-Asia	Anteater
+Eurasia-Asia	Antelope
+Eurasia-Asia	Asian Elephant
+Eurasia-Asia	Asian Giant Hornet
+Eurasia-Asia	Asian Palm Civet
+Eurasia-Asia	Asiatic Black Bear
+Eurasia-Asia	Australian Shepherd
+Eurasia-Asia	Bactrian Camel
+Eurasia-Asia	Banded Palm Civet
+Eurasia-Asia	Barb
+Eurasia-Asia	Barn Owl
+Eurasia-Asia	Bat
+Eurasia-Asia	Bear
+Eurasia-Asia	Beetle
+Eurasia-Asia	Bengal Tiger
+Eurasia-Asia	Binturong
+Eurasia-Asia	Bird
+Eurasia-Asia	Birds Of Paradise
+Eurasia-Asia	Birman
+Eurasia-Asia	Black Russian Terrier
+Eurasia-Asia	Bornean Orang-utan
+Eurasia-Asia	Borneo Elephant
+Eurasia-Asia	Brown Bear
+Eurasia-Asia	Bumble Bee
+Eurasia-Asia	Burmese
+Eurasia-Asia	Butterfly
+Eurasia-Asia	Camel
+Eurasia-Asia	Canaan Dog
+Eurasia-Asia	Caracal
+Eurasia-Asia	Cat
+Eurasia-Asia	Caterpillar
+Eurasia-Asia	Catfish
+Eurasia-Asia	Centipede
+Eurasia-Asia	Chameleon
+Eurasia-Asia	Chicken
+Eurasia-Asia	Chinese Crested Dog
+Eurasia-Asia	Chow Chow
+Eurasia-Asia	Clouded Leopard
+Eurasia-Asia	Cockroach
+Eurasia-Asia	Common Buzzard
+Eurasia-Asia	Cow
+Eurasia-Asia	Crab
+Eurasia-Asia	Crab-Eating Macaque
+Eurasia-Asia	Crane
+Eurasia-Asia	Crocodile
+Eurasia-Asia	Dalmatian
+Eurasia-Asia	Deer
+Eurasia-Asia	Dhole
+Eurasia-Asia	Dog
+Eurasia-Asia	Donkey
+Eurasia-Asia	Dormouse
+Eurasia-Asia	Dragonfly
+Eurasia-Asia	Duck
+Eurasia-Asia	Eagle
+Eurasia-Asia	Earwig 
+Eurasia-Asia	Elephant
+Eurasia-Asia	Falcon
+Eurasia-Asia	Fire-Bellied Toad
+Eurasia-Asia	Fishing Cat
+Eurasia-Asia	Fly
+Eurasia-Asia	Flying Squirrel
+Eurasia-Asia	Fox
+Eurasia-Asia	Frilled Lizard
+Eurasia-Asia	Frog
+Eurasia-Asia	Gecko
+Eurasia-Asia	Gerbil
+Eurasia-Asia	Gharial
+Eurasia-Asia	Giant African Land Snail
+Eurasia-Asia	Giant Panda Bear
+Eurasia-Asia	Gibbon
+Eurasia-Asia	Glass Lizard
+Eurasia-Asia	Glow Worm
+Eurasia-Asia	Goat
+Eurasia-Asia	Golden Oriole
+Eurasia-Asia	Goose
+Eurasia-Asia	Grasshopper
+Eurasia-Asia	Green Bee-Eater
+Eurasia-Asia	Hamster
+Eurasia-Asia	Hedgehog
+Eurasia-Asia	Heron
+Eurasia-Asia	Honey Bee
+Eurasia-Asia	Horse
+Eurasia-Asia	Human
+Eurasia-Asia	Hummingbird
+Eurasia-Asia	Hyena
+Eurasia-Asia	Ibis
+Eurasia-Asia	Indian Elephant
+Eurasia-Asia	Indian Palm Squirrel
+Eurasia-Asia	Indian Rhinoceros
+Eurasia-Asia	Indian Star Tortoise
+Eurasia-Asia	Indochinese Tiger
+Eurasia-Asia	Insect
+Eurasia-Asia	Jackal
+Eurasia-Asia	Japanese Chin
+Eurasia-Asia	Japanese Macaque
+Eurasia-Asia	Javan Rhinoceros
+Eurasia-Asia	Kingfisher
+Eurasia-Asia	Komodo Dragon
+Eurasia-Asia	Ladybird
+Eurasia-Asia	Leopard
+Eurasia-Asia	Leopard Cat
+Eurasia-Asia	Liger
+Eurasia-Asia	Lizard
+Eurasia-Asia	Llama
+Eurasia-Asia	Long-Eared Owl
+Eurasia-Asia	Lynx
+Eurasia-Asia	Magpie
+Eurasia-Asia	Malayan Civet
+Eurasia-Asia	Malayan Tiger
+Eurasia-Asia	Markhor
+Eurasia-Asia	Masked Palm Civet
+Eurasia-Asia	Mayfly
+Eurasia-Asia	Millipede
+Eurasia-Asia	Mole
+Eurasia-Asia	Mongoose
+Eurasia-Asia	Mongrel
+Eurasia-Asia	Monitor Lizard
+Eurasia-Asia	Monkey
+Eurasia-Asia	Moorhen
+Eurasia-Asia	Moth
+Eurasia-Asia	Mouse
+Eurasia-Asia	Mule
+Eurasia-Asia	Neanderthal
+Eurasia-Asia	Newt
+Eurasia-Asia	Nightingale
+Eurasia-Asia	Orang-utan
+Eurasia-Asia	Otter
+Eurasia-Asia	Panther
+Eurasia-Asia	Parrot
+Eurasia-Asia	Peacock
+Eurasia-Asia	Pekingese
+Eurasia-Asia	Persian
+Eurasia-Asia	Pheasant
+Eurasia-Asia	Pig
+Eurasia-Asia	Pika
+Eurasia-Asia	Pond Skater
+Eurasia-Asia	Porcupine
+Eurasia-Asia	Proboscis Monkey
+Eurasia-Asia	Puffin
+Eurasia-Asia	Pug
+Eurasia-Asia	Quail
+Eurasia-Asia	Rabbit
+Eurasia-Asia	Raccoon Dog
+Eurasia-Asia	Rat
+Eurasia-Asia	Rattlesnake
+Eurasia-Asia	Red Panda
+Eurasia-Asia	Reindeer
+Eurasia-Asia	Rhinoceros
+Eurasia-Asia	River Dolphin
+Eurasia-Asia	River Turtle
+Eurasia-Asia	Robin
+Eurasia-Asia	Russian Blue
+Eurasia-Asia	Salamander
+Eurasia-Asia	Saola
+Eurasia-Asia	Scorpion
+Eurasia-Asia	Seahorse
+Eurasia-Asia	Sheep
+Eurasia-Asia	Shih Tzu
+Eurasia-Asia	Shrimp
+Eurasia-Asia	Siamese
+Eurasia-Asia	Siamese Fighting Fish
+Eurasia-Asia	Siberian
+Eurasia-Asia	Siberian Tiger
+Eurasia-Asia	Skunk
+Eurasia-Asia	Slow Worm
+Eurasia-Asia	Snail
+Eurasia-Asia	Snake
+Eurasia-Asia	Snowy Owl
+Eurasia-Asia	South China Tiger
+Eurasia-Asia	Sparrow
+Eurasia-Asia	Squirrel
+Eurasia-Asia	Sri Lankan Elephant
+Eurasia-Asia	Stick Insect
+Eurasia-Asia	Stoat
+Eurasia-Asia	Sumatran Elephant
+Eurasia-Asia	Sumatran Orang-utan
+Eurasia-Asia	Sumatran Rhinoceros
+Eurasia-Asia	Sumatran Tiger
+Eurasia-Asia	Sun Bear
+Eurasia-Asia	Swan
+Eurasia-Asia	Tapir
+Eurasia-Asia	Tarsier
+Eurasia-Asia	Tawny Owl
+Eurasia-Asia	Termite
+Eurasia-Asia	Tibetan Mastiff
+Eurasia-Asia	Tiger
+Eurasia-Asia	Tortoise
+Eurasia-Asia	Tree Frog
+Eurasia-Asia	Uguisu
+Eurasia-Asia	Vulture
+Eurasia-Asia	Wasp
+Eurasia-Asia	Water Buffalo
+Eurasia-Asia	Water Dragon
+Eurasia-Asia	Weasel
+Eurasia-Asia	White Tiger
+Eurasia-Asia	Wild Boar
+Eurasia-Asia	Wolf
+Eurasia-Asia	Woodlouse
+Eurasia-Asia	Woodpecker
+Eurasia-Asia	Yak
+Eurasia-Asia	Zebu
+Europe	Affenpinscher
+Europe	Airedale Terrier 
+Europe	Akbash
+Europe	Alpine Dachsbracke
+Europe	Ant
+Europe	Appenzeller Dog
+Europe	Avocet
+Europe	Badger
+Europe	Barn Owl
+Europe	Basset Hound
+Europe	Bat
+Europe	Bavarian Mountain Hound
+Europe	Beagle
+Europe	Bearded Collie
+Europe	Beaver
+Europe	Bedlington Terrier
+Europe	Beetle
+Europe	Bernese Mountain Dog
+Europe	Bichon Frise
+Europe	Bird
+Europe	Black Russian Terrier
+Europe	Bloodhound
+Europe	Bolognese Dog
+Europe	Border Collie
+Europe	Border Terrier
+Europe	Boxer Dog
+Europe	Brown Bear
+Europe	Bull Mastiff
+Europe	Bull Terrier
+Europe	Bulldog
+Europe	Bumble Bee
+Europe	Butterfly
+Europe	Cairn Terrier
+Europe	Cat
+Europe	Caterpillar
+Europe	Catfish
+Europe	Cavalier King Charles Spaniel
+Europe	Centipede
+Europe	Cesky Fousek
+Europe	Chameleon
+Europe	Chamois
+Europe	Chicken
+Europe	Chipmunk
+Europe	Clumber Spaniel
+Europe	Cockroach
+Europe	Collie
+Europe	Common Buzzard
+Europe	Common Frog
+Europe	Common Loon
+Europe	Common Toad
+Europe	Cow
+Europe	Crane
+Europe	Curly Coated Retriever
+Europe	Dachshund
+Europe	Deer
+Europe	Deutsche Bracke
+Europe	Doberman Pinscher
+Europe	Dog
+Europe	Dogue De Bordeaux
+Europe	Donkey
+Europe	Dormouse
+Europe	Dragonfly
+Europe	Drever
+Europe	Duck
+Europe	Dunker
+Europe	Eagle
+Europe	Earwig 
+Europe	Edible Frog
+Europe	English Cocker Spaniel
+Europe	English Springer Spaniel
+Europe	Entlebucher Mountain Dog
+Europe	Epagneul Pont Audemer
+Europe	Estrela Mountain Dog
+Europe	Falcon
+Europe	Ferret
+Europe	Field Spaniel
+Europe	Finnish Spitz
+Europe	Fire-Bellied Toad
+Europe	Flat Coat Retriever
+Europe	Fly
+Europe	Flying Squirrel
+Europe	Fox
+Europe	Fox Terrier
+Europe	French Bulldog
+Europe	Frog
+Europe	German Pinscher
+Europe	German Shepherd
+Europe	Giant Schnauzer
+Europe	Glass Lizard
+Europe	Glow Worm
+Europe	Goat
+Europe	Golden Oriole
+Europe	Golden Retriever
+Europe	Goose
+Europe	Grasshopper
+Europe	Great Dane
+Europe	Greater Swiss Mountain Dog
+Europe	Greenland Dog
+Europe	Greyhound
+Europe	Grouse
+Europe	Hamster
+Europe	Hare
+Europe	Harrier
+Europe	Hedgehog
+Europe	Heron
+Europe	Highland Cattle
+Europe	Honey Bee
+Europe	Horse
+Europe	Human
+Europe	Ibizan Hound
+Europe	Insect
+Europe	Irish Setter
+Europe	Irish WolfHound
+Europe	Jack Russel
+Europe	Jackal
+Europe	Kingfisher
+Europe	Labrador Retriever
+Europe	Ladybird
+Europe	Lemming
+Europe	Lizard
+Europe	Long-Eared Owl
+Europe	Magpie
+Europe	Maltese
+Europe	Marsh Frog
+Europe	Mastiff
+Europe	Mayfly
+Europe	Millipede
+Europe	Mole
+Europe	Mongrel
+Europe	Moorhen
+Europe	Moose
+Europe	Moth
+Europe	Mouse
+Europe	Mule
+Europe	Neanderthal
+Europe	Neapolitan Mastiff
+Europe	Newt
+Europe	Nightingale
+Europe	Norfolk Terrier
+Europe	Norwegian Forest
+Europe	Old English Sheepdog
+Europe	Olm
+Europe	Otter
+Europe	Panther
+Europe	Pheasant
+Europe	Pig
+Europe	Pika
+Europe	Pike
+Europe	Pointer
+Europe	Pond Skater
+Europe	Poodle
+Europe	Pool Frog
+Europe	Porcupine
+Europe	Puffin
+Europe	Purple Emperor
+Europe	Puss Moth
+Europe	Quail
+Europe	Rabbit
+Europe	Raccoon
+Europe	Raccoon Dog
+Europe	Rat
+Europe	Reindeer
+Europe	River Turtle
+Europe	Robin
+Europe	Rottweiler
+Europe	Russian Blue
+Europe	Saint Bernard
+Europe	Salamander
+Europe	Sand Lizard
+Europe	Scorpion
+Europe	Seahorse
+Europe	Sheep
+Europe	Shrimp
+Europe	Siberian
+Europe	Slow Worm
+Europe	Snail
+Europe	Snake
+Europe	Snowy Owl
+Europe	Spadefoot Toad
+Europe	Sparrow
+Europe	Squirrel
+Europe	Staffordshire Bull Terrier
+Europe	Stag Beetle
+Europe	Stick Insect
+Europe	Stoat
+Europe	Swan
+Europe	Tawny Owl
+Europe	Termite
+Europe	Tree Frog
+Europe	Turkish Angora
+Europe	Vulture
+Europe	Wasp
+Europe	Water Buffalo
+Europe	Water Vole
+Europe	Weasel
+Europe	Welsh Corgi
+Europe	West Highland Terrier
+Europe	Whippet
+Europe	Wild Boar
+Europe	Wolf
+Europe	Wolverine
+Europe	Woodlouse
+Europe	Woodpecker
+Europe	Yorkshire Terrier
+Indian Ocean	Albatross
+Indian Ocean	Aldabra Giant Tortoise
+Indian Ocean	Angelfish
+Indian Ocean	Barnacle
+Indian Ocean	Barracuda
+Indian Ocean	Bird
+Indian Ocean	Blue Whale
+Indian Ocean	Bottle Nosed Dolphin
+Indian Ocean	Bull Shark
+Indian Ocean	Butterfly Fish
+Indian Ocean	Clown Fish
+Indian Ocean	Coral
+Indian Ocean	Crab
+Indian Ocean	Cuttlefish
+Indian Ocean	Dodo
+Indian Ocean	Dolphin
+Indian Ocean	Dugong
+Indian Ocean	Dusky Dolphin
+Indian Ocean	Elephant Seal
+Indian Ocean	Fin Whale
+Indian Ocean	Fish
+Indian Ocean	Fly
+Indian Ocean	Fur Seal
+Indian Ocean	Giant African Land Snail
+Indian Ocean	Giant Clam
+Indian Ocean	Great White Shark
+Indian Ocean	Grey Reef Shark
+Indian Ocean	Hammerhead Shark
+Indian Ocean	Hermit Crab
+Indian Ocean	Horseshoe Crab
+Indian Ocean	Humpback Whale
+Indian Ocean	Insect
+Indian Ocean	Jellyfish
+Indian Ocean	Killer Whale
+Indian Ocean	King Crab
+Indian Ocean	Lobster
+Indian Ocean	Manta Ray
+Indian Ocean	Moray Eel
+Indian Ocean	Octopus
+Indian Ocean	Oyster
+Indian Ocean	Panther
+Indian Ocean	Pelican
+Indian Ocean	Penguin
+Indian Ocean	Pika
+Indian Ocean	Prawn
+Indian Ocean	Puffer Fish
+Indian Ocean	Rockhopper Penguin
+Indian Ocean	Scorpion Fish
+Indian Ocean	Sea Lion
+Indian Ocean	Sea Slug
+Indian Ocean	Sea Squirt
+Indian Ocean	Sea Turtle
+Indian Ocean	Sea Urchin
+Indian Ocean	Seahorse
+Indian Ocean	Seal
+Indian Ocean	Shrimp
+Indian Ocean	Snail
+Indian Ocean	Sperm Whale
+Indian Ocean	Spiny Dogfish
+Indian Ocean	Sponge
+Indian Ocean	Squid
+Indian Ocean	Starfish
+Indian Ocean	Stingray
+Indian Ocean	Tang
+Indian Ocean	Tiger Shark
+Indian Ocean	Tropicbird
+Indian Ocean	Whale Shark
+Indian Ocean	Wrasse
+Indian Ocean	Zebra Shark
+North America	Alaskan Malamute
+North America	Alligator
+North America	American Bulldog
+North America	American Cocker Spaniel
+North America	American Coonhound
+North America	American Eskimo Dog
+North America	American Foxhound
+North America	American Pit Bull Terrier
+North America	American Staffordshire Terrier
+North America	American Water Spaniel
+North America	Anatolian Shepherd Dog
+North America	Ant
+North America	Antelope
+North America	Armadillo
+North America	Australian Shepherd
+North America	Avocet
+North America	Balinese
+North America	Barn Owl
+North America	Bat
+North America	Bear
+North America	Beaver
+North America	Beetle
+North America	Bird
+North America	Bison
+North America	Black Bear
+North America	Black Widow Spider
+North America	Blue Lacy Dog
+North America	Bluetick Coonhound
+North America	Bobcat
+North America	Bombay
+North America	Boston Terrier
+North America	Boykin Spaniel
+North America	Bullfrog
+North America	Bumble Bee
+North America	Butterfly
+North America	Carolina Dog
+North America	Cat
+North America	Caterpillar
+North America	Catfish
+North America	Chesapeake Bay Retriever
+North America	Chicken
+North America	Chinook
+North America	Chipmunk
+North America	Coati
+North America	Cockroach
+North America	Cougar
+North America	Cow
+North America	Coyote
+North America	Crane
+North America	Crocodile
+North America	Deer
+North America	Dog
+North America	Donkey
+North America	Dragonfly
+North America	Duck
+North America	Eagle
+North America	Earwig 
+North America	Elephant
+North America	English Shepherd
+North America	Falcon
+North America	Fly
+North America	Flying Squirrel
+North America	Fox
+North America	Frog
+North America	Gar
+North America	Gila Monster
+North America	Glass Lizard
+North America	Glow Worm
+North America	Goose
+North America	Gopher
+North America	Grasshopper
+North America	Grizzly Bear
+North America	Hamster
+North America	Hare
+North America	Heron
+North America	Highland Cattle
+North America	Himalayan
+North America	Honey Bee
+North America	Horse
+North America	Human
+North America	Insect
+North America	Javanese
+North America	Kingfisher
+North America	Ladybird
+North America	Liger
+North America	Lizard
+North America	Long-Eared Owl
+North America	Lynx
+North America	Maine Coon
+North America	Mayfly
+North America	Millipede
+North America	Mole
+North America	Mongrel
+North America	Moorhen
+North America	Moth
+North America	Mountain Lion
+North America	Mouse
+North America	Mule
+North America	Newt
+North America	Opossum
+North America	Otter
+North America	Panther
+North America	Pheasant
+North America	Pig
+North America	Pika
+North America	Pike
+North America	Porcupine
+North America	Puffin
+North America	Puma
+North America	Quail
+North America	Rabbit
+North America	Raccoon
+North America	Ragdoll
+North America	Rat
+North America	Rattlesnake
+North America	Red Wolf
+North America	River Turtle
+North America	Robin
+North America	Sabre-Toothed Tiger
+North America	Scorpion
+North America	Seahorse
+North America	Sheep
+North America	Shrimp
+North America	Siberian Husky
+North America	Skunk
+North America	Snail
+North America	Snake
+North America	Snapping Turtle
+North America	Snowshoe
+North America	Somali
+North America	Spadefoot Toad
+North America	Sparrow
+North America	Squirrel
+North America	Stick Insect
+North America	Swan
+North America	Termite
+North America	Tiffany
+North America	Tiger Salamander
+North America	Turkey
+North America	Vulture
+North America	Wasp
+North America	Water Buffalo
+North America	Weasel
+North America	Wolf
+North America	Wolverine
+North America	Woodlouse
+North America	Woodpecker
+North America	Zorse
+Pacific Ocean	Albatross
+Pacific Ocean	Angelfish
+Pacific Ocean	Barnacle
+Pacific Ocean	Barracuda
+Pacific Ocean	Basking Shark
+Pacific Ocean	Bird
+Pacific Ocean	Blue Whale
+Pacific Ocean	Booby
+Pacific Ocean	Bottle Nosed Dolphin
+Pacific Ocean	Bull Shark
+Pacific Ocean	Butterfly Fish
+Pacific Ocean	Clown Fish
+Pacific Ocean	Coral
+Pacific Ocean	Crab
+Pacific Ocean	Cuttlefish
+Pacific Ocean	Dolphin
+Pacific Ocean	Dugong
+Pacific Ocean	Dusky Dolphin
+Pacific Ocean	Elephant Seal
+Pacific Ocean	Fin Whale
+Pacific Ocean	Fish
+Pacific Ocean	Flounder
+Pacific Ocean	Fly
+Pacific Ocean	Frigatebird
+Pacific Ocean	Fur Seal
+Pacific Ocean	Galapagos Penguin
+Pacific Ocean	Galapagos Tortoise
+Pacific Ocean	Giant African Land Snail
+Pacific Ocean	Giant Clam
+Pacific Ocean	Great White Shark
+Pacific Ocean	Grey Reef Shark
+Pacific Ocean	Hammerhead Shark
+Pacific Ocean	Hermit Crab
+Pacific Ocean	Horn Shark
+Pacific Ocean	Horseshoe Crab
+Pacific Ocean	Humboldt Penguin
+Pacific Ocean	Humpback Whale
+Pacific Ocean	Insect
+Pacific Ocean	Jellyfish
+Pacific Ocean	Killer Whale
+Pacific Ocean	King Crab
+Pacific Ocean	Lionfish
+Pacific Ocean	Lobster
+Pacific Ocean	Magellanic Penguin
+Pacific Ocean	Manatee
+Pacific Ocean	Manta Ray
+Pacific Ocean	Minke Whale
+Pacific Ocean	Moray Eel
+Pacific Ocean	Nurse Shark
+Pacific Ocean	Octopus
+Pacific Ocean	Oyster
+Pacific Ocean	Pelican
+Pacific Ocean	Penguin
+Pacific Ocean	Pika
+Pacific Ocean	Prawn
+Pacific Ocean	Puffer Fish
+Pacific Ocean	Rockhopper Penguin
+Pacific Ocean	Scorpion Fish
+Pacific Ocean	Sea Dragon
+Pacific Ocean	Sea Lion
+Pacific Ocean	Sea Otter
+Pacific Ocean	Sea Slug
+Pacific Ocean	Sea Squirt
+Pacific Ocean	Sea Turtle
+Pacific Ocean	Sea Urchin
+Pacific Ocean	Seahorse
+Pacific Ocean	Seal
+Pacific Ocean	Shrimp
+Pacific Ocean	Snail
+Pacific Ocean	Sperm Whale
+Pacific Ocean	Spiny Dogfish
+Pacific Ocean	Sponge
+Pacific Ocean	Squid
+Pacific Ocean	Starfish
+Pacific Ocean	Stingray
+Pacific Ocean	Tang
+Pacific Ocean	Tiger Shark
+Pacific Ocean	Tropicbird
+Pacific Ocean	Whale Shark
+Pacific Ocean	Wrasse
+Pacific Ocean	Zebra Shark
+South America	Ant
+South America	Anteater
+South America	Antelope
+South America	Armadillo
+South America	Avocet
+South America	Axolotl
+South America	Barb
+South America	Barn Owl
+South America	Bat
+South America	Bear
+South America	Beetle
+South America	Bird
+South America	Black Widow Spider
+South America	Booby
+South America	Brazilian Terrier
+South America	Butterfly
+South America	Caiman
+South America	Caiman Lizard
+South America	Capybara
+South America	Cat
+South America	Caterpillar
+South America	Catfish
+South America	Centipede
+South America	Chicken
+South America	Chihuahua
+South America	Chinchilla
+South America	Coati
+South America	Cockroach
+South America	Collared Peccary
+South America	Cottontop Tamarin
+South America	Cow
+South America	Crab
+South America	Crocodile
+South America	Darwins Frog
+South America	Desert Tortoise
+South America	Discus
+South America	Dog
+South America	Dogo Argentino
+South America	Donkey
+South America	Dragonfly
+South America	Duck
+South America	Earwig 
+South America	Electric Eel
+South America	Emperor Tamarin
+South America	Flamingo
+South America	Fly
+South America	Flying Squirrel
+South America	Frog
+South America	Gar
+South America	Gecko
+South America	Geoffroys Tamarin
+South America	Giant African Land Snail
+South America	Gila Monster
+South America	Glow Worm
+South America	Golden Lion Tamarin
+South America	Grasshopper
+South America	Guinea Pig
+South America	Guppy
+South America	Hamster
+South America	Havanese
+South America	Hercules Beetle
+South America	Honey Bee
+South America	Horned Frog
+South America	Horse
+South America	Howler Monkey
+South America	Human
+South America	Hummingbird
+South America	Ibis
+South America	Iguana
+South America	Insect
+South America	Jaguar
+South America	Keel Billed Toucan
+South America	Kingfisher
+South America	Ladybird
+South America	Lizard
+South America	Llama
+South America	Macaw
+South America	Marine Toad
+South America	Mayfly
+South America	Millipede
+South America	Molly
+South America	Mongrel
+South America	Monkey
+South America	Monte Iberia Eleuth
+South America	Moorhen
+South America	Moth
+South America	Mountain Lion
+South America	Mouse
+South America	Mule
+South America	Ocelot
+South America	Otter
+South America	Panther
+South America	Parrot
+South America	Pheasant
+South America	Pied Tamarin
+South America	Pika
+South America	Pink Fairy Armadillo
+South America	Piranha
+South America	Poison Dart Frog
+South America	Porcupine
+South America	Puma
+South America	Pygmy Marmoset
+South America	Quail
+South America	Quetzal
+South America	Rat
+South America	Rattlesnake
+South America	Red Knee Tarantula
+South America	Red-handed Tamarin
+South America	River Dolphin
+South America	River Turtle
+South America	Roseate Spoonbill
+South America	Sabre-Toothed Tiger
+South America	Salamander
+South America	Scorpion
+South America	Seahorse
+South America	Shrimp
+South America	Silver Dollar
+South America	Sloth
+South America	Snail
+South America	Snake
+South America	Snapping Turtle
+South America	Sparrow
+South America	Spectacled Bear
+South America	Spider Monkey
+South America	Squirrel
+South America	Squirrel Monkey
+South America	Stick Insect
+South America	Swan
+South America	Tapir
+South America	Termite
+South America	Tetra
+South America	Tortoise
+South America	Toucan
+South America	Tree Frog
+South America	Turkey
+South America	Uakari
+South America	Umbrellabird
+South America	Vampire Bat
+South America	Vulture
+South America	Wasp
+South America	White Faced Capuchin
+South America	Wolf
+South America	Woodlouse
+South America	Woodpecker
+South America	Woolly Monkey
+South America	X-Ray Tetra
+South America	Zebu

@@ -1,0 +1,180 @@
+EJERCICIO BBDD PAÍSES   - SOLUCIÓN
+===================================
+
+- Resetear el serverX desde foundationX:
+
+fX> rht-vmctl reset server_rhel_pm
+
+- Acceder a serverX:
+
+fX> ssh root@serverX
+
+1. Instalación
+---------------
+
+- Instalar los grupos de paquetes de MariaDB:
+
+    serverX> yum groupinstall mariadb mariadb-client -y
+
+- Arrancar y activar el servicio mariadb:  (no arranco primero e intento ejecutar el comando mysql_secure_installation, la password de root vacía no funciona)
+
+    serverX> systemctl start mariadb; systemctl enable mariadb
+
+- Securizar la instalacion poniendo la password de root a "maria", y eliminar el acceso remoto de root, eliminar el usuario anónimo y la base de datos "test"
+
+    serverX> mysql_secure_installation
+
+- Veo donde está MariaDB escuchando:
+    
+ serverX> ss -tulpan | grep mysql   <- En todos los interfaces de la máquina
+
+- Sólo la subred 172.25.X.0/24 puede usar el servidor de MariaDB.
+  Con poner en la configuración de MariaDB bind-address=172.25.X.11 no lo soluciono, a través del Gateway podría llegar una máquina de otra subred.
+  Tengo que configurar el Firewall:
+
+  Primera opción, hago que todo lo que venga de la subred 172.25.X.0/24 vaya a una zona, p.e., zona "work" y en esa zona añadir el servicio "mysql":
+  firewall-cmd --add-source=172.25.X.0/24 --zone=work --permanent
+  firewall-cmd --add-service=mysql --zone=work --permanent
+  firewall-cmd --reload
+  
+  Segunda opción, creo una rich rule:
+  firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=172.25.X.0/24 service name=mysql accept'
+
+Puedo añadir que loguee las conexiónes que se hagan hasta un límite de 3 x minuto:
+
+  firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=172.25.X.0/24 service name="mysql" log level="notice" prefix="NEW MariaDB connection " limit value="3/m" accept'
+
+o que haga audit:
+
+   firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=172.25.X.0/24 service name="mysql" audit limit value="3/m" accept'
+
+
+- Instalo el cliente en desktop0 para poderme conectar en remoto:
+  fX> ssh root@desktopX
+  desktopX> yum groupinstall mariadb-client -y
+
+2. Backup
+----------
+ - Obtener el volcado de la BBDD:
+  
+  serverX> wget -O /tmp/world.dump http://content.example.com/Curso_RHEL/RH254/T9-MariaDB/EjercicioWorld/world.dump
+  
+ - Creo la BBDD "world":
+ 
+   serverX> mysql -u root -pmaria -e "CREATE DATABASE world;"
+
+ - Vuelco el backup en la BBDD recién creada:
+   
+   serverX> mysql -u root -pmaria world <  /tmp/world.dump
+
+ - Compruebo que veo las tablas:
+
+   serverX> mysql -u root -pmaria -e "USE world;SHOW TABLES;"
+
+ 
+3. Usuarios
+------------
+
+- Creo todos los usuarios "pepe", "juan", "ana", "carmen" y "carlos" que son remotos (%) con la password igual a su nombre:
+  
+   serverX> for i in pepe juan carlos ana carmen;do mysql -u root -ppepe -e "CREATE USER $i@'%' IDENTIFIED BY '$i';";done
+
+- Creo el usuario "student" en local:
+
+   serverX> mysql -u root -pmaria -e "CREATE USER student@localhost IDENTIFIED BY 'student';"
+
+- Doy privilegios de consulta a pepe y juan:
+
+   serverX> for i in pepe juan; do mysql -u root -pmaria -e "GRANT SELECT ON world.* TO $i@'%';";done
+
+- Doy privilegios CRUD a "ana" y "carmen":
+  
+  serverX> for i in ana carmen;do mysql -u root -pmaria -e " GRANT INSERT, UPDATE, DELETE, SELECT ON world.* TO $i@'%';";done
+
+- Doy privilegios a "carlos" para crear, modificar y borrar tablas en la BBDD "world":
+
+   serverX> mysql -u root -pmaria -e "GRANT CREATE, ALTER, DROP ON world.* TO carlos@'%';"
+ 
+- Doy privilegios para hacer de todo a "student":
+
+serverX> mysql -u root -pmaria -e "GRANT ALL PRIVILEGES ON *.* TO student@localhost;"
+
+
+4. Revocar permisos y otros
+-----------------------------
+
+serverX> mysql -u root -pmaria
+- El usuario "pepe" no tiene que tener privilegios:
+   MariaDB> SHOW GRANTS FOR pepe;   -> veo los que tiene y se los quito a continuación.
+   MariaDB> REVOKE SELECT ON world.* FROM pepe@'%';
+
+- Borro el usuario "juan":
+
+   MariaDB> REVOKE SELECT ON world.* FROM juan@'%';
+   MariaDB> DROP USER juan@'%';
+
+- El usuario "ana" solo tendrá privilegios CRUD sobre la tabla "city":
+
+   MariaDB> REVOKE SELECT, INSERT, DELETE, UPDATE ON world.* FROM ana@'%';
+   MariaDB> GRANT INSERT, UPDATE, DELETE, SELECT ON world.CITY to ana@'%';
+
+- Le cambio la password a "student":
+     MariaDB> SET PASSWORD FOR student@localhost =password('redhat');
+
+5. Consultas
+-------------
+- ¿Cuántas tablas hay en la BBDD "world"?¿Cuáles son?
+
+   serverX>  mysql -u student -predhat  
+   MariaDB> USE world;SHOW TABLES world;
+
+ Respuesta: 3, "city", "country" y "countrylanguages"
+
+- ¿Cuántos usuarios hay en MariaDB?
+
+   serverX>  mysql -u student -predhat 
+    MariaDB> SELECT COUNT(User) FROM mysql.user; 
+
+ Respuesta: hay 8
+
+- Usando el usuario "carmen" ¿Cuantos países hay en Asia?
+  
+   desktopX> mysql -u carmen -pcarmen -h serverX -e "SELECT COUNT(Name) FROM world.country WHERE Continent LIKE 'Asia';"
+   
+  Respuesta: 51
+
+- Usando el usuario "carmen", ¿Qué paises hay en la Antártida (Antarctica)?
+
+   desktopX> mysql -u carmen -h serverX -pcarmen -e " SELECT Name FROM world.country WHERE Continent LIKE 'Antarctica';
+
+  Respuesta: Antarctica, French Southern territories, Bouvet Island, Heard Island and McDonald Islands y South Georgia and the South Sandwich Islands.
+
+- Usando el usuario "carlos" ¿Cuántos países hay en Africa?
+  Carlos no puede hacer SELECT sobre las tablas 
+
+- ¿Cuantos países tienen como lengua oficial el español (Spanish)? Obten la lista de esos países
+
+   serverX>  mysql -u student -predhat 
+  MariaDB>  SELECT * FROM countrylanguage WHERE IsOfficial='T' AND Language='Spanish';
+ ó 
+  MariaDB>  SELECT COUNT(Language) FROM countrylanguage WHERE IsOfficial='T' AND Language='Spanish';
+
+  Respuesta: 20
+
+  serverX>  mysql -u student -predhat 
+  MariaDB> SELECT country.Name FROM country,countrylanguage WHERE country.Code=countrylanguage.CountryCode AND countrylanguage.IsOfficial='T' AND countrylanguage.Language='Spanish';
+
+ Respuesta: Argentina, Bolivia, Chile, Colombia, Costa Rica, Cuba, Dominican Republic, Ecuador, Spain, Guatemala, Honduras, Mexico, Nicaragua, Panama, Peru, Puerto Rico, Paraguay, El Salvador, Uruguay y Venezuela.
+
+- Con usuario "ana", inserta la ciudad de Majadahonda que tiene una población de 70.755 habitantes. PISTA: Busca el código de pais para Spain en la tabla country
+
+ desktopX>  mysql -u ana -pana -e " SELECT Code FROM country where Name='Spain';"
+
+ desktopX>  mysql -u ana -pana -e "INSERT INTO city(Name,CountryCode,District,Population) VALUES('Majadahonda','ESP','Madrid','70755');"
+
+ Compruebo que aparece Majadahonda en la tabla "city":
+
+ desktopX>  mysql -u ana -pana -e "SELECT * from city WHERE CountryCode='ESP' AND District='Madrid';"
+ 
+
+  

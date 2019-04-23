@@ -1,0 +1,16 @@
+La BBDD MariaDB sólo debe poder utilizarse a las máquinas de la subred 172.25.X.0/24:
+
+firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=172.25.X.0/24 service name=mysql accept'
+
+Puedo añadir que loguee las conexiónes que se hagan hasta un límite de 3 x minuto:
+
+firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=172.25.X.0/24 service name="mysql" log level="notice" prefix="NEW MariaDB connection " limit value="3/m" accept'
+
+o que haga audit:
+
+firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=172.25.X.0/24 service name="mysql" audit limit value="3/m" accept'
+
+ejemplos de rich-rules en: man 5 firewalld.richlanguage -> examples
+
+
+

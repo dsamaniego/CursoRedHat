@@ -1,0 +1,295 @@
+EJERCICIO BBDD PAÍSES
+======================
+
+Antes de empezar, hacer reset de serverX y de desktopX.
+ 
+1. Instalación
+--------------- 
+  Configurar en el serverX un servidor de MariaDB con los datos:
+	- password del usuario root de MariaDB: "maria"
+	- No se debe permitir usar el usuario root en remoto ni accesos sin usuario
+	- Se debe permitir el acceso remoto sólo a la subred 172.25.X.0/24
+	- La BBDD de test debe ser eliminada
+
+2. Backup
+---------- 
+ Recuperar el backup de la BBDD "world" que está en: http://content.example.com/Curso_RHEL/RH254/T9-MariaDB/EjercicioWorld/world.dump
+
+3. Usuarios
+------------
+  Crear los usuarios siguientes con los privilegios:
+
+	- Usuarios remotos con permisos para hacer consultas en la BBDD "world": "pepe", "juan". 
+	- Usuarios remotos con permisos para hacer operaciones CRUD en la BBDD "world": "ana", "carmen".
+	- Los usuarios que no son root, tienen la password igual a su username y NO SON USUARIOS DE SISTEMA.
+	- El usuario remoto "carlos" podrá crear, alterar y borrar tablas en la BBDD "world".
+	- El usuario de sistema "student" tiene permisos para hacer de todo en todas las bases de datos. (OJO: donde está el usuario student)
+
+4. Revocar permisos y otros
+----------------------------
+  - El usuario "pepe" se decide que ya no tenga acceso a la BBDD, quitarle dichos privilegios pero no borrar el usuario.
+
+  - Borrar el usuario "juan".
+
+  - El usuario "ana" sólo tendrá permisos CRUD para la tabla "city" de la BBDD "world".
+
+  - Cambiarle la password a "student" por "redhat"
+
+5. Consultas:
+-------------
+
+  - ¿Cuántas tablas hay en la BBDD "world"?¿Cuáles son?
+
+  - ¿Cuántos usuarios hay en MariaDB?
+
+  - Usando el usuario "carmen" ¿Cuantos países hay en Asia?
+
+  - Usando el usuario "carmen", ¿Qué paises hay en la Antártida (Antarctica)?
+
+  - Usando el usuario "carlos" ¿Cuántos países hay en Africa?
+
+  - ¿Cuantos países tienen como lengua oficial el español (Spanish)? Obten la lista de esos países
+
+  - Con usuario "ana", inserta la ciudad de Majadahonda que tiene una población de 70.755 habitantes. PISTA: Busca el código de pais para "Spain" en la tabla "country".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

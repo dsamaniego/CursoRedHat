@@ -1,0 +1,17 @@
+AUTOCOMPLETADO EN MARIADB
+-------------------------
+Desactivado por defecto, activar con:
+-> En el fichero /etc/my.cnf   o   para un usuario en concreto:   ~/.my.cnf
+
+poner al final del fichero:
+
+[mysql]
+auto-rehash
+
+-> En el comando:
+  mysql --auto-rehash -u root -p
+
+-> Dentro del prompt de MariaDB, comando "rehash"
+
+Referencia:
+	http://www.sysadmit.com/2016/08/linux-mysql-autocompletar.html

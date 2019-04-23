@@ -1,0 +1,38 @@
+PASOS PARA RECUPERAR LA CONTRASEÑA DE ROOT DE MARIADB:
+
+Como usuario root de sistema:
+
+1) Parar el servicio mariadb: 
+  systemctl stop mariadb
+
+2) Arrancar en modo "safe":
+   mysqld_safe --skip-grant-tables --skip-networking&
+
+ Con la opción --skip-grant-tables se iniciará sin emplear el sistema de privilegios, por lo que tendrás acceso ilimitado a todas las bases de datos y la opción --skip-networking hará que se dejen de escuchar conexiones TCP/IP externas, lo que evitará problemas externos durante el cambio.
+
+3) Conectar como root sin password:
+  mysql -u root
+
+4) Ir a la BBDD "mysql":
+  USE mysql;
+
+5) Modificar el registro de root en la tabla "user":
+    UPDATE user SET password=PASSWORD('nueva') WHERE user='root';
+    flush privileges;  (sin esto también funciona)
+    exit
+
+  donde "nueva" es la nueva contraseña de root de MariaDB.
+
+6) Parar el modo "safe":
+  jobs -> veo el número de job
+  kill %n  -> donde n es el número de job visto antes
+
+otra opción es: mysqladmin -p shutdown
+
+7) Arranco MariaDB:
+  systemctl start mariadb
+
+
+
+Referencia:
+ 	https://clouding.io/kb/mysql-como-recuperar-la-contrasena-de-root/

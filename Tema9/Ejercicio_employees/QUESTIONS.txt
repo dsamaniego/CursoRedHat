@@ -1,0 +1,16 @@
+PREGUNTAS REFERIDAS AL DATABASE employees:
+
+1. ¿Cuántas y cuáles son las tablas? 
+2. ¿Qué campos(=atributos) tiene cada una de las tablas?
+3. ¿Cuántos registros tiene cada una de las tablas del database employees?
+4. ¿Cuántos empleados son hombres? y, ¿mujeres?
+5. ¿Cuántas  empleadas han sido contratadas en los 90' y han nacido en los 60'? y, ¿empleados?
+
+  Pista: MariaDB [employees]> select count(*) from employees where gender='F' and hire_date like '199%' and birth_date like '196%';
+
+6. Apellido de los "Senior Engineer".
+7. Apellido de los "Senior Engineer" mujeres (Pista: gender=F). 
+8. Apellido de los "Senior Engineer" hombres (Pista: gender=M).
+
+
+
